@@ -1,0 +1,1016 @@
+# JSON + XML {#sec-ch17}
+
+```{python}
+#| include: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from plotnine import *
+import json
+import requests
+from bs4 import BeautifulSoup
+import xml.etree.ElementTree as ET
+from lxml import html, etree
+import re
+import warnings
+warnings.filterwarnings('ignore')
+```
+
+## Introduction
+
+In this text we have primarily worked with tabular data stored in
+a CSV file. Tabular data is arranged into rows and columns, which
+we went into further detail in Chap. 5.
+As we have seen, this format is surprisingly flexible
+while also keeping the data organized in a way that is 
+optimized for using the grammar of graphics and data manipulation verbs to
+do exploratory data analysis. Getting data organized for analysis
+often takes significant time. In fact, it often takes us more time
+than the analysis. Whether creating our own data or moving between formats,
+collecting and organizing data is a time consuming, yet key, task. 
+
+There are many other formats 
+available for storing tabular datasets. We mentioned the use of
+the Excel format in Chap. 5 as a good option for 
+data entry and we used the special GeoJSON format for 
+storing tabular data along with geospatial information. For 
+most other common tabular data formats there is likely to be
+at least one Python function or package that is able to read, and
+in most cases write, tabular data stored in it. The **pandas**
+library can load many variations on CSV, such as tables that use 
+other delimiters or fixed-width columns. The **geopandas** library
+that we used for GeoJSON will automatically read many
+other spatial formats such as ESRI shapefiles. For formats
+created by SAS, SPSS, or Stata, pandas has functions for getting 
+the data into Python DataFrames [@haven]. If we have one or
+more data tables in a database, packages such as **sqlalchemy** 
+and database-specific libraries can query the database and return 
+tables as pandas DataFrames [@duckdb] [@RMySQL]. For other
+tabular data files that we may run into, searching Python's
+package index (PyPI) will usually reveal a package that can help
+get data into the desired format.
+
+Sometimes, data will be available in a format that is not
+initially organized into the kinds of tables we introduced in 
+Chap. 1 and have used throughout this book. The most 
+common types of non-tabular data that we may run into include
+raw text, JSON (Javascript Object Notation), XML (Extensible
+Markup Language), and HTML (HyperText Markup Language). All of
+these can be loaded into Python using built-in functions and packages 
+specifically designed to parse them. The challenge, however, is
+that when read into Python these formats will be in the form of dictionaries,
+lists, or other custom objects. Parsing these formats into a DataFrame
+requires writing custom code that takes into account the specific
+information stored in the data. Often this requires using new
+functions or query languages, such as regular expressions or
+XPath queries, to facilitate the conversion process. In this
+chapter, we will introduce these four common formats and show
+examples of how they can be used to represent different kinds of
+information. Along the way, we show specific functions for 
+parsing data stored in these file types. 
+
+## Strings
+
+The term *string* typically refers to a sequence of characters. We
+have been using variables of string type throughout this book. 
+We have used string variables in several different ways. First, as in
+Chaps. 2-5, as categories to group, filter,
+and summarize a dataset. There we treated the string
+variables as coming from a fixed set of values (such as the name
+of a region of the United States). In Chap. 5, we noted
+that when creating data it is important to document and use a
+consistent set of codes in order facilitate this kind of usage.
+Another way that we have used strings are as labels or ids.
+Here, typically, we expect each row of a dataset to have a unique
+value for a specific variable and we use this value to label
+points in a graphic. We used this approach in Chap. 2
+in connection with geom_text layers and to link together
+datasets through joins in Chap. 4. Identifiers also were
+used through the application chapters to identify each document
+in a textual corpus, nodes in the network data, and the images
+in our image dataset. In the latter case, strings were also used to
+indicate the file path where the actual images could be found
+on our local machine. Another usage of strings came from the 
+application in Chap. 6, where each string recorded 
+long, free-form text that constituted the main object of study
+in that chapter. We saw that working with the latter required
+first pre-processing the data through an NLP pipeline to create
+an annotation table with one row per token.
+
+The case we consider here is where strings fall somewhere
+in-between the free-form text in Chap. 6 and the
+structured categories in the opening chapters. In other words, 
+each string might contain structured data that needs to be
+modified before we can use it in data summaries, visualizations,
+and models. Understanding how to parse apart raw strings is a key
+step in learning how to collect and organize large datasets. In
+this and the following section, we will share several techniques
+for manipulating strings that we will be able to put to use in
+cleaning data in the subsequent chapters.
+
+To illustrate the string manipulation functions presented here, 
+we will again use a dataset created from Wikipedia related to
+British authors. In the previous examples, we used a relatively
+small set of 75 authors. Each of the authors was associated with
+several metadata categories such as the years of birth and death
+and a category describing the era in which they were active. We
+created those records manually using the data entry methods 
+described in Chap. 5. The metadata were stored as a
+CSV file that we then read into Python and then joined with the dataset
+that had the textual documents. Wikipedia has a much larger list
+of authors that we could use to create a much larger set of
+pages. As we will see below, creating the documents for this
+larger set is relatively straightforward and just involves a 
+longer loop through the set of pages. Grabbing the metadata for
+each author, however, is a bit more challenging because we want
+to try to do this automatically rather than entering the 
+thousands of records manually. 
+
+We have saved one of the intermediate steps in grabbing the 
+larger set of Wikipedia pages as a text file, with one row for
+each author. (We will show later how to generate this file.) We
+can load this dataset into Python by reading the file line by line:
+
+```{python}
+# Read lines from file
+with open("data/wiki_uk_long_meta.txt", "r", encoding="utf-8") as f:
+    wiki = f.read().strip().split('\n')
+
+# Show first 10 lines
+for i in range(10):
+    print(f"{i}: {wiki[i]}")
+```
+
+Already we see that there is quite a lot of interesting metadata
+in this list. However, it is not sufficiently structured to 
+immediately turn it into a tabular dataset with all of the 
+features as individual columns. As a first step, we will create
+a DataFrame that contains the text as its single column:
+
+```{python}
+wiki_df = pd.DataFrame({'desc': wiki})
+wiki_df
+```
+
+In order to extract the structured information from this text,
+we need to use specific functions for working with strings.
+Python has excellent built-in string methods and the **re** module
+for regular expressions. All string objects in Python have many
+useful methods. For example, we can find the length of each string:
+
+```{python}
+# Add string length column
+wiki_df['desc_len'] = wiki_df['desc'].str.len()
+wiki_df[['desc', 'desc_len']]
+```
+
+There are also methods to extract substrings. Python uses zero-based indexing,
+so the first character is at position 0. We can extract substrings using
+slice notation:
+
+```{python}
+# Extract first three characters
+wiki_df['desc_first_three'] = wiki_df['desc'].str[:3]
+wiki_df[['desc', 'desc_first_three']]
+```
+
+We can also extract from the end of strings using negative indices:
+
+```{python}
+# Extract last three characters
+wiki_df['desc_last_three'] = wiki_df['desc'].str[-3:]
+wiki_df[['desc_last_three']]
+```
+
+There are many other useful string methods for searching and replacing:
+
+```{python}
+# Check if strings contain specific text
+wiki_df['has_and'] = wiki_df['desc'].str.contains('and')
+
+# Count occurrences
+wiki_df['count_and'] = wiki_df['desc'].str.count('and')
+
+# Replace text
+wiki_df['desc_replaced'] = wiki_df['desc'].str.replace('ï', 'o')
+
+wiki_df[['has_and', 'count_and', 'desc_replaced']]
+```
+
+These basic string methods are great building blocks for extracting text. However,
+we need a more flexible approach to parse the Wikipedia data in our example.
+
+## Regular Expressions
+
+Python's **re** module provides powerful regular expression capabilities.
+A *regular expression* is a way of describing patterns in strings. The
+language of regular expressions can become quite complex; here
+we will focus on a subset of components that are more frequently
+used for cleaning data.
+
+```{python}
+import re
+
+# Let's work with a sample of our data
+sample_desc = wiki_df['desc'].iloc[0]
+sample_desc
+```
+
+There are several special commands in a regular expression that
+stand for sets of characters. A period `.` stands for any
+character, `\w` for word characters (letters and numbers), and `\W` 
+for non-word characters such as spaces. Putting any sequence of characters 
+in square brackets will search for any matching character in the set. 
+If the first term in the brackets is the caret `^`, this will instead 
+match anything not in the set. There is also a special shorthand,
+`[0-9]`, to match any digit. If we want to match one or more consecutive 
+characters, we can use the plus sign (`+`). Let's see examples:
+
+```{python}
+# Extract patterns using pandas string methods with regex
+wiki_sample = wiki_df.head(10).copy()
+
+# Extract first word character
+wiki_sample['first_word_char'] = wiki_sample['desc'].str.extract(r'(\w)', expand=False)
+
+# Extract first sequence of word characters
+wiki_sample['first_word'] = wiki_sample['desc'].str.extract(r'(\w+)', expand=False)
+
+# Extract first sequence of digits
+wiki_sample['first_numbers'] = wiki_sample['desc'].str.extract(r'([0-9]+)', expand=False)
+
+# Extract first sequence of vowels
+wiki_sample['first_vowels'] = wiki_sample['desc'].str.extract(r'([aeiou]+)', expand=False)
+
+wiki_sample[['first_word', 'first_numbers', 'first_vowels']]
+```
+
+Two other special regular expression characters are `^` (start of string) 
+and `$` (end of string). These are called *anchors* and can be very
+useful for grabbing data within a string.
+
+Now, we have enough tools to try to extract some of the data that
+is captured inside of the string. To start, at least in the
+first ten rows, if we extract all of the text up to the 
+parenthesis, we will have the full name of each author. We can
+do this by finding text that doesn't include parentheses:
+
+```{python}
+wiki_sample['author_name'] = wiki_sample['desc'].str.extract(r'([^(]+)', expand=False)
+wiki_sample['author_name'] = wiki_sample['author_name'].str.strip()
+
+wiki_sample[['author_name']]
+```
+
+What if we wanted to extract the last name of each author? This
+could be useful to create a short name for future plots. We can do this by
+finding word characters at the end of the author name:
+
+```{python}
+# Extract last names (last word before parentheses)
+wiki_sample['last_name'] = wiki_sample['author_name'].str.extract(r'([\w.]+)$', expand=False)
+
+wiki_sample[['author_name', 'last_name']]
+```
+
+Now, how about the dates that each author was alive? We can look for
+four-digit numbers, which should correspond to years:
+
+```{python}
+# Extract birth and death years
+# Find all four-digit numbers (years)
+years_pattern = r'([0-9]{4})'
+
+# Extract first and last occurrence of four-digit numbers
+wiki_sample['birth_year'] = wiki_sample['desc'].str.extract(years_pattern, expand=False)
+wiki_sample['death_year'] = wiki_sample['desc'].str.extractall(years_pattern).groupby(level=0)[0].last()
+
+# Handle cases where birth and death years are the same
+wiki_sample['is_modern'] = wiki_sample['death_year'].str[:2].isin(['19', '20'])
+wiki_sample.loc[
+    (wiki_sample['birth_year'] == wiki_sample['death_year']) & 
+    (~wiki_sample['is_modern']), 'birth_year'
+] = None
+wiki_sample.loc[
+    (wiki_sample['birth_year'] == wiki_sample['death_year']) & 
+    (wiki_sample['is_modern']), 'death_year'
+] = None
+
+wiki_sample[['author_name', 'birth_year', 'death_year']]
+```
+
+We can also extract all occurrences of a pattern using `findall`:
+
+```{python}
+# Extract all vowels from each description
+wiki_sample['all_vowels'] = wiki_sample['desc'].str.findall(r'[AEIOUaeiou]')
+
+wiki_sample[['author_name', 'all_vowels']]
+```
+
+The output shows lists of vowels for each author. This type of structure
+is called *nested* data. We can "explode" these lists to create multiple
+rows per author:
+
+```{python}
+# Explode the vowels to create multiple rows
+vowels_exploded = (wiki_sample[['author_name', 'all_vowels']]
+    .explode('all_vowels')
+    .dropna()
+)
+
+vowels_exploded
+```
+
+We can use similar techniques to extract professions. Let's look for text
+after the closing parenthesis:
+
+```{python}
+wiki_sample['professions_raw'] = wiki_sample['desc'].str.extract(r'\)(.+)$', expand=False)
+
+wiki_sample['professions_clean'] = (wiki_sample['professions_raw']
+    .str.strip()
+    .str.replace(' and ', ', ')
+)
+
+wiki_sample['professions'] = wiki_sample['professions_clean'].str.split(', ')
+
+wiki_prof = (wiki_sample[['author_name', 'professions']]
+    .explode('professions')
+    .dropna()
+    .reset_index(drop=True)
+)
+
+wiki_prof
+```
+
+Let's see the most common professions:
+
+```{python}
+profession_counts = (wiki_prof
+    .groupby('professions')
+    .size()
+    .reset_index(name='count')
+    .sort_values('count', ascending=False)
+)
+
+profession_counts
+```
+
+All of these top terms correspond to the professions we would
+expect from dataset of authors. While a full cleaning would require
+more sophisticated regular expressions to handle edge cases, our work
+illustrates the application of regular expression functions
+and how they can be used to extract data from raw strings.
+As we can see, getting data organized is a time consuming process
+and often the longest part of our humanities data work.
+
+## JSON Data
+
+The *JavaScript Object Notation* (JSON) is a popular open 
+standard data format. It was originally designed for the
+JavaScript language, but is supported in many programming
+languages. The format of JSON closely resembles native data
+structures found in Python. In part because of the
+importance of JavaScript as a core programming language in 
+modern browsers, JSON has become a very popular format for 
+data storage. This is particularly true for data that are 
+distributed over a web-based API, as we will see later in this
+chapter. 
+
+As with CSV, JSON data is stored in a plaintext format. This
+means that we can open the file in any text editor and see the
+data in a human-readable format. We created a small example of
+a JSON file displaying information about two of the authors in
+our Wikipedia dataset:
+
+```json
+{
+  "data": [
+    {
+      "name": "Charlotte Brontë",
+      "age_at_death": 38,
+      "date": {
+        "born": "21 April 1816",
+        "died": "31 March 1855"
+      },
+      "profession": [
+        "novelist",
+        "poet",
+        "governess"
+      ]
+    },
+    {
+      "name": "Virginia Woolf",
+      "age_at_death": 59,
+      "date": {
+        "born": "25 January 1882",
+        "died": "28 March 1941"
+      },
+      "profession": [
+        "novelist",
+        "essayist",
+        "critic"
+      ]
+    }
+  ]
+}
+```
+
+Data stored in the JSON format is highly structured. In some
+ways, the format is more strict than CSV files and is relatively
+easy to parse. Looking at the example above, we see many of the
+basic element types of JSON data. In fact, there are only six
+core data types available:
+
+1. an empty value called `null`
+2. a **number**
+3. a **string**
+4. a **Boolean** value equal to `true` or `false`
+5. an **object** of named value pairs, with names equal to
+strings and values equal to any other data type
+6. an ordered **array** of objects coming from any other type
+
+Objects are defined by curly braces and arrays are defined with
+square brackets. The reason that JSON can become complex even
+with these limited types is that, as in the example above, it is
+possible to created nested structures using the object and array
+types. To read a JSON object into Python, we can use the built-in
+`json` module:
+
+```{python}
+import json
+
+# Read JSON file
+with open("data/author.json", "r") as f:
+    obj_json = json.load(f)
+
+print(f"Type: {type(obj_json)}")
+print(f"Keys: {list(obj_json.keys())}")
+```
+
+The output object `obj_json` is a Python dictionary. In general,
+Python turns JSON arrays into lists and objects into dictionaries. Numbers,
+strings, and Boolean objects become the corresponding Python types. To create a structured dataset from
+the output, we can use standard Python dictionary and list operations:
+
+```{python}
+# Extract author names
+names = [author['name'] for author in obj_json['data']]
+print(f"Author names: {names}")
+
+# Create a DataFrame with author information
+authors_data = []
+for author in obj_json['data']:
+    authors_data.append({
+        'name': author['name'],
+        'age_at_death': author['age_at_death'],
+        'born': author['date']['born'],
+        'died': author['date']['died']
+    })
+
+meta = pd.DataFrame(authors_data)
+meta
+```
+
+The JSON object also associates each author with a set of 
+professions. JSON naturally handles nested structures. To create 
+a dataset mapping each author to all of their professions, we can 
+use pandas' explode functionality:
+
+```{python}
+# Create professions dataset
+prof_data = []
+for author in obj_json['data']:
+    name = author['name']
+    for profession in author['profession']:
+        prof_data.append({
+            'name': name,
+            'profession': profession
+        })
+
+prof = pd.DataFrame(prof_data)
+print(prof)
+
+# Alternative approach using pandas
+authors_with_prof = pd.DataFrame([
+    {
+        'name': author['name'],
+        'profession': author['profession']
+    } for author in obj_json['data']
+])
+
+# Explode the professions
+prof_alt = authors_with_prof.explode('profession').reset_index(drop=True)
+prof_alt
+```
+
+It is often the case that one JSON file needs to be turned into
+multiple tabular datasets with different primary and foreign keys
+used to link them together. Deciding what tables to build and
+how to link them together is the core task of turning JSON data
+into tabular data. The difficulty of this varies greatly on the
+level of nesting in the JSON data as well as the consistency 
+from record to record.
+
+## XML and HTML Formats
+
+*Extensible Markup Language* (XML) is another popular format for
+transferring and storing data. As with JSON data, the format is quite flexible and
+typically results in nested, tree-like structures that require some
+work to turn into a rectangular data format. Much of the formal
+standards for XML are concerned with describing how other groups can
+produce specific "extensible" dialects of XML that have consistent
+names and structures to describe particular kinds of data. Popular
+open examples include XML-RDF (Resource Description Framework) for
+describing linked open data and XML-TEI (Text Encoding Initiative)
+for providing context to textual data.
+
+The XML format organizes data inside of hierarchically nested tags.
+Below is an example of how the data from the previous JSON example 
+could have been stored in an XML dataset:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <author>
+    <name>Charlotte Brontë</name>
+    <life>
+      <item name="born">21 April 1816</item>
+      <item name="died">31 March 1855</item>
+    </life>
+    <ageatdeath>38</ageatdeath>
+    <professions>
+      <profession>novelist</profession>
+      <profession>poet</profession>
+      <profession>governess</profession>
+    </professions>
+  </author>
+  <author>
+    <name>Virginia Woolf</name>
+    <life>
+      <item name="born">25 January 1882</item>
+      <item name="died">28 March 1941</item>
+    </life>
+    <ageatdeath>59</ageatdeath>
+    <professions>
+      <profession>novelist</profession>
+      <profession>essayist</profession>
+      <profession>critic</profession>
+    </professions>
+  </author>
+</root>
+```
+
+Python provides several ways to parse XML. We can use the built-in
+`xml.etree.ElementTree` module or the more powerful `lxml` library:
+
+```{python}
+import xml.etree.ElementTree as ET
+
+# Parse XML file
+tree = ET.parse("data/author.xml")
+root = tree.getroot()
+
+print(f"Root tag: {root.tag}")
+print(f"Number of authors: {len(root.findall('author'))}")
+```
+
+We can extract data from XML by navigating the tree structure:
+
+```{python}
+# Extract author information
+authors_xml = []
+for author in root.findall('author'):
+    name = author.find('name').text
+    age = int(author.find('ageatdeath').text)
+    
+    # Extract birth and death dates
+    life = author.find('life')
+    born = life.find("item[@name='born']").text
+    died = life.find("item[@name='died']").text
+    
+    authors_xml.append({
+        'name': name,
+        'age_at_death': age,
+        'born': born,
+        'died': died
+    })
+
+meta_xml = pd.DataFrame(authors_xml)
+meta_xml
+```
+
+For professions, we need to handle multiple elements:
+
+```{python}
+# Extract professions
+prof_xml = []
+for author in root.findall('author'):
+    name = author.find('name').text
+    professions = author.find('professions')
+    
+    for prof in professions.findall('profession'):
+        prof_xml.append({
+            'name': name,
+            'profession': prof.text
+        })
+
+prof_xml_df = pd.DataFrame(prof_xml)
+prof_xml_df
+```
+
+**HTML (HyperText Markup Language)** is a markup language for describing 
+documents intended to be shown in a web browser. While its primary purpose 
+is not to store arbitrary data, we often need to extract data from HTML 
+documents. Here's an example HTML file with the same author information:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>British Authors</title>
+</head>
+<body>
+  <h1>British Authors</h1>
+  <div class="author">
+    <h1>Charlotte Brontë</h1>
+    <div id="life" class="info">
+      <p>Lived from <b id="born">21 April 1816</b> to <b id="died">31 March 1855</b>.</p>
+    </div>
+    <div id="profession" class="info box">
+      <ul>
+        <li><i>novelist</i></li>
+        <li><i>poet</i></li>
+        <li><i>governess</i></li>
+      </ul>
+    </div>
+  </div>
+  <!-- Similar structure for Virginia Woolf -->
+</body>
+</html>
+```
+
+For HTML parsing, **BeautifulSoup** is the most popular Python library:
+
+```{python}
+from bs4 import BeautifulSoup
+
+# Parse HTML file
+with open("data/author.html", "r", encoding="utf-8") as f:
+    html_content = f.read()
+
+soup = BeautifulSoup(html_content, 'html.parser')
+
+print(f"Title: {soup.title.text}")
+print(f"Number of author divs: {len(soup.find_all('div', class_='author'))}")
+```
+
+![Example display of the British authors HTML file shown in Firefox.](img/html_author_output.png){#fig-htmlauthor .lightbox}
+
+We can extract information using BeautifulSoup's methods:
+
+```{python}
+# Extract author information from HTML
+authors_html = []
+
+for author_div in soup.find_all('div', class_='author'):
+    # Get author name from h1 tag
+    name = author_div.find('h1').text
+    
+    # Get birth and death dates
+    life_div = author_div.find('div', id='life')
+    born = life_div.find('b', id='born').text
+    died = life_div.find('b', id='died').text
+    
+    authors_html.append({
+        'name': name,
+        'born': born,
+        'died': died
+    })
+
+meta_html = pd.DataFrame(authors_html)
+print(meta_html)
+
+# Extract professions
+prof_html = []
+for author_div in soup.find_all('div', class_='author'):
+    name = author_div.find('h1').text
+    
+    # Find profession list
+    prof_ul = author_div.find('div', id='profession').find('ul')
+    
+    for li in prof_ul.find_all('li'):
+        profession = li.find('i').text
+        prof_html.append({
+            'name': name,
+            'profession': profession
+        })
+
+prof_html_df = pd.DataFrame(prof_html)
+prof_html_df
+```
+
+## XPath with lxml
+
+For more complex XML/HTML parsing, we can use XPath expressions with the
+`lxml` library. XPath is a powerful query language for XML documents:
+
+```{python}
+from lxml import html, etree
+
+# Parse HTML with lxml
+with open("data/author.html", "r", encoding="utf-8") as f:
+    html_content = f.read()
+
+doc = html.fromstring(html_content)
+
+# XPath examples
+# Find all bold tags
+bold_texts = doc.xpath(".//b/text()")
+print(f"Bold texts: {bold_texts}")
+
+# Find all list items in profession divs
+prof_items = doc.xpath(".//div[@id='profession']//li/i/text()")
+print(f"Professions: {prof_items}")
+
+# Find birth dates specifically
+birth_dates = doc.xpath(".//b[@id='born']/text()")
+print(f"Birth dates: {birth_dates}")
+```
+
+XPath provides very precise control over element selection:
+
+```{python}
+# More complex XPath queries
+# Find all author names (h1 tags within author divs)
+author_names = doc.xpath(".//div[@class='author']/h1/text()")
+print(f"Author names: {author_names}")
+
+# Find elements containing specific text
+life_divs = doc.xpath(".//div[contains(@class, 'info')]")
+print(f"Number of info divs: {len(life_divs)}")
+
+# Combine XPath with iteration
+for i, author_div in enumerate(doc.xpath(".//div[@class='author']")):
+    name = author_div.xpath("./h1/text()")[0]
+    born = author_div.xpath(".//b[@id='born']/text()")[0]
+    print(f"Author {i+1}: {name} (born {born})")
+```
+
+## Using an API
+
+An *application programming interface* (API) is a generic term
+for a specific interface that two computers can communicate
+across. Most commonly, APIs communicate over the internet
+using the *Hypertext Transfer Protocol* (HTTP). HTTP
+is a set of standards describing how different
+computers can communicate with one another over the internet. It
+is how the vast majority of the internet communicates; for
+example, our web browser uses HTTP to communicate with other
+websites.
+
+There are many APIs available online for accessing a variety of
+different types of data. Often these require first setting up
+an account with the service. Some APIs require payment for each
+request, though others offer free access or a free-tier of 
+access for occasional users. Most frequently, data from an API
+would correspond to some data source which is frequently
+changing, such as news stories or the weather. Increasingly,
+though, even static datasets are being put behind an API access
+rather than allowing a straightforward download of a CSV, JSON,
+or XML file. Fortunately, it is relatively easy to make and
+parse API calls from within Python using the **requests** library.
+
+We will show two types of API calls that can be made with the
+MediaWiki API that runs behind Wikipedia. This API is particularly
+nice because not only is it freely available, it does not require
+any signup or access to run. Anyone can call the API directly
+and get data related to the various MediaWiki projects:
+
+```{python}
+import requests
+from urllib.parse import urlencode
+
+# Build API URL for Wikipedia pageviews
+base_url = "https://en.wikipedia.org/w/api.php"
+params = {
+    'action': 'query',
+    'format': 'json',
+    'prop': 'pageviews',
+    'titles': 'Emily Brontë'
+}
+
+# Make the API request
+response = requests.get(base_url, params=params)
+print(f"Status code: {response.status_code}")
+print(f"URL: {response.url}")
+```
+
+Parse the JSON response:
+
+```{python}
+# Parse JSON response
+data = response.json()
+
+# Extract pageview data
+pages = data['query']['pages']
+page_id = list(pages.keys())[0]
+pageviews = pages[page_id].get('pageviews', {})
+
+# Convert to DataFrame
+if pageviews:
+    pageview_data = []
+    for date, views in pageviews.items():
+        pageview_data.append({
+            'date': date,
+            'views': views,
+            'doc_id': 'Emily Brontë'
+        })
+    
+    page_views_df = pd.DataFrame(pageview_data)
+    print(page_views_df.head())
+else:
+    print("No pageview data available")
+```
+
+We can create a function to get pageviews for multiple authors:
+
+```{python}
+def get_pageviews(titles_list, max_requests=5):
+    """Get pageviews for a list of Wikipedia page titles."""
+    all_pageviews = []
+    
+    for i, title in enumerate(titles_list[:max_requests]):  # Limit for demo
+        params = {
+            'action': 'query',
+            'format': 'json',
+            'prop': 'pageviews',
+            'titles': title
+        }
+        
+        try:
+            response = requests.get(base_url, params=params)
+            data = response.json()
+            
+            pages = data['query']['pages']
+            page_id = list(pages.keys())[0]
+            pageviews = pages[page_id].get('pageviews', {})
+            
+            for date, views in pageviews.items():
+                all_pageviews.append({
+                    'doc_id': title,
+                    'date': date,
+                    'views': views
+                })
+                
+        except Exception as e:
+            print(f"Error fetching data for {title}: {e}")
+    
+    return pd.DataFrame(all_pageviews)
+
+# Test with a few authors
+authors = ['Emily Brontë', 'Charlotte Brontë', 'Virginia Woolf']
+pageviews_df = get_pageviews(authors)
+pageviews_df
+```
+
+We can also get the actual page content using a different API endpoint:
+
+```{python}
+# Get page content
+def get_page_content(title):
+    """Get the HTML content of a Wikipedia page."""
+    params = {
+        'action': 'parse',
+        'format': 'json',
+        'page': title,
+        'redirects': True
+    }
+    
+    response = requests.get(base_url, params=params)
+    data = response.json()
+    
+    if 'parse' in data:
+        html_content = data['parse']['text']['*']
+        return html_content
+    else:
+        return None
+
+# Get content for Emily Brontë
+emily_html = get_page_content('Emily Brontë')
+
+if emily_html:
+    # Parse with BeautifulSoup
+    soup = BeautifulSoup(emily_html, 'html.parser')
+    
+    # Extract paragraphs
+    paragraphs = soup.find_all('p')
+    print(f"Found {len(paragraphs)} paragraphs")
+    
+    # Show first paragraph
+    if paragraphs:
+        print(f"First paragraph: {paragraphs[0].get_text()[:200]}...")
+    
+    # Extract links
+    links = soup.find_all('a', href=True)
+    wiki_links = [link['href'] for link in links if link['href'].startswith('/wiki/')]
+    print(f"\nFound {len(wiki_links)} internal Wikipedia links")
+    print("First 10 links:")
+    for link in wiki_links[:10]:
+        print(f"  {link}")
+```
+
+This approach allows us to recreate the datasets used throughout
+Chaps. 6-8. The specific query parameters for different APIs
+will vary, but the general pattern remains the same: construct
+the API URL, make the request, parse the response (usually JSON),
+and convert to a structured format.
+
+```{python}
+# Example of building a larger dataset
+def build_author_dataset(author_list, get_content=False):
+    """Build a comprehensive dataset of author information."""
+    dataset = []
+    
+    for author in author_list[:3]:  # Limit for demo
+        print(f"Processing {author}...")
+        
+        # Get pageviews
+        pageviews = get_pageviews([author], max_requests=1)
+        
+        # Get content if requested
+        content = None
+        if get_content:
+            content = get_page_content(author)
+        
+        dataset.append({
+            'author': author,
+            'pageviews': pageviews,
+            'content': content
+        })
+    
+    return dataset
+
+# Build dataset
+authors = ['Emily Brontë', 'Charlotte Brontë', 'Virginia Woolf']
+author_data = build_author_dataset(authors, get_content=True)
+
+print(f"Built dataset for {len(author_data)} authors")
+for i, author_info in enumerate(author_data):
+    print(f"Author {i+1}: {author_info['author']}")
+    print(f"  Pageviews records: {len(author_info['pageviews'])}")
+    print(f"  Has content: {author_info['content'] is not None}")
+```
+
+## Extensions
+
+There is a lot of information covered in this chapter and many
+different directions that the material can be extended and 
+built upon. Python provides excellent built-in support for regular
+expressions through the **re** module, and there are many more
+advanced pattern matching techniques worth learning [@goyvaerts2012regular].
+
+**For string processing:**
+- The **re** module has many more functions like `re.finditer()` for finding all matches with positions
+- **pandas** string methods provide vectorized string operations
+- Libraries like **fuzzywuzzy** for fuzzy string matching
+
+**For JSON processing:**
+- Python's built-in **json** module handles most use cases
+- **jsonschema** for validating JSON structure
+- **pandas.json_normalize()** for flattening nested JSON
+
+**For XML/HTML processing:**
+- **lxml** provides the most complete XPath support
+- **BeautifulSoup** is excellent for HTML parsing and has a gentle learning curve
+- **html5lib** for parsing real-world HTML that may not be well-formed
+- **requests-html** combines requests with PyQuery for JavaScript-heavy sites
+
+**For API interaction:**
+- **requests** is the standard library for HTTP requests
+- **httpx** for async HTTP requests
+- **requests-cache** for caching API responses
+- Authentication libraries for OAuth, API keys, etc.
+
+Many resources exist for extending these methods. The **requests** 
+documentation (docs.python-requests.org) is excellent for API work.
+For XML/HTML processing, the BeautifulSoup documentation 
+(beautiful-soup-4.readthedocs.io) and lxml documentation provide
+comprehensive guides. When combined with the practical information
+in this chapter, these resources should enable you to work with
+almost any text-based data format or web API.
+
+The benefits of Python's rich ecosystem make it possible to handle
+complex data extraction tasks efficiently. Libraries like **scrapy**
+for large-scale web scraping, **selenium** for JavaScript-heavy sites,
+and **pandas** for data manipulation provide a complete toolkit for
+gathering and organizing humanities data from diverse sources.
+
+As we've seen throughout this chapter, collecting and organizing data
+is time consuming and often requires careful attention to detail. However,
+the tools and techniques covered here provide a solid foundation for
+working with the wide variety of data formats encountered in digital
+humanities research.
+
+## References {-}

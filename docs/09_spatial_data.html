@@ -1,0 +1,3404 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Taylor Arnold and Lauren Tilton">
+
+<title>9&nbsp; Spatial Data – Humanities Data in Python</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./10_image_data.html" rel="next">
+<link href="./08_temporal_data.html" rel="prev">
+<link href="./owl_explore.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-7dd7401653f9b7f7a674e3bd3661a20e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./06_textual_data.html">Part II: Data Types</a></li><li class="breadcrumb-item"><a href="./09_spatial_data.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Humanities Data in Python</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/distant-viewing/hdpy" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I: Core</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">EDA I: Visualizing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_verbs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">EDA II: Organizing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_combine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">EDA III: Restructuring Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_collect.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Collecting Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II: Data Types</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_textual_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Textual Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_network_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Network Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_temporal_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Temporal Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_spatial_data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10_image_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Image Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III: Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Inference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12_supervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13_unsupervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./14_deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./15_transformers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Transformers</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV: Programming</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./16_program.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./17_jsonxml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">JSON + XML</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./18_databases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Databases</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">9.1</span> Introduction</a></li>
+  <li><a href="#spatial-points" id="toc-spatial-points" class="nav-link" data-scroll-target="#spatial-points"><span class="header-section-number">9.2</span> Spatial Points</a></li>
+  <li><a href="#polygons" id="toc-polygons" class="nav-link" data-scroll-target="#polygons"><span class="header-section-number">9.3</span> Polygons</a></li>
+  <li><a href="#spatial-metrics" id="toc-spatial-metrics" class="nav-link" data-scroll-target="#spatial-metrics"><span class="header-section-number">9.4</span> Spatial Metrics</a></li>
+  <li><a href="#spatial-joins" id="toc-spatial-joins" class="nav-link" data-scroll-target="#spatial-joins"><span class="header-section-number">9.5</span> Spatial Joins</a></li>
+  <li><a href="#raster-maps" id="toc-raster-maps" class="nav-link" data-scroll-target="#raster-maps"><span class="header-section-number">9.6</span> Raster Maps</a></li>
+  <li><a href="#extensions" id="toc-extensions" class="nav-link" data-scroll-target="#extensions"><span class="header-section-number">9.7</span> Extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./06_textual_data.html">Part II: Data Types</a></li><li class="breadcrumb-item"><a href="./09_spatial_data.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial Data</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ch09" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial Data</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">9.1</span> Introduction</h2>
+<p>There is a popular phrase thrown around by those working with spatial data claiming that “80% of data contains a spatial component”, likely dating to a version of this statement made by Carl Franklin and Paula Hane specifically regarding data contained in government databases <span class="citation" data-cites="franklin1992introduction">[<a href="#ref-franklin1992introduction" role="doc-biblioref">1</a>]</span>. While actually quantifying the “amount of data” with a spatial component is likely impossible, the premise that a majority of datasets contain some spatial information is a valid one. Consider a dataset containing a record for every item held in a particular public library. It may contain explicit geospatial data such as the address of the branch where each item is housed, but there is a substantial amount of implicit spatial data such as the location of first publication or the birthplaces of the authors. Other sources such as letters, newspapers, and photographs abound with geographical data. Given the preponderance of geospatial data in general, and its particular importance to work in the humanities, this chapter introduces methods for exploring and visualizing a number of spatial data types within Python <span class="citation" data-cites="bivand2008applied">[<a href="#ref-bivand2008applied" role="doc-biblioref">2</a>]</span> <span class="citation" data-cites="gaetan2010spatial">[<a href="#ref-gaetan2010spatial" role="doc-biblioref">3</a>]</span>.</p>
+</section>
+<section id="spatial-points" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="spatial-points"><span class="header-section-number">9.2</span> Spatial Points</h2>
+<p>As a starting point, we will begin by working again with the CBSA dataset that we used in the introductory chapters. A reminder that CBSA stands for community based statistical areas, which are regions defined by the U.S. Office of Management and Budget. They are characterized by social and economic ties rather than political boundaries. While we did not make use of it at the time, this dataset does include spatial information about each region given by the longitude and latitude coordinates at the center of each CBSA region. Let’s read the dataset into Python again, focusing on the spatial information contained in the fourth and fifth columns.</p>
+<div id="35fad6e4" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cbsa <span class="op">=</span> pd.read_csv(<span class="st">"data/acs_cbsa.csv"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cbsa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">geoid</th>
+<th data-quarto-table-cell-role="th">quad</th>
+<th data-quarto-table-cell-role="th">lon</th>
+<th data-quarto-table-cell-role="th">lat</th>
+<th data-quarto-table-cell-role="th">pop</th>
+<th data-quarto-table-cell-role="th">density</th>
+<th data-quarto-table-cell-role="th">age_median</th>
+<th data-quarto-table-cell-role="th">hh_income_median</th>
+<th data-quarto-table-cell-role="th">percent_own</th>
+<th data-quarto-table-cell-role="th">rent_1br_median</th>
+<th data-quarto-table-cell-role="th">rent_perc_income</th>
+<th data-quarto-table-cell-role="th">division</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>New York</td>
+<td>35620</td>
+<td>NE</td>
+<td>-74.101056</td>
+<td>40.768770</td>
+<td>20.011812</td>
+<td>1051.306467</td>
+<td>42.9</td>
+<td>86445</td>
+<td>55.3</td>
+<td>1430</td>
+<td>31.0</td>
+<td>Middle Atlantic</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Los Angeles</td>
+<td>31080</td>
+<td>W</td>
+<td>-118.148722</td>
+<td>34.219406</td>
+<td>13.202558</td>
+<td>1040.647281</td>
+<td>41.6</td>
+<td>81652</td>
+<td>51.3</td>
+<td>1468</td>
+<td>33.6</td>
+<td>Pacific</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Chicago</td>
+<td>16980</td>
+<td>NC</td>
+<td>-87.958820</td>
+<td>41.700605</td>
+<td>9.607711</td>
+<td>508.629406</td>
+<td>41.9</td>
+<td>78790</td>
+<td>68.9</td>
+<td>1060</td>
+<td>29.0</td>
+<td>East North Central</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Dallas</td>
+<td>19100</td>
+<td>S</td>
+<td>-96.970508</td>
+<td>32.849480</td>
+<td>7.543340</td>
+<td>323.181404</td>
+<td>41.3</td>
+<td>76916</td>
+<td>64.1</td>
+<td>1106</td>
+<td>29.1</td>
+<td>West South Central</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Houston</td>
+<td>26420</td>
+<td>S</td>
+<td>-95.401574</td>
+<td>29.787083</td>
+<td>7.048954</td>
+<td>316.543514</td>
+<td>41.0</td>
+<td>72551</td>
+<td>65.1</td>
+<td>997</td>
+<td>30.0</td>
+<td>West South Central</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">929</td>
+<td>Zapata</td>
+<td>49820</td>
+<td>S</td>
+<td>-99.168533</td>
+<td>27.000573</td>
+<td>0.013945</td>
+<td>5.081383</td>
+<td>41.4</td>
+<td>34406</td>
+<td>77.1</td>
+<td>321</td>
+<td>34.6</td>
+<td>West South Central</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">930</td>
+<td>Ketchikan</td>
+<td>28540</td>
+<td>O</td>
+<td>-130.927217</td>
+<td>55.582484</td>
+<td>0.013939</td>
+<td>1.046556</td>
+<td>44.6</td>
+<td>77820</td>
+<td>67.5</td>
+<td>946</td>
+<td>31.2</td>
+<td>Pacific</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">931</td>
+<td>Craig</td>
+<td>18780</td>
+<td>W</td>
+<td>-108.207523</td>
+<td>40.618749</td>
+<td>0.013240</td>
+<td>1.077471</td>
+<td>44.5</td>
+<td>58583</td>
+<td>72.8</td>
+<td>485</td>
+<td>29.0</td>
+<td>Mountain</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">932</td>
+<td>Vernon</td>
+<td>46900</td>
+<td>S</td>
+<td>-99.240853</td>
+<td>34.080611</td>
+<td>0.012887</td>
+<td>5.086411</td>
+<td>41.5</td>
+<td>45262</td>
+<td>62.0</td>
+<td>503</td>
+<td>22.0</td>
+<td>West South Central</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">933</td>
+<td>Lamesa</td>
+<td>29500</td>
+<td>S</td>
+<td>-101.947637</td>
+<td>32.742488</td>
+<td>0.012371</td>
+<td>5.291467</td>
+<td>41.1</td>
+<td>42778</td>
+<td>71.5</td>
+<td>611</td>
+<td>34.5</td>
+<td>West South Central</td>
+</tr>
+</tbody>
+</table>
+
+<p>934 rows × 13 columns</p>
+</div>
+</div>
+</div>
+<p>What can we do with this spatial information? The longitude and latitude are stored as numbers. There is nothing stopping us from plotting them directly in a visualization. This would result in a plot that shows the spatial extent of the regions and could be roughly identified as having the same shape that we see in familiar maps of the United States. This approach is a nice starting point. If we were dealing with data from a smaller geographic region, as we will see in later sections, this kind of scatter plot can actually be a fine base to a spatial visualization. In the case of the United States, we can do better by turning this into a special kind of object specifically designed to store geospatial information. To do this, we make use of geopandas to create a GeoDataFrame from our regular DataFrame. We convert the longitude and latitude columns into Point geometries and set the coordinate reference system (CRS) to 4326, which indicates that these are “raw” longitude and latitude values.</p>
+<div id="0b15b9ee" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> shapely.geometry <span class="im">import</span> Point</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create geometry from longitude and latitude</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>geometry <span class="op">=</span> [Point(xy) <span class="cf">for</span> xy <span class="kw">in</span> <span class="bu">zip</span>(cbsa[<span class="st">'lon'</span>], cbsa[<span class="st">'lat'</span>])]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create GeoDataFrame</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>cbsa_geo <span class="op">=</span> gpd.GeoDataFrame(cbsa, geometry<span class="op">=</span>geometry, crs<span class="op">=</span><span class="st">'EPSG:4326'</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>cbsa_geo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">geoid</th>
+<th data-quarto-table-cell-role="th">quad</th>
+<th data-quarto-table-cell-role="th">lon</th>
+<th data-quarto-table-cell-role="th">lat</th>
+<th data-quarto-table-cell-role="th">pop</th>
+<th data-quarto-table-cell-role="th">density</th>
+<th data-quarto-table-cell-role="th">age_median</th>
+<th data-quarto-table-cell-role="th">hh_income_median</th>
+<th data-quarto-table-cell-role="th">percent_own</th>
+<th data-quarto-table-cell-role="th">rent_1br_median</th>
+<th data-quarto-table-cell-role="th">rent_perc_income</th>
+<th data-quarto-table-cell-role="th">division</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>New York</td>
+<td>35620</td>
+<td>NE</td>
+<td>-74.101056</td>
+<td>40.768770</td>
+<td>20.011812</td>
+<td>1051.306467</td>
+<td>42.9</td>
+<td>86445</td>
+<td>55.3</td>
+<td>1430</td>
+<td>31.0</td>
+<td>Middle Atlantic</td>
+<td>POINT (-74.10106 40.76877)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Los Angeles</td>
+<td>31080</td>
+<td>W</td>
+<td>-118.148722</td>
+<td>34.219406</td>
+<td>13.202558</td>
+<td>1040.647281</td>
+<td>41.6</td>
+<td>81652</td>
+<td>51.3</td>
+<td>1468</td>
+<td>33.6</td>
+<td>Pacific</td>
+<td>POINT (-118.14872 34.21941)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Chicago</td>
+<td>16980</td>
+<td>NC</td>
+<td>-87.958820</td>
+<td>41.700605</td>
+<td>9.607711</td>
+<td>508.629406</td>
+<td>41.9</td>
+<td>78790</td>
+<td>68.9</td>
+<td>1060</td>
+<td>29.0</td>
+<td>East North Central</td>
+<td>POINT (-87.95882 41.70061)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Dallas</td>
+<td>19100</td>
+<td>S</td>
+<td>-96.970508</td>
+<td>32.849480</td>
+<td>7.543340</td>
+<td>323.181404</td>
+<td>41.3</td>
+<td>76916</td>
+<td>64.1</td>
+<td>1106</td>
+<td>29.1</td>
+<td>West South Central</td>
+<td>POINT (-96.97051 32.84948)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Houston</td>
+<td>26420</td>
+<td>S</td>
+<td>-95.401574</td>
+<td>29.787083</td>
+<td>7.048954</td>
+<td>316.543514</td>
+<td>41.0</td>
+<td>72551</td>
+<td>65.1</td>
+<td>997</td>
+<td>30.0</td>
+<td>West South Central</td>
+<td>POINT (-95.40157 29.78708)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">929</td>
+<td>Zapata</td>
+<td>49820</td>
+<td>S</td>
+<td>-99.168533</td>
+<td>27.000573</td>
+<td>0.013945</td>
+<td>5.081383</td>
+<td>41.4</td>
+<td>34406</td>
+<td>77.1</td>
+<td>321</td>
+<td>34.6</td>
+<td>West South Central</td>
+<td>POINT (-99.16853 27.00057)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">930</td>
+<td>Ketchikan</td>
+<td>28540</td>
+<td>O</td>
+<td>-130.927217</td>
+<td>55.582484</td>
+<td>0.013939</td>
+<td>1.046556</td>
+<td>44.6</td>
+<td>77820</td>
+<td>67.5</td>
+<td>946</td>
+<td>31.2</td>
+<td>Pacific</td>
+<td>POINT (-130.92722 55.58248)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">931</td>
+<td>Craig</td>
+<td>18780</td>
+<td>W</td>
+<td>-108.207523</td>
+<td>40.618749</td>
+<td>0.013240</td>
+<td>1.077471</td>
+<td>44.5</td>
+<td>58583</td>
+<td>72.8</td>
+<td>485</td>
+<td>29.0</td>
+<td>Mountain</td>
+<td>POINT (-108.20752 40.61875)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">932</td>
+<td>Vernon</td>
+<td>46900</td>
+<td>S</td>
+<td>-99.240853</td>
+<td>34.080611</td>
+<td>0.012887</td>
+<td>5.086411</td>
+<td>41.5</td>
+<td>45262</td>
+<td>62.0</td>
+<td>503</td>
+<td>22.0</td>
+<td>West South Central</td>
+<td>POINT (-99.24085 34.08061)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">933</td>
+<td>Lamesa</td>
+<td>29500</td>
+<td>S</td>
+<td>-101.947637</td>
+<td>32.742488</td>
+<td>0.012371</td>
+<td>5.291467</td>
+<td>41.1</td>
+<td>42778</td>
+<td>71.5</td>
+<td>611</td>
+<td>34.5</td>
+<td>West South Central</td>
+<td>POINT (-101.94764 32.74249)</td>
+</tr>
+</tbody>
+</table>
+
+<p>934 rows × 14 columns</p>
+</div>
+</div>
+</div>
+<p>The output object <code>cbsa_geo</code> is now a special kind of DataFrame called a GeoDataFrame that includes more specific information about the spatial data attached to each observation in addition to the standard information that we are familiar with in a tabular dataset. Printing the <code>cbsa_geo</code> data shows how this object differs from other DataFrames we have used in this book. There is a special column called <code>geometry</code> that has the spatial information attached to it.</p>
+<p>One of the benefits of the spatially enhanced version of a dataset is that it allows us to create spatial plots using geopandas’ built-in plotting functionality or using plotnine with spatial awareness. We can create a basic spatial plot using geopandas’ <code>.plot()</code> method:</p>
+<div id="3d867573" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic spatial plot using geopandas</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>cbsa_geo.plot(ax<span class="op">=</span>ax, markersize<span class="op">=</span><span class="dv">5</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Centers of CBSA Regions"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The output shows the spatial distribution of CBSA centers across the United States. As we have seen with other plots, such as when working with temporal data in Chap. 8, geopandas automatically handles the coordinate system and creates appropriate axis labels. One somewhat unique thing about spatial plots is that we often don’t need to explicitly set x and y coordinates because they are inferred from the spatial information. However, we can still modify other aesthetic properties such as changing the color and size of the points.</p>
+<p>One important operation that we can perform on spatial data before plotting it is to change the projection of the points. Projections create a better representation of the curved earth on a flat plot based on the region of the world that we are looking at. To change the projection, we can use the <code>.to_crs()</code> method. The method takes one argument, a CRS identifier giving the projection. Above, we already saw the 4326 code to indicate that our input projection was in degrees longitude and latitude.</p>
+<p>A powerful aspect of spatial analysis is working with coordinate reference systems. Each CRS represents points on the earth in terms of two numbers. This allows us to adjust our projection such as selecting a Mercator or Albers projection. A better projection when working with the entire United States is the CRS code 5069, a Conus Albers centered on the continental United States. We can plot the data using this projection:</p>
+<div id="26de5c0b" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform to better projection for US</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cbsa_projected <span class="op">=</span> cbsa_geo.to_crs(<span class="st">'EPSG:5069'</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>cbsa_projected.plot(ax<span class="op">=</span>ax, markersize<span class="op">=</span><span class="dv">5</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"CBSA Centers (Albers Projection)"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()  <span class="co"># Remove axis for cleaner look</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The output shows the spatial points plot using the updated CRS code. Notice that the lines of longitude and latitude are no longer straight when we overlay coordinate grids. They curve, much like they would if we were looking at a round globe and spun it around to center our vision on the United States. In order to find a good CRS code for a spatial dataset, we need to look up the CRS codes in an index. One such free service can be found at <a href="http://epsg.io">epsg.io</a>. Just search the broad political terms in the vicinity of the points to find recommended options. Usually searching for the country of our data will suffice. For countries with larger geographic scope such the United States, Canada, Russia, or China, we may need to narrow down our search to a city or region.</p>
+<p>We can also add text labels to our spatial plots. Let’s add labels for the most populous CBSA regions. We’ll filter to only show regions with at least one million people and focus on the continental United States:</p>
+<div id="e171f7d3" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for large CBSAs in continental US</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>large_cbsas <span class="op">=</span> (cbsa_projected</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"quad != 'O' and pop &gt;= 1"</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">10</span>))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>large_cbsas.plot(ax<span class="op">=</span>ax, markersize<span class="op">=</span><span class="dv">20</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Add labels with some offset to avoid overlap</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> large_cbsas.iterrows():</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    ax.annotate(row[<span class="st">'name'</span>], </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                xy<span class="op">=</span>(row.geometry.x, row.geometry.y),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                xytext<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>), textcoords<span class="op">=</span><span class="st">'offset points'</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                fontsize<span class="op">=</span><span class="dv">6</span>, ha<span class="op">=</span><span class="st">'left'</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Major CBSA Centers in Continental United States"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The output shows the points and labels for the largest CBSA regions, giving us a clear view of major population centers across the continental United States.</p>
+</section>
+<section id="polygons" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="polygons"><span class="header-section-number">9.3</span> Polygons</h2>
+<p>Polygons are the way that we represent areas on a map. Spatial data can associate regions (i.e.&nbsp;polygons) with each row rather than a single point. It is less likely that we will create this type of spatial data directly. Instead, we usually read polygon data directly from a file that is already designed to store spatial information. The file type we will use is called GeoJSON. Geopandas can read GeoJSON files (and many other geospatial formats like ESRI shapefiles) using the <code>read_file()</code> function. Below, let’s read in a dataset with polygons describing the shape of each state in the United States.</p>
+<div id="0cdbd003" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read state polygons from GeoJSON</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>state <span class="op">=</span> gpd.read_file(<span class="st">"data/geo_state.geojson"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>state</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">abb</th>
+<th data-quarto-table-cell-role="th">fips</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Maine</td>
+<td>ME</td>
+<td>23</td>
+<td>MULTIPOLYGON (((-70.70382 43.05983, -70.8268 4...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>New Hampshire</td>
+<td>NH</td>
+<td>33</td>
+<td>MULTIPOLYGON (((-71.50109 45.01338, -71.40564 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Delaware</td>
+<td>DE</td>
+<td>10</td>
+<td>MULTIPOLYGON (((-75.7886 39.7222, -75.61724 39...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>South Carolina</td>
+<td>SC</td>
+<td>45</td>
+<td>MULTIPOLYGON (((-83.10861 35.00066, -82.46009 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Nebraska</td>
+<td>NE</td>
+<td>31</td>
+<td>MULTIPOLYGON (((-104.05313 43.00059, -102.7921...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Washington</td>
+<td>WA</td>
+<td>53</td>
+<td>MULTIPOLYGON (((-117.03235 48.99919, -117.0411...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>New Mexico</td>
+<td>NM</td>
+<td>35</td>
+<td>MULTIPOLYGON (((-109.04522 36.99908, -108.2493...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>South Dakota</td>
+<td>SD</td>
+<td>46</td>
+<td>MULTIPOLYGON (((-104.0577 44.99743, -104.03969...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Texas</td>
+<td>TX</td>
+<td>48</td>
+<td>MULTIPOLYGON (((-103.00243 36.5004, -102.25045...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>California</td>
+<td>CA</td>
+<td>06</td>
+<td>MULTIPOLYGON (((-124.2116 41.99846, -123.34756...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Kentucky</td>
+<td>KY</td>
+<td>21</td>
+<td>MULTIPOLYGON (((-89.13292 36.98206, -89.18251 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Ohio</td>
+<td>OH</td>
+<td>39</td>
+<td>MULTIPOLYGON (((-84.80608 41.69609, -83.45383 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Alabama</td>
+<td>AL</td>
+<td>01</td>
+<td>MULTIPOLYGON (((-88.20006 34.99563, -88.20296 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Georgia</td>
+<td>GA</td>
+<td>13</td>
+<td>MULTIPOLYGON (((-85.60517 34.98468, -84.32187 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Wisconsin</td>
+<td>WI</td>
+<td>55</td>
+<td>MULTIPOLYGON (((-92.01529 46.70647, -91.82003 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Arkansas</td>
+<td>AR</td>
+<td>05</td>
+<td>MULTIPOLYGON (((-94.61792 36.49941, -93.12597 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Oregon</td>
+<td>OR</td>
+<td>41</td>
+<td>MULTIPOLYGON (((-123.54766 46.25911, -123.4308...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Pennsylvania</td>
+<td>PA</td>
+<td>42</td>
+<td>MULTIPOLYGON (((-80.51942 41.97752, -80.18808 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Mississippi</td>
+<td>MS</td>
+<td>28</td>
+<td>MULTIPOLYGON (((-91.16607 33.00411, -91.08759 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Colorado</td>
+<td>CO</td>
+<td>08</td>
+<td>MULTIPOLYGON (((-109.05008 41.00066, -108.2506...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Utah</td>
+<td>UT</td>
+<td>49</td>
+<td>MULTIPOLYGON (((-114.04172 41.99372, -113.8932...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>Oklahoma</td>
+<td>OK</td>
+<td>40</td>
+<td>MULTIPOLYGON (((-103.0022 37.0001, -102.04224 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>Tennessee</td>
+<td>TN</td>
+<td>47</td>
+<td>MULTIPOLYGON (((-89.7331 36.00061, -89.594 36....</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>West Virginia</td>
+<td>WV</td>
+<td>54</td>
+<td>MULTIPOLYGON (((-82.59367 38.42181, -82.52958 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>New York</td>
+<td>NY</td>
+<td>36</td>
+<td>MULTIPOLYGON (((-79.76195 42.26986, -79.42912 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>Indiana</td>
+<td>IN</td>
+<td>18</td>
+<td>MULTIPOLYGON (((-87.52404 41.70833, -87.42344 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>Kansas</td>
+<td>KS</td>
+<td>20</td>
+<td>MULTIPOLYGON (((-102.05174 40.00308, -100.4687...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>Nevada</td>
+<td>NV</td>
+<td>32</td>
+<td>MULTIPOLYGON (((-119.99917 41.99454, -118.6964...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>Illinois</td>
+<td>IL</td>
+<td>17</td>
+<td>MULTIPOLYGON (((-91.41942 40.37826, -91.37575 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>Vermont</td>
+<td>VT</td>
+<td>50</td>
+<td>MULTIPOLYGON (((-73.34312 45.01084, -72.84563 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>Connecticut</td>
+<td>CT</td>
+<td>09</td>
+<td>MULTIPOLYGON (((-73.48731 42.04964, -73.05329 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>Montana</td>
+<td>MT</td>
+<td>30</td>
+<td>MULTIPOLYGON (((-116.04909 49.00085, -115.1298...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>Minnesota</td>
+<td>MN</td>
+<td>27</td>
+<td>MULTIPOLYGON (((-97.22872 49.00056, -96.40541 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>Maryland</td>
+<td>MD</td>
+<td>24</td>
+<td>MULTIPOLYGON (((-79.47666 39.72108, -77.53488 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">34</td>
+<td>Hawaii</td>
+<td>HI</td>
+<td>15</td>
+<td>MULTIPOLYGON (((-156.05722 19.74254, -155.9403...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35</td>
+<td>Arizona</td>
+<td>AZ</td>
+<td>04</td>
+<td>MULTIPOLYGON (((-114.71963 32.71876, -114.5390...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">36</td>
+<td>Rhode Island</td>
+<td>RI</td>
+<td>44</td>
+<td>MULTIPOLYGON (((-71.19564 41.67509, -71.13289 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">37</td>
+<td>Missouri</td>
+<td>MO</td>
+<td>29</td>
+<td>MULTIPOLYGON (((-95.76564 40.58521, -94.48928 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">38</td>
+<td>North Carolina</td>
+<td>NC</td>
+<td>37</td>
+<td>MULTIPOLYGON (((-83.10023 35.77474, -82.99205 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">39</td>
+<td>Virginia</td>
+<td>VA</td>
+<td>51</td>
+<td>MULTIPOLYGON (((-81.9683 37.5378, -81.91668 37...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">40</td>
+<td>Wyoming</td>
+<td>WY</td>
+<td>56</td>
+<td>MULTIPOLYGON (((-104.0577 44.99743, -104.05313...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">41</td>
+<td>Louisiana</td>
+<td>LA</td>
+<td>22</td>
+<td>MULTIPOLYGON (((-94.04296 33.01922, -92.22282 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">42</td>
+<td>Michigan</td>
+<td>MI</td>
+<td>26</td>
+<td>MULTIPOLYGON (((-86.82483 41.76024, -86.61944 ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">43</td>
+<td>Massachusetts</td>
+<td>MA</td>
+<td>25</td>
+<td>MULTIPOLYGON (((-73.26496 42.74594, -72.45852 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">44</td>
+<td>Idaho</td>
+<td>ID</td>
+<td>16</td>
+<td>MULTIPOLYGON (((-116.91599 45.99541, -116.9595...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">45</td>
+<td>Florida</td>
+<td>FL</td>
+<td>12</td>
+<td>MULTIPOLYGON (((-85.0025 31.00068, -84.93696 3...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">46</td>
+<td>Alaska</td>
+<td>AK</td>
+<td>02</td>
+<td>MULTIPOLYGON (((-168.12893 65.65574, -167.9798...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">47</td>
+<td>New Jersey</td>
+<td>NJ</td>
+<td>34</td>
+<td>MULTIPOLYGON (((-75.50974 39.68611, -75.41506 ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">48</td>
+<td>North Dakota</td>
+<td>ND</td>
+<td>38</td>
+<td>MULTIPOLYGON (((-104.04869 48.99959, -102.2180...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">49</td>
+<td>Iowa</td>
+<td>IA</td>
+<td>19</td>
+<td>MULTIPOLYGON (((-96.45326 43.50039, -95.51477 ...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>In the output above, we can see that this object already has the spatial information attached to it. Unlike our previous dataset, the geometry type here consists of polygons and multipolygons, to indicate that each row is associated with a region rather than an individual point. The prefix “multi” is used to indicate that some of our observations may be associated with multiple separate polygons. For example, Hawaii requires at least one polygon for each of the islands that make up the state. As with spatial points, we can create a spatial plot of the regions using geopandas plotting methods.</p>
+<p>As with the spatial points, it will be helpful to transform our data before plotting it. In fact, it is often much more clear with polygons how distorted the default projection makes everything. Below is the code to produce a plot of the states as regions:</p>
+<div id="0680e878" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform to better projection and plot</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>state_projected <span class="op">=</span> state.to_crs(<span class="st">'EPSG:5069'</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">10</span>))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>state_projected.plot(ax<span class="op">=</span>ax, edgecolor<span class="op">=</span><span class="st">'black'</span>, facecolor<span class="op">=</span><span class="st">'lightblue'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"United States State Boundaries (Albers Projection)"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can also add labels to show state abbreviations at the center of each polygon:</p>
+<div id="0d52426c" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot states with labels, excluding Alaska and Hawaii for cleaner display</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>continental_states <span class="op">=</span> state_projected[<span class="op">~</span>state_projected[<span class="st">'abb'</span>].isin([<span class="st">'AK'</span>, <span class="st">'HI'</span>])]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">10</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>continental_states.plot(ax<span class="op">=</span>ax, edgecolor<span class="op">=</span><span class="st">'black'</span>, facecolor<span class="op">=</span><span class="st">'lightblue'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add state abbreviations at polygon centroids</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> continental_states.iterrows():</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    centroid <span class="op">=</span> row.geometry.centroid</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    ax.annotate(row[<span class="st">'abb'</span>], </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                xy<span class="op">=</span>(centroid.x, centroid.y), </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                fontsize<span class="op">=</span><span class="dv">8</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Continental United States with State Abbreviations"</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As we have been calling them throughout this text, the CBSA regions are, in fact, regions. The United States Census Bureau provides shape files that show the actual regions defined for each CBSA. Let’s read this data and see how we can visualize the regions themselves:</p>
+<div id="ce1f81ca" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read CBSA regions</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>cbsa_reg <span class="op">=</span> gpd.read_file(<span class="st">"data/acs_cbsa_geo.geojson"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge with CBSA data to get names and other attributes</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>cbsa_data <span class="op">=</span> pd.read_csv(<span class="st">"data/acs_cbsa.csv"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>cbsa_reg <span class="op">=</span> cbsa_reg.merge(cbsa_data[[<span class="st">'geoid'</span>, <span class="st">'name'</span>]], on<span class="op">=</span><span class="st">'geoid'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>cbsa_reg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">geoid</th>
+<th data-quarto-table-cell-role="th">quad</th>
+<th data-quarto-table-cell-role="th">pop</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+<th data-quarto-table-cell-role="th">name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>35620.0</td>
+<td>NE</td>
+<td>20.011812</td>
+<td>MULTIPOLYGON (((-72.03683 41.24984, -72.03496 ...</td>
+<td>New York</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>31080.0</td>
+<td>W</td>
+<td>13.202558</td>
+<td>MULTIPOLYGON (((-118.60442 33.47855, -118.5987...</td>
+<td>Los Angeles</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>16980.0</td>
+<td>NC</td>
+<td>9.607711</td>
+<td>MULTIPOLYGON (((-88.94215 42.06505, -88.93894 ...</td>
+<td>Chicago</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>19100.0</td>
+<td>S</td>
+<td>7.543340</td>
+<td>MULTIPOLYGON (((-98.0656 32.59502, -98.06486 3...</td>
+<td>Dallas</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>26420.0</td>
+<td>S</td>
+<td>7.048954</td>
+<td>MULTIPOLYGON (((-94.7183 29.72886, -94.71721 2...</td>
+<td>Houston</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">934</td>
+<td>49820.0</td>
+<td>S</td>
+<td>0.013945</td>
+<td>MULTIPOLYGON (((-99.4538 27.26506, -99.42542 2...</td>
+<td>Zapata</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">935</td>
+<td>28540.0</td>
+<td>O</td>
+<td>0.013939</td>
+<td>MULTIPOLYGON (((-130.98311 55.36598, -130.9809...</td>
+<td>Ketchikan</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">936</td>
+<td>18780.0</td>
+<td>W</td>
+<td>0.013240</td>
+<td>MULTIPOLYGON (((-109.05095 40.44437, -109.0503...</td>
+<td>Craig</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">937</td>
+<td>46900.0</td>
+<td>S</td>
+<td>0.012887</td>
+<td>MULTIPOLYGON (((-99.47514 33.90105, -99.47522 ...</td>
+<td>Vernon</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">938</td>
+<td>29500.0</td>
+<td>S</td>
+<td>0.012371</td>
+<td>MULTIPOLYGON (((-102.20852 32.95896, -102.1989...</td>
+<td>Lamesa</td>
+</tr>
+</tbody>
+</table>
+
+<p>939 rows × 5 columns</p>
+</div>
+</div>
+</div>
+<p>The structure of this dataset is similar to the dataset of state regions, with a geometry column containing the region shapes and metadata indicating that these are polygons and multipolygons. A common technique with spatial information is to encode a variable of interest using the color of each polygon. Since both the x- and y-coordinates are used to represent where a region is, color becomes the aesthetic that holds the metric of interest that would usually go on one of the primary axes. For example, consider trying to show the population of each of the CBSA regions. We can do this by setting the color based on the population variable. We’ll also add the state boundaries as a reference:</p>
+<div id="59bb4137" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter to continental US and transform projections</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>cbsa_continental <span class="op">=</span> cbsa_reg[cbsa_reg[<span class="st">'quad'</span>] <span class="op">!=</span> <span class="st">'O'</span>].to_crs(<span class="st">'EPSG:5069'</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>states_continental <span class="op">=</span> state_projected[<span class="op">~</span>state_projected[<span class="st">'abb'</span>].isin([<span class="st">'AK'</span>, <span class="st">'HI'</span>])]</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">10</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot state boundaries first (as background)</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>states_continental.plot(ax<span class="op">=</span>ax, facecolor<span class="op">=</span><span class="st">'white'</span>, edgecolor<span class="op">=</span><span class="st">'gray'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot CBSA regions colored by population</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>cbsa_continental.plot(ax<span class="op">=</span>ax, column<span class="op">=</span><span class="st">'pop'</span>, cmap<span class="op">=</span><span class="st">'Blues'</span>, </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                     edgecolor<span class="op">=</span><span class="st">'none'</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, legend<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"CBSA Regions Colored by Population"</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The spatial part of the plot works quite well, showing the coverage of the CBSA regions over the country. It is possible to pick out the largest regions on the map corresponding to New York, Los Angeles, and Chicago. However, the default color scale is fairly difficult to interpret because the population values are highly skewed. We can improve this by using a logarithmic scale and a better color scheme:</p>
+<div id="d6d288a3" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">10</span>))</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot state boundaries</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>states_continental.plot(ax<span class="op">=</span>ax, facecolor<span class="op">=</span><span class="st">'white'</span>, edgecolor<span class="op">=</span><span class="st">'gray'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot CBSA regions with log scale and better colormap</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>cbsa_continental_copy <span class="op">=</span> cbsa_continental.copy()</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>cbsa_continental_copy[<span class="st">'log_pop'</span>] <span class="op">=</span> np.log10(cbsa_continental_copy[<span class="st">'pop'</span>])</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> cbsa_continental_copy.plot(ax<span class="op">=</span>ax, column<span class="op">=</span><span class="st">'log_pop'</span>, cmap<span class="op">=</span><span class="st">'Spectral_r'</span>, </span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                               edgecolor<span class="op">=</span><span class="st">'none'</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, legend<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>                               legend_kwds<span class="op">=</span>{<span class="st">'label'</span>: <span class="st">'Population (log10 scale)'</span>})</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"CBSA Regions Colored by Population (Log Scale)"</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The new visualization of the population of each CBSA region is much nicer to look at and it is much easier to see all of the core population centers in the country as a continuum from the largest to the smallest. This kind of spatial plot is often called a <em>choropleth map</em>. These are frequently used by popular media to illustrate spatial patterns, particularly during events such as elections. Depending on the application, it might have made more sense to plot the figure here using the density of each region rather than its overall population. This requires knowing the area of each region, from which we can define the population density. A running (sort of) joke in the spatial analysis community is that most maps claiming to reveal a different spatial feature are actually just population maps. We want to be cognizant of this. In the next section we will see how to derive metrics such as area from a spatial dataset.</p>
+</section>
+<section id="spatial-metrics" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="spatial-metrics"><span class="header-section-number">9.4</span> Spatial Metrics</h2>
+<p>Now that we have seen how to read in spatial polygon data and plot it, we can begin to show how we can analyze the spatial data beyond visualizations. Geopandas provides a number of methods that we can apply to GeoDataFrames to compute summary information about each of the geometries. For example, the <code>.area</code> property will return the total area of each of the polygons associated with every row of a spatial dataset. When working with a projected coordinate system (like our Albers projection), the area will be in the units of that projection (typically square meters). To convert to square kilometers, we can divide by one million. Let’s compute the area of each CBSA region in square kilometers and then arrange in ascending order to see the smallest regions by area:</p>
+<div id="7981308f" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute areas (ensuring we're in a projected CRS for accurate area calculation)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cbsa_with_area <span class="op">=</span> cbsa_continental.copy()</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>cbsa_with_area[<span class="st">'area_km2'</span>] <span class="op">=</span> cbsa_with_area.geometry.area <span class="op">/</span> <span class="fl">1e6</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Show smallest areas</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>smallest_areas <span class="op">=</span> (cbsa_with_area</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">'area_km2'</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    .loc[:, [<span class="st">'name'</span>, <span class="st">'area_km2'</span>, <span class="st">'pop'</span>]]</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">10</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>smallest_areas</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">area_km2</th>
+<th data-quarto-table-cell-role="th">pop</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">915</td>
+<td>Los Alamos</td>
+<td>282.833496</td>
+<td>0.019169</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">909</td>
+<td>Vineyard Haven</td>
+<td>306.672129</td>
+<td>0.020277</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">550</td>
+<td>Carson City</td>
+<td>406.922179</td>
+<td>0.057957</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">847</td>
+<td>Toccoa</td>
+<td>476.393809</td>
+<td>0.026641</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">872</td>
+<td>Scottsburg</td>
+<td>499.172628</td>
+<td>0.024290</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">427</td>
+<td>Oak Harbor</td>
+<td>549.398746</td>
+<td>0.085938</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">876</td>
+<td>Connersville</td>
+<td>557.136473</td>
+<td>0.023393</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">141</td>
+<td>Trenton</td>
+<td>592.734769</td>
+<td>0.384951</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">924</td>
+<td>Maysville</td>
+<td>638.328765</td>
+<td>0.017103</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">922</td>
+<td>Fitzgerald</td>
+<td>657.561503</td>
+<td>0.017237</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Another useful metric that we can compute from spatial polygon objects are the <em>centroids</em>, points at the geographic center of each region. It can be useful if we want to treat the polygon as a single point or add a label such as a placename in the center of the region. Computing this is straightforward using the <code>.centroid</code> property:</p>
+<div id="74eb1c02" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute centroids</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>centroids <span class="op">=</span> cbsa_continental.geometry.centroid</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract x, y coordinates</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>cbsa_with_centroids <span class="op">=</span> cbsa_continental.copy()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>cbsa_with_centroids[<span class="st">'centroid_x'</span>] <span class="op">=</span> centroids.x</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>cbsa_with_centroids[<span class="st">'centroid_y'</span>] <span class="op">=</span> centroids.y</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>cbsa_with_centroids[[<span class="st">'name'</span>, <span class="st">'centroid_x'</span>, <span class="st">'centroid_y'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">centroid_x</th>
+<th data-quarto-table-cell-role="th">centroid_y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>New York</td>
+<td>1.817142e+06</td>
+<td>2.183304e+06</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Los Angeles</td>
+<td>-2.006862e+06</td>
+<td>1.474388e+06</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Chicago</td>
+<td>6.635662e+05</td>
+<td>2.105417e+06</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Dallas</td>
+<td>-9.027537e+04</td>
+<td>1.086927e+06</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Houston</td>
+<td>5.784893e+04</td>
+<td>7.459226e+05</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">933</td>
+<td>Pecos</td>
+<td>-7.255826e+05</td>
+<td>9.575672e+05</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">934</td>
+<td>Zapata</td>
+<td>-3.163617e+05</td>
+<td>4.429799e+05</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">936</td>
+<td>Craig</td>
+<td>-1.021286e+06</td>
+<td>2.021907e+06</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">937</td>
+<td>Vernon</td>
+<td>-2.967750e+05</td>
+<td>1.228991e+06</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">938</td>
+<td>Lamesa</td>
+<td>-5.537604e+05</td>
+<td>1.091841e+06</td>
+</tr>
+</tbody>
+</table>
+
+<p>919 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<p>These are the exact centroids that were pre-populated in the <code>cbsa</code> dataset that we started with at the beginning of the chapter. In fact, we computed those centroids when building the dataset for the book directly from the polygons provided by the United States Census Bureau. Centroids are very helpful for many kinds of analysis. If the regions are fairly small in area compared to the total area of analysis, it may be easier and more straightforward to treat each observation as a point rather than as a complex region.</p>
+<p>In addition to points and polygons, it is also possible to have spatial data that represents spatial lines. These can define, for example, roads, metro lines, railways, rivers, or the path of a moving object such as a hurricane. As an example, let’s read in a dataset of roads from New York City:</p>
+<div id="925b912c" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read road network data</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>roads <span class="op">=</span> gpd.read_file(<span class="st">"data/geo_ny_roads.geojson"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>roads</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Wooster St Exd</td>
+<td>LINESTRING (-73.99712 40.72893, -73.99657 40.7...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>W 158th St Exn</td>
+<td>LINESTRING (-73.9485 40.83641, -73.94879 40.83...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Stanton St Exn</td>
+<td>LINESTRING (-73.97942 40.71867, -73.98022 40.7...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Staten St Exn</td>
+<td>LINESTRING (-73.98193 40.71946, -73.98122 40.7...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>First Ave Lp</td>
+<td>LINESTRING (-73.98071 40.73381, -73.98002 40.7...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2233</td>
+<td>None</td>
+<td>LINESTRING (-73.93644 40.818, -73.9368 40.8174...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2234</td>
+<td>None</td>
+<td>LINESTRING (-73.96461 40.79422, -73.96445 40.7...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2235</td>
+<td>None</td>
+<td>LINESTRING (-73.96248 40.76637, -73.96294 40.7...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2236</td>
+<td>None</td>
+<td>LINESTRING (-73.95422 40.82021, -73.9543 40.82...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2237</td>
+<td>None</td>
+<td>LINESTRING (-73.97806 40.77842, -73.97782 40.7...</td>
+</tr>
+</tbody>
+</table>
+
+<p>2238 rows × 2 columns</p>
+</div>
+</div>
+</div>
+<p>One useful application of spatial lines is to add them on top of other spatial data visualizations to better understand where different regions are located. This is particularly useful when looking at regions within a city where it can be hard to understand how to match the plot up with our understanding of the city’s geography without lines or other markers to orient ourselves. We can also compute metrics associated with lines. For example, the <code>.length</code> property functions similarly to the <code>.area</code> property to give the length of each line. Let’s apply it to find the longest streets in New York City, grouping together parts of streets that have the same name:</p>
+<div id="e7ff47d6" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute road lengths and find longest streets</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>roads_with_length <span class="op">=</span> roads.copy()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>roads_with_length[<span class="st">'length'</span>] <span class="op">=</span> roads_with_length.geometry.length</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Group by name and sum lengths</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>longest_streets <span class="op">=</span> (roads_with_length</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    .dropna(subset<span class="op">=</span>[<span class="st">'name'</span>])  <span class="co"># Remove unnamed roads</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'name'</span>)[<span class="st">'length'</span>]</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">sum</span>()</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    .sort_values(ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">10</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>longest_streets</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>name
+State Rte 9a         0.405296
+F D R Dr             0.353201
+Henry Hudson Pkwy    0.236432
+Broadway             0.219867
+Riverside Dr         0.162182
+Harlem River Dr      0.144414
+Amsterdam Ave        0.106750
+5th Ave              0.104180
+1st Ave              0.103039
+2nd Ave              0.101780
+Name: length, dtype: float64</code></pre>
+</div>
+</div>
+<p>For those familiar with the geography of New York City, these longest streets roughly match the names of the main streets that run the length of Manhattan. There are several other metrics that can be used to manipulate spatial objects. The main goal of most of these other ones are to find distances and overlaps between pairs of geometries. We will cover these as a group in the next section.</p>
+</section>
+<section id="spatial-joins" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="spatial-joins"><span class="header-section-number">9.5</span> Spatial Joins</h2>
+<p>One of the most common operations that we can perform on spatial data is to combine information between two different GeoDataFrames. For example, we might want to associate the points in one dataset with the polygons that they are contained within another dataset. Or we might want to filter one set of polygons based on those that intersect another set of polygons. For example, let’s say we have a dataset of historical battles or birth places, we can then associate them with modern political boundaries. Self-joins are also common with spatial data, such as in applications that need to find the distances between all pairs of points within a dataset of spatial points.</p>
+<p>Before looking at joining spatial datasets by the spatial information, it will be useful to see what happens if we do a traditional table join with spatial information. Both the <code>cbsa</code> and <code>cbsa_geo</code> datasets contain a column called <code>geoid</code> that can be used to combine them together using an ordinary <code>merge()</code>, or any other table join function. Because GeoDataFrames are just DataFrames with extra information, performing a key-based join works, but we need to be careful about maintaining the spatial properties:</p>
+<div id="0097fb58" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Traditional key-based join with spatial data</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>cbsa_subset <span class="op">=</span> cbsa[[<span class="st">'geoid'</span>, <span class="st">'name'</span>]].copy()  <span class="co"># Remove duplicate columns</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>merged_spatial <span class="op">=</span> cbsa_geo.merge(cbsa_subset, on<span class="op">=</span><span class="st">'geoid'</span>, suffixes<span class="op">=</span>(<span class="st">''</span>, <span class="st">'_extra'</span>))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Merged data type: </span><span class="sc">{</span><span class="bu">type</span>(merged_spatial)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Has geometry column: </span><span class="sc">{</span><span class="st">'geometry'</span> <span class="kw">in</span> merged_spatial<span class="sc">.</span>columns<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Is GeoDataFrame: </span><span class="sc">{</span><span class="bu">isinstance</span>(merged_spatial, gpd.GeoDataFrame)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Merged data type: &lt;class 'geopandas.geodataframe.GeoDataFrame'&gt;
+Has geometry column: True
+Is GeoDataFrame: True</code></pre>
+</div>
+</div>
+<p>Notice that the output maintains its GeoDataFrame properties because we started with a GeoDataFrame and merged regular DataFrame information into it.</p>
+<p>Now, we can move onto joins that function by considering the spatial relationships between two datasets. Geopandas provides a function <code>sjoin()</code> (spatial join) to combine two datasets based on their spatial relationships. For example, we can join the spatial points <code>cbsa_geo</code> dataset with the spatial polygons <code>state</code> to find which state each CBSA center point falls within:</p>
+<div id="7c39f8bc" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join: find which state each CBSA center is in</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># First ensure both datasets have the same CRS</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>cbsa_geo_proj <span class="op">=</span> cbsa_geo.to_crs(<span class="st">'EPSG:5069'</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>state_proj <span class="op">=</span> state.to_crs(<span class="st">'EPSG:5069'</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform spatial join</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>cbsa_with_states <span class="op">=</span> gpd.sjoin(cbsa_geo_proj, state_proj, how<span class="op">=</span><span class="st">'left'</span>, predicate<span class="op">=</span><span class="st">'within'</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Show results</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>result_sample <span class="op">=</span> cbsa_with_states[[<span class="st">'name_left'</span>, <span class="st">'name_right'</span>, <span class="st">'abb'</span>]].head(<span class="dv">10</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>result_sample</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name_left</th>
+<th data-quarto-table-cell-role="th">name_right</th>
+<th data-quarto-table-cell-role="th">abb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>New York</td>
+<td>New Jersey</td>
+<td>NJ</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Los Angeles</td>
+<td>California</td>
+<td>CA</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Chicago</td>
+<td>Illinois</td>
+<td>IL</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Dallas</td>
+<td>Texas</td>
+<td>TX</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Houston</td>
+<td>Texas</td>
+<td>TX</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Washington</td>
+<td>Virginia</td>
+<td>VA</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Philadelphia</td>
+<td>Pennsylvania</td>
+<td>PA</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Miami</td>
+<td>Florida</td>
+<td>FL</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Atlanta</td>
+<td>Georgia</td>
+<td>GA</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Boston</td>
+<td>Massachusetts</td>
+<td>MA</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>As confirmation of our join, we see that each CBSA region is now associated with the state it falls within. The New York City CBSA region might be associated with New Jersey if its center point falls there, even though the metropolitan area spans multiple states.</p>
+<p>The spatial join supports different types of spatial relationships through the <code>predicate</code> parameter. For example, we can use <code>'touches'</code> to find geometries that share a border. Let’s use this to join the state dataset to itself by finding all pairs of states that border one another:</p>
+<div id="5a51fafe" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find states that border each other</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>bordering_states <span class="op">=</span> gpd.sjoin(state_proj, state_proj, how<span class="op">=</span><span class="st">'inner'</span>, predicate<span class="op">=</span><span class="st">'touches'</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove self-matches and show results</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>border_pairs <span class="op">=</span> (bordering_states</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'abb_left != abb_right'</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    .loc[:, [<span class="st">'name_left'</span>, <span class="st">'abb_left'</span>, <span class="st">'name_right'</span>, <span class="st">'abb_right'</span>]]</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">10</span>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>border_pairs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name_left</th>
+<th data-quarto-table-cell-role="th">abb_left</th>
+<th data-quarto-table-cell-role="th">name_right</th>
+<th data-quarto-table-cell-role="th">abb_right</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Maine</td>
+<td>ME</td>
+<td>New Hampshire</td>
+<td>NH</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>New Hampshire</td>
+<td>NH</td>
+<td>Massachusetts</td>
+<td>MA</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>New Hampshire</td>
+<td>NH</td>
+<td>Vermont</td>
+<td>VT</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>New Hampshire</td>
+<td>NH</td>
+<td>Maine</td>
+<td>ME</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Delaware</td>
+<td>DE</td>
+<td>Maryland</td>
+<td>MD</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Delaware</td>
+<td>DE</td>
+<td>New Jersey</td>
+<td>NJ</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Delaware</td>
+<td>DE</td>
+<td>Pennsylvania</td>
+<td>PA</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>South Carolina</td>
+<td>SC</td>
+<td>Georgia</td>
+<td>GA</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>South Carolina</td>
+<td>SC</td>
+<td>North Carolina</td>
+<td>NC</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Nebraska</td>
+<td>NE</td>
+<td>Missouri</td>
+<td>MO</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Another useful spatial relationship is finding points that are within a certain distance of each other. We can compute distances between spatial objects using various methods:</p>
+<div id="ee8350f8" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find distances between CBSA centers</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># For demonstration, let's find the closest CBSA to each one</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample a few CBSAs for efficiency</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>cbsa_sample <span class="op">=</span> cbsa_geo_proj.head(<span class="dv">20</span>).copy()</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute distance matrix</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>distances <span class="op">=</span> cbsa_sample.geometry.<span class="bu">apply</span>(</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> geom: cbsa_sample.geometry.distance(geom)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Find closest pairs (excluding self-matches)</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>closest_pairs <span class="op">=</span> []</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, row <span class="kw">in</span> cbsa_sample.iterrows():</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    distances_to_others <span class="op">=</span> cbsa_sample.geometry.distance(row.geometry)</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Exclude self (distance = 0)</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    closest_idx <span class="op">=</span> distances_to_others[distances_to_others <span class="op">&gt;</span> <span class="dv">0</span>].idxmin()</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    closest_pairs.append({</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">'cbsa1'</span>: row[<span class="st">'name'</span>],</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">'cbsa2'</span>: cbsa_sample.loc[closest_idx, <span class="st">'name'</span>],</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">'distance_km'</span>: distances_to_others.loc[closest_idx] <span class="op">/</span> <span class="dv">1000</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>closest_df <span class="op">=</span> pd.DataFrame(closest_pairs).head()</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>closest_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">cbsa1</th>
+<th data-quarto-table-cell-role="th">cbsa2</th>
+<th data-quarto-table-cell-role="th">distance_km</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>New York</td>
+<td>Philadelphia</td>
+<td>140.000260</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Los Angeles</td>
+<td>San Diego</td>
+<td>185.744711</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Chicago</td>
+<td>Detroit</td>
+<td>403.856526</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Dallas</td>
+<td>Houston</td>
+<td>371.802326</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Houston</td>
+<td>Dallas</td>
+<td>371.802326</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We can also find the farthest pairs of points by looking at the maximum distances:</p>
+<div id="20b71009" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the farthest CBSA pairs from our sample</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>farthest_pairs <span class="op">=</span> []</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, row <span class="kw">in</span> cbsa_sample.iterrows():</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    distances_to_others <span class="op">=</span> cbsa_sample.geometry.distance(row.geometry)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    farthest_idx <span class="op">=</span> distances_to_others.idxmax()</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> distances_to_others.loc[farthest_idx] <span class="op">&gt;</span> <span class="dv">0</span>:  <span class="co"># Exclude self-matches</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>        farthest_pairs.append({</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">'cbsa1'</span>: row[<span class="st">'name'</span>],</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">'cbsa2'</span>: cbsa_sample.loc[farthest_idx, <span class="st">'name'</span>],</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">'distance_km'</span>: distances_to_others.loc[farthest_idx] <span class="op">/</span> <span class="dv">1000</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>farthest_df <span class="op">=</span> pd.DataFrame(farthest_pairs).sort_values(<span class="st">'distance_km'</span>, ascending<span class="op">=</span><span class="va">False</span>).head()</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>farthest_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">cbsa1</th>
+<th data-quarto-table-cell-role="th">cbsa2</th>
+<th data-quarto-table-cell-role="th">distance_km</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Seattle</td>
+<td>Miami</td>
+<td>4305.998690</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Miami</td>
+<td>Seattle</td>
+<td>4305.998690</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">11</td>
+<td>San Francisco</td>
+<td>Boston</td>
+<td>4290.724372</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Boston</td>
+<td>San Francisco</td>
+<td>4290.724372</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Los Angeles</td>
+<td>Boston</td>
+<td>4129.790860</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Being able to analyze proximity and distance between objects offers a way to explore humanities data. Spatial joins can be a powerful type of analysis, for often spatial analysis can be valuable beyond producing visualizations through maps.</p>
+</section>
+<section id="raster-maps" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="raster-maps"><span class="header-section-number">9.6</span> Raster Maps</h2>
+<p>We will finish this chapter by considering a completely different way to visualize spatial points. In the introduction, we mentioned that it is possible to build a spatial visualization of points by plotting the longitude and latitude on a scatterplot. If the points are in a relatively small region of the world not too close to either the North or South Pole, the projection of the data will not significantly affect the visualization. However, it can be difficult to understand a scatter plot of longitude and latitude pairs without polygons or lines to orient ourselves. One solution is to plot the points on top of a fixed map. One nice aspect of this approach is that we can grab map images from the entire world from a single source without having to hunt down polygon or line shapefiles for each application <span class="citation" data-cites="nie2011design">[<a href="#ref-nie2011design" role="doc-biblioref">4</a>]</span>. Raster maps are composed of pixels; they are images.</p>
+<p>In Python, we can use the <strong>contextily</strong> library to add basemap tiles to our spatial plots. This library can fetch map tiles from various providers and overlay them with our spatial data:</p>
+<div id="a3b66a34" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> contextily <span class="im">as</span> cx</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># For demonstration, let's use a dataset with smaller geographic scope</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># We'll create a sample of French cities</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>french_city <span class="op">=</span> pd.read_csv(<span class="st">"data/geo_french_city.csv"</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>french_city</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">city</th>
+<th data-quarto-table-cell-role="th">lat</th>
+<th data-quarto-table-cell-role="th">lon</th>
+<th data-quarto-table-cell-role="th">population</th>
+<th data-quarto-table-cell-role="th">admin_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Paris</td>
+<td>48.8667</td>
+<td>2.3333</td>
+<td>9904000</td>
+<td>Ile-de-France</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Lyon</td>
+<td>45.7700</td>
+<td>4.8300</td>
+<td>1423000</td>
+<td>Auvergne-Rhone-Alpes</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Marseille</td>
+<td>43.2900</td>
+<td>5.3750</td>
+<td>1400000</td>
+<td>Provence-Alpes-Cote d'Azur</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Lille</td>
+<td>50.6500</td>
+<td>3.0800</td>
+<td>1044000</td>
+<td>Hauts-de-France</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Nice</td>
+<td>43.7150</td>
+<td>7.2650</td>
+<td>927000</td>
+<td>Provence-Alpes-Cote d'Azur</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Toulouse</td>
+<td>43.6200</td>
+<td>1.4499</td>
+<td>847000</td>
+<td>Occitanie</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Bordeaux</td>
+<td>44.8500</td>
+<td>-0.5950</td>
+<td>803000</td>
+<td>Nouvelle-Aquitaine</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Rouen</td>
+<td>49.4304</td>
+<td>1.0800</td>
+<td>532559</td>
+<td>Normandie</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Strasbourg</td>
+<td>48.5800</td>
+<td>7.7500</td>
+<td>439972</td>
+<td>Grand Est</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Nantes</td>
+<td>47.2104</td>
+<td>-1.5900</td>
+<td>438537</td>
+<td>Pays de la Loire</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Metz</td>
+<td>49.1203</td>
+<td>6.1800</td>
+<td>409186</td>
+<td>Grand Est</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Grenoble</td>
+<td>45.1804</td>
+<td>5.7200</td>
+<td>388574</td>
+<td>Auvergne-Rhone-Alpes</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Toulon</td>
+<td>43.1342</td>
+<td>5.9188</td>
+<td>357693</td>
+<td>Provence-Alpes-Cote d'Azur</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Montpellier</td>
+<td>43.6104</td>
+<td>3.8700</td>
+<td>327254</td>
+<td>Occitanie</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Nancy</td>
+<td>48.6837</td>
+<td>6.2000</td>
+<td>268976</td>
+<td>Grand Est</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Saint-Etienne</td>
+<td>45.4304</td>
+<td>4.3800</td>
+<td>265684</td>
+<td>Auvergne-Rhone-Alpes</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Melun</td>
+<td>48.5333</td>
+<td>2.6666</td>
+<td>249432</td>
+<td>Ile-de-France</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Le Havre</td>
+<td>49.5050</td>
+<td>0.1050</td>
+<td>242124</td>
+<td>Normandie</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Tours</td>
+<td>47.3804</td>
+<td>0.6999</td>
+<td>236096</td>
+<td>Centre-Val de Loire</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Clermont-Ferrand</td>
+<td>45.7800</td>
+<td>3.0800</td>
+<td>233050</td>
+<td>Auvergne-Rhone-Alpes</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Orleans</td>
+<td>47.9004</td>
+<td>1.9000</td>
+<td>217301</td>
+<td>Centre-Val de Loire</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>Mulhouse</td>
+<td>47.7504</td>
+<td>7.3500</td>
+<td>215454</td>
+<td>Grand Est</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>Rennes</td>
+<td>48.1000</td>
+<td>-1.6700</td>
+<td>209375</td>
+<td>Bretagne</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>Reims</td>
+<td>49.2504</td>
+<td>4.0300</td>
+<td>196565</td>
+<td>Grand Est</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>Caen</td>
+<td>49.1838</td>
+<td>-0.3500</td>
+<td>190099</td>
+<td>Normandie</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>Angers</td>
+<td>47.4800</td>
+<td>-0.5300</td>
+<td>188380</td>
+<td>Pays de la Loire</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>Dijon</td>
+<td>47.3304</td>
+<td>5.0300</td>
+<td>169946</td>
+<td>Bourgogne-Franche-Comte</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>Nimes</td>
+<td>43.8304</td>
+<td>4.3500</td>
+<td>169547</td>
+<td>Occitanie</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>Limoges</td>
+<td>45.8300</td>
+<td>1.2500</td>
+<td>152199</td>
+<td>Nouvelle-Aquitaine</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>Aix-en-Provence</td>
+<td>43.5200</td>
+<td>5.4500</td>
+<td>146821</td>
+<td>Provence-Alpes-Cote d'Azur</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>Perpignan</td>
+<td>42.7000</td>
+<td>2.9000</td>
+<td>146620</td>
+<td>Occitanie</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>Biarritz</td>
+<td>43.4733</td>
+<td>-1.5616</td>
+<td>145348</td>
+<td>Nouvelle-Aquitaine</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>Brest</td>
+<td>48.3904</td>
+<td>-4.4950</td>
+<td>144899</td>
+<td>Bretagne</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>Le Mans</td>
+<td>48.0004</td>
+<td>0.1000</td>
+<td>144515</td>
+<td>Pays de la Loire</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">34</td>
+<td>Amiens</td>
+<td>49.9004</td>
+<td>2.3000</td>
+<td>143086</td>
+<td>Hauts-de-France</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35</td>
+<td>Besancon</td>
+<td>47.2300</td>
+<td>6.0300</td>
+<td>128426</td>
+<td>Bourgogne-Franche-Comte</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">36</td>
+<td>Annecy</td>
+<td>45.9000</td>
+<td>6.1167</td>
+<td>105749</td>
+<td>Auvergne-Rhone-Alpes</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">37</td>
+<td>Calais</td>
+<td>50.9504</td>
+<td>1.8333</td>
+<td>92201</td>
+<td>Hauts-de-France</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">38</td>
+<td>Poitiers</td>
+<td>46.5833</td>
+<td>0.3333</td>
+<td>85960</td>
+<td>Nouvelle-Aquitaine</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">39</td>
+<td>Versailles</td>
+<td>48.8005</td>
+<td>2.1333</td>
+<td>85416</td>
+<td>Ile-de-France</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">40</td>
+<td>Lorient</td>
+<td>47.7504</td>
+<td>-3.3666</td>
+<td>84952</td>
+<td>Bretagne</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">41</td>
+<td>La Rochelle</td>
+<td>46.1667</td>
+<td>-1.1500</td>
+<td>76997</td>
+<td>Nouvelle-Aquitaine</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">42</td>
+<td>Roanne</td>
+<td>46.0333</td>
+<td>4.0667</td>
+<td>73315</td>
+<td>Auvergne-Rhone-Alpes</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">43</td>
+<td>Arras</td>
+<td>50.2833</td>
+<td>2.7833</td>
+<td>64165</td>
+<td>Hauts-de-France</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">44</td>
+<td>Troyes</td>
+<td>48.3404</td>
+<td>4.0834</td>
+<td>61703</td>
+<td>Grand Est</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">45</td>
+<td>Cherbourg</td>
+<td>49.6504</td>
+<td>-1.6500</td>
+<td>60991</td>
+<td>Normandie</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">46</td>
+<td>Agen</td>
+<td>44.2004</td>
+<td>0.6333</td>
+<td>58223</td>
+<td>Nouvelle-Aquitaine</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">47</td>
+<td>Tarbes</td>
+<td>43.2333</td>
+<td>0.0833</td>
+<td>54854</td>
+<td>Occitanie</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">48</td>
+<td>Ajaccio</td>
+<td>41.9271</td>
+<td>8.7283</td>
+<td>54364</td>
+<td>Corsica</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">49</td>
+<td>Saint-Brieuc</td>
+<td>48.5167</td>
+<td>-2.7833</td>
+<td>53223</td>
+<td>Bretagne</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">50</td>
+<td>Nevers</td>
+<td>46.9837</td>
+<td>3.1667</td>
+<td>45929</td>
+<td>Bourgogne-Franche-Comte</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">51</td>
+<td>Vichy</td>
+<td>46.1171</td>
+<td>3.4167</td>
+<td>43158</td>
+<td>Auvergne-Rhone-Alpes</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">52</td>
+<td>Dieppe</td>
+<td>49.9337</td>
+<td>1.0833</td>
+<td>42461</td>
+<td>Normandie</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">53</td>
+<td>Bastia</td>
+<td>42.7032</td>
+<td>9.4500</td>
+<td>41001</td>
+<td>Corsica</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">54</td>
+<td>Beziers</td>
+<td>43.3505</td>
+<td>3.2100</td>
+<td>81438</td>
+<td>Occitanie</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">55</td>
+<td>Bourges</td>
+<td>47.0837</td>
+<td>2.4000</td>
+<td>72340</td>
+<td>Centre-Val de Loire</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">56</td>
+<td>Brive-la-Gaillarde</td>
+<td>45.1504</td>
+<td>1.5333</td>
+<td>55448</td>
+<td>Nouvelle-Aquitaine</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">57</td>
+<td>Auxerre</td>
+<td>47.8004</td>
+<td>3.5666</td>
+<td>41516</td>
+<td>Bourgogne-Franche-Comte</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We can plot these cities on top of a map without needing complex setup. Contextily works well with geopandas to automatically grab map tiles that correspond to our data extent:</p>
+<div id="5b0d3180" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create GeoDataFrame from French cities</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>french_geo <span class="op">=</span> gpd.GeoDataFrame(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    french_city, </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    geometry<span class="op">=</span>gpd.points_from_xy(french_city.lon, french_city.lat),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    crs<span class="op">=</span><span class="st">'EPSG:4326'</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform to Web Mercator (required for contextily)</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>french_geo_mercator <span class="op">=</span> french_geo.to_crs(<span class="st">'EPSG:3857'</span>)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Create plot with basemap</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the points</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>french_geo_mercator.plot(ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'red'</span>, markersize<span class="op">=</span><span class="dv">50</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Add basemap</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>cx.add_basemap(ax, crs<span class="op">=</span>french_geo_mercator.crs, source<span class="op">=</span>cx.providers.OpenStreetMap.Mapnik)</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"French Cities with OpenStreetMap Basemap"</span>)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-24-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can also use different basemap providers and styles. Contextily supports many different tile sources:</p>
+<div id="4458cef6" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot with a different basemap style</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Color points by administrative region</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>french_geo_mercator.plot(ax<span class="op">=</span>ax, column<span class="op">=</span><span class="st">'admin_name'</span>, markersize<span class="op">=</span><span class="dv">50</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, legend<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a terrain basemap</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    cx.add_basemap(ax, crs<span class="op">=</span>french_geo_mercator.crs, source<span class="op">=</span>cx.providers.Stamen.Terrain)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="st">"French Cities by Region (Terrain Basemap)"</span>)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span>:</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Fallback to OpenStreetMap if Stamen is unavailable</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    cx.add_basemap(ax, crs<span class="op">=</span>french_geo_mercator.crs, source<span class="op">=</span>cx.providers.OpenStreetMap.Mapnik)</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="st">"French Cities by Region (OpenStreetMap Basemap)"</span>)</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-25-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For more complex visualizations, we can work with line data. Let’s demonstrate with a Paris metro dataset:</p>
+<div id="891c85bf" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Paris metro data</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>paris_metro <span class="op">=</span> pd.read_csv(<span class="st">"data/geo_paris_metro.csv"</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>paris_metro</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">line</th>
+<th data-quarto-table-cell-role="th">line_color</th>
+<th data-quarto-table-cell-role="th">lon</th>
+<th data-quarto-table-cell-role="th">lat</th>
+<th data-quarto-table-cell-role="th">lon_end</th>
+<th data-quarto-table-cell-role="th">lat_end</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>La Defense - Grande Arche</td>
+<td>1</td>
+<td>#ffbe00</td>
+<td>2.237018</td>
+<td>48.892187</td>
+<td>2.247932</td>
+<td>48.888631</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Esplanade de la Defense</td>
+<td>1</td>
+<td>#ffbe00</td>
+<td>2.247932</td>
+<td>48.888631</td>
+<td>2.260515</td>
+<td>48.884708</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Pont de Neuilly (Avenue de Madrid)</td>
+<td>1</td>
+<td>#ffbe00</td>
+<td>2.260515</td>
+<td>48.884708</td>
+<td>2.271687</td>
+<td>48.881192</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Les Sablons (Jardin d'acclimatation)</td>
+<td>1</td>
+<td>#ffbe00</td>
+<td>2.271687</td>
+<td>48.881192</td>
+<td>2.289323</td>
+<td>48.875594</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Argentine</td>
+<td>1</td>
+<td>#ffbe00</td>
+<td>2.289323</td>
+<td>48.875594</td>
+<td>2.295905</td>
+<td>48.875150</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">366</td>
+<td>Gare de Lyon</td>
+<td>14</td>
+<td>#640082</td>
+<td>2.373014</td>
+<td>48.843986</td>
+<td>2.379554</td>
+<td>48.840001</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">367</td>
+<td>Bercy</td>
+<td>14</td>
+<td>#640082</td>
+<td>2.379554</td>
+<td>48.840001</td>
+<td>2.386632</td>
+<td>48.833339</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">368</td>
+<td>Cour Saint-Emilion</td>
+<td>14</td>
+<td>#640082</td>
+<td>2.386632</td>
+<td>48.833339</td>
+<td>2.375748</td>
+<td>48.829990</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">369</td>
+<td>Bibliotheque Francois Mitterrand</td>
+<td>14</td>
+<td>#640082</td>
+<td>2.375748</td>
+<td>48.829990</td>
+<td>2.368033</td>
+<td>48.827271</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">370</td>
+<td>Olympiades</td>
+<td>14</td>
+<td>#640082</td>
+<td>2.368033</td>
+<td>48.827271</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>371 rows × 7 columns</p>
+</div>
+</div>
+</div>
+<p>We can create a more complex visualization showing metro lines with their official colors:</p>
+<div id="aa76a28f" class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for a few metro lines and create visualization</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>metro_subset <span class="op">=</span> paris_metro[paris_metro[<span class="st">'line'</span>] <span class="op">&lt;=</span> <span class="dv">4</span>].copy()</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create geometries for start and end points</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>start_points <span class="op">=</span> gpd.GeoDataFrame(</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    metro_subset,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    geometry<span class="op">=</span>gpd.points_from_xy(metro_subset.lon, metro_subset.lat),</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    crs<span class="op">=</span><span class="st">'EPSG:4326'</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>).to_crs(<span class="st">'EPSG:3857'</span>)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot points colored by line</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> line_num <span class="kw">in</span> <span class="bu">sorted</span>(metro_subset[<span class="st">'line'</span>].unique()):</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>    line_data <span class="op">=</span> start_points[start_points[<span class="st">'line'</span>] <span class="op">==</span> line_num]</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>    line_color <span class="op">=</span> line_data[<span class="st">'line_color'</span>].iloc[<span class="dv">0</span>]</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>    line_data.plot(ax<span class="op">=</span>ax, color<span class="op">=</span>line_color, markersize<span class="op">=</span><span class="dv">30</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="ss">f'Line </span><span class="sc">{</span>line_num<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Add basemap</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>cx.add_basemap(ax, crs<span class="op">=</span>start_points.crs, source<span class="op">=</span>cx.providers.OpenStreetMap.Mapnik, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Paris Metro Lines (Sample)"</span>)</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>ax.set_axis_off()</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-27-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can also create faceted plots to show different metro lines separately:</p>
+<div id="61f56e93" class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create subplots for different metro lines</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">12</span>))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>axes <span class="op">=</span> axes.flatten()</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, line_num <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">sorted</span>(metro_subset[<span class="st">'line'</span>].unique())[:<span class="dv">4</span>]):</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> axes[i]</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Filter data for this line</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    line_data <span class="op">=</span> start_points[start_points[<span class="st">'line'</span>] <span class="op">==</span> line_num]</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    line_color <span class="op">=</span> line_data[<span class="st">'line_color'</span>].iloc[<span class="dv">0</span>]</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot line data</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    line_data.plot(ax<span class="op">=</span>ax, color<span class="op">=</span>line_color, markersize<span class="op">=</span><span class="dv">30</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add basemap</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    cx.add_basemap(ax, crs<span class="op">=</span>line_data.crs, source<span class="op">=</span>cx.providers.OpenStreetMap.Mapnik, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f'Metro Line </span><span class="sc">{</span>line_num<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    ax.set_axis_off()</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09_spatial_data_files/figure-html/cell-28-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Raster maps when layered with point and line data offer a way to quickly garner insights from humanities data. The combination of real-world geographic context (through basemap tiles) with our specific data points creates rich, interpretable visualizations.</p>
+</section>
+<section id="extensions" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="extensions"><span class="header-section-number">9.7</span> Extensions</h2>
+<p>Spatial analysis is a large area with many exciting avenues for humanities data. The spatial turn in the discipline of History along with award-winning digital humanities projects like University of Richmond’s American Panorama project are just a few examples of how humanities fields have been embracing spatial analysis <span class="citation" data-cites="connolly2018mapping">[<a href="#ref-connolly2018mapping" role="doc-biblioref">5</a>]</span>. Concepts like thick mapping and deep mapping are also providing exciting theoretical interventions <span class="citation" data-cites="bodenhamer2013deep">[<a href="#ref-bodenhamer2013deep" role="doc-biblioref">6</a>]</span> <span class="citation" data-cites="presner2015mapping">[<a href="#ref-presner2015mapping" role="doc-biblioref">7</a>]</span>.</p>
+<p>For extending the methods mentioned in this chapter, consider exploring:</p>
+<p><strong>Python Libraries:</strong> - <strong>GeoPandas</strong>: Core spatial data manipulation (used throughout this chapter) - <strong>Shapely</strong>: Geometric operations and analysis - <strong>Contextily</strong>: Basemap tiles and web map integration<br>
+- <strong>Folium</strong>: Interactive web mapping - <strong>PyProj</strong>: Coordinate system transformations - <strong>Rasterio</strong>: Working with raster/satellite imagery data - <strong>OSMnx</strong>: Working with OpenStreetMap data for network analysis - <strong>PySAL</strong>: Spatial statistics and econometrics</p>
+<p><strong>Theoretical Resources:</strong> A next step from this chapter would be exploring more advanced spatial statistics and modeling techniques. The concepts translate well from R to Python, with similar analytical capabilities available through the PySAL ecosystem. The text <em>Applied Spatial Data Analysis with R</em> <span class="citation" data-cites="bivand2008applied">[<a href="#ref-bivand2008applied" role="doc-biblioref">2</a>]</span> provides excellent conceptual background that applies to Python workflows as well. <em>Spatial statistics and modeling</em> by Carlo Gaetan and Xavier Guyon provides a more extensive introduction to spatial statistics <span class="citation" data-cites="gaetan2010spatial">[<a href="#ref-gaetan2010spatial" role="doc-biblioref">3</a>]</span>. For an introductory theoretical text, we recommend <em>Mapping: A Critical Introduction to Cartography and GIS</em> <span class="citation" data-cites="crampton2010mapping">[<a href="#ref-crampton2010mapping" role="doc-biblioref">8</a>]</span>.</p>
+<p>The Python spatial ecosystem is rapidly evolving, with particularly strong capabilities in areas like satellite imagery analysis, urban analytics, and large-scale spatial data processing that continue to grow.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+
+
+<div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-franklin1992introduction" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline">Franklin, C and Hane, P (1992 ). An introduction to geographic information systems: Linking maps to databases [and] maps for the rest of us: Affordable and fun. <em>Database</em>. ERIC. <strong>15</strong> 12–5</div>
+</div>
+<div id="ref-bivand2008applied" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">Bivand, R S, Pebesma, E J, Gómez-Rubio, V and Pebesma, E J (2008 ). <em>Applied Spatial Data Analysis with r</em>. Springer</div>
+</div>
+<div id="ref-gaetan2010spatial" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline">Gaetan, C, Guyon, X and others (2010 ). <em>Spatial Statistics and Modeling</em>. Springer</div>
+</div>
+<div id="ref-nie2011design" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline">Nie, Y F, Xu, H and Liu, H L (2011 ). The design and implementation of tile map service. <em>Advanced Materials Research</em>. Trans Tech Publ. <strong>159</strong> 714–9</div>
+</div>
+<div id="ref-connolly2018mapping" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[5] </div><div class="csl-right-inline">Connolly, N, Winling, L, Nelson, R K and Marciano, R (2018 ). Mapping inequality:‘big data’meets social history in the story of redlining. <em>The routledge companion to spatial history</em>. Routledge. 502–24</div>
+</div>
+<div id="ref-bodenhamer2013deep" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[6] </div><div class="csl-right-inline">Bodenhamer, D J, Harris, T M and Corrigan, J (2013 ). Deep mapping and the spatial humanities. <em>International Journal of Humanities and Arts Computing</em>. Edinburgh University Press. <strong>7</strong> 170–5</div>
+</div>
+<div id="ref-presner2015mapping" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[7] </div><div class="csl-right-inline">Presner, T and Shepard, D (2015 ). Mapping the geospatial turn. <em>A new companion to digital humanities</em>. Wiley Online Library. 199–212</div>
+</div>
+<div id="ref-crampton2010mapping" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[8] </div><div class="csl-right-inline">Crampton, J W (2010 ). <em>Mapping: A Critical Introduction to Cartography and GIS</em>. John Wiley &amp; Sons</div>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/distant-viewing\.github\.io\/hdpy");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./08_temporal_data.html" class="pagination-link" aria-label="Temporal Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Temporal Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./10_image_data.html" class="pagination-link" aria-label="Image Data">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Image Data</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Taylor Arnold and Lauren Tilton</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>A <a href="https://distantviewing.org/">Distant Viewing Lab</a> project</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,1 @@
+Sitemap: https://distant-viewing.github.io/hdpy/sitemap.xml

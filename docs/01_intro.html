@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Taylor Arnold and Lauren Tilton">
+
+<title>1&nbsp; Introduction – Humanities Data in Python</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./02_graphics.html" rel="next">
+<link href="./index.html" rel="prev">
+<link href="./owl_explore.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-7dd7401653f9b7f7a674e3bd3661a20e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_intro.html">Part I: Core</a></li><li class="breadcrumb-item"><a href="./01_intro.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Humanities Data in Python</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/distant-viewing/hdpy" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I: Core</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_intro.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">EDA I: Visualizing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_verbs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">EDA II: Organizing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_combine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">EDA III: Restructuring Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_collect.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Collecting Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II: Data Types</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_textual_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Textual Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_network_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Network Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_temporal_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Temporal Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_spatial_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10_image_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Image Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III: Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Inference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12_supervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13_unsupervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./14_deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./15_transformers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Transformers</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV: Programming</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./16_program.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./17_jsonxml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">JSON + XML</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./18_databases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Databases</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1.1</span> Introduction</a></li>
+  <li><a href="#data-science-ecosystem" id="toc-data-science-ecosystem" class="nav-link" data-scroll-target="#data-science-ecosystem"><span class="header-section-number">1.2</span> Data Science Ecosystem</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">1.3</span> Setup</a></li>
+  <li><a href="#working-with-notebooks" id="toc-working-with-notebooks" class="nav-link" data-scroll-target="#working-with-notebooks"><span class="header-section-number">1.4</span> Working with Notebooks</a></li>
+  <li><a href="#running-python-code" id="toc-running-python-code" class="nav-link" data-scroll-target="#running-python-code"><span class="header-section-number">1.5</span> Running Python Code</a></li>
+  <li><a href="#functions-in-python" id="toc-functions-in-python" class="nav-link" data-scroll-target="#functions-in-python"><span class="header-section-number">1.6</span> Functions in Python</a></li>
+  <li><a href="#loading-data-in-python" id="toc-loading-data-in-python" class="nav-link" data-scroll-target="#loading-data-in-python"><span class="header-section-number">1.7</span> Loading Data in Python</a></li>
+  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets"><span class="header-section-number">1.8</span> Datasets</a></li>
+  <li><a href="#formatting-python-code" id="toc-formatting-python-code" class="nav-link" data-scroll-target="#formatting-python-code"><span class="header-section-number">1.9</span> Formatting Python Code</a></li>
+  <li><a href="#extensions" id="toc-extensions" class="nav-link" data-scroll-target="#extensions"><span class="header-section-number">1.10</span> Extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_intro.html">Part I: Core</a></li><li class="breadcrumb-item"><a href="./01_intro.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ch01" class="quarto-section-identifier"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1.1</span> Introduction</h2>
+<p>In this book, we focus on tools and techniques for exploratory data analysis, or EDA. Initially described in John Tukey’s classic text by the same name, EDA is a general approach to examining data through visualizations and broad summary statistics <span class="citation" data-cites="ch1:tukey1977exploratory">[<a href="#ref-ch1:tukey1977exploratory" role="doc-biblioref">1</a>]</span> <span class="citation" data-cites="brillinger2002john">[<a href="#ref-brillinger2002john" role="doc-biblioref">2</a>]</span>. It prioritizes studying data directly in order to generate hypotheses and ascertain general trends prior to, and often in lieu of, formal statistical modeling. The growth in both data volume and complexity has further increased the need for a careful application of these exploratory techniques. In the intervening 40 years, techniques for EDA have enjoyed great popularity within statistics, computer science, and many other data-driven fields and professions.</p>
+<p>The histories of the R programming language and EDA are deeply entwined. Concurrent with Tukey’s development of EDA, Rick Becker, John Chambers, and Allan Wilks of Bell Labs began developing software designed specifically for statistical computing. By 1980, the ‘S’ language was released for general distribution outside Labs. It was followed by a popular series of books and updates, including ‘New S’ and ‘S-Plus’ <span class="citation" data-cites="ch1:becker1984s">[<a href="#ref-ch1:becker1984s" role="doc-biblioref">3</a>]</span> <span class="citation" data-cites="ch1:becker1985extending">[<a href="#ref-ch1:becker1985extending" role="doc-biblioref">4</a>]</span> <span class="citation" data-cites="ch1:becker1988new">[<a href="#ref-ch1:becker1988new" role="doc-biblioref">5</a>]</span> <span class="citation" data-cites="ch1:chambers1991statistical">[<a href="#ref-ch1:chambers1991statistical" role="doc-biblioref">6</a>]</span>. In the early 1990s, Ross Ihaka and Robert Gentleman produced a fully open-source implementation of S called ‘R’. It is called ‘R’ for it is both the “previous letter in the alphabet” and the shared initial in the authors’ names. Their implementation has become the de-facto tool in the field of statistics and is often cited as being amongst the Top-20 used programming languages in the world. Without the interactive console and flexible graphics engine of a language such as R, modern data analysis techniques would be largely intractable. Conversely, without the tools of EDA, R would likely still have been a welcome simplification to programming in lower-level languages, but would have played a far less pivotal role in the development of applied statistics.</p>
+</section>
+<section id="data-science-ecosystem" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="data-science-ecosystem"><span class="header-section-number">1.2</span> Data Science Ecosystem</h2>
+<p>While R pioneered many concepts in statistical computing and EDA, these ideas have been successfully adopted and extended by the Python programming language through a rich ecosystem of data science libraries. Python, originally created by Guido van Rossum in 1991, has evolved into one of the most popular programming languages for data analysis, machine learning, and scientific computing.</p>
+<p>The core concepts developed for EDA in R—interactive data manipulation, powerful visualization capabilities, and seamless integration between analysis steps—have been implemented in Python through several key libraries. <strong>Pandas</strong>, developed by Wes McKinney starting in 2008, brought R-like data structures and manipulation capabilities to Python <span class="citation" data-cites="mckinney2022python">[<a href="#ref-mckinney2022python" role="doc-biblioref">7</a>]</span>. <strong>Matplotlib</strong> and later <strong>Seaborn</strong> provided comprehensive plotting capabilities, while <strong>plotnine</strong> specifically implemented the grammar of graphics approach pioneered by <strong>ggplot2</strong> in R. More recently, <strong>Polars</strong> has emerged as a high-performance alternative to pandas for large-scale data manipulation.</p>
+<p>This Python ecosystem maintains the same philosophy that made R successful for EDA: prioritizing interactive exploration, readable code, and the ability to seamlessly move between data manipulation, visualization, and analysis. The historical context of EDA’s development in R underscores the motivation for studying these concepts in Python as well. We see this book as contributing to efforts to bring new communities to learn from and to help shape data analysis by offering the humanities and humanistic social sciences powerful tools for data-driven inquiry. A visual summary of the steps of EDA are shown in Fig. 1.1. We will see that the core chapters in this text map onto the steps outlined in the diagram.</p>
+</section>
+<section id="setup" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="setup"><span class="header-section-number">1.3</span> Setup</h2>
+<p>While it is possible to read this book as a conceptual text, we expect that the majority of readers will eventually want to follow along with the code and examples that are given throughout the text. The first step in doing so is to obtain a working copy of Python with the necessary data science libraries.</p>
+<p>We recommend installing Python through the Anaconda distribution, which includes Python along with many of the most commonly used data science packages: <a href="https://www.anaconda.com/download">https://www.anaconda.com/download</a>. Anaconda provides download instructions according to a user’s operating system (i.e., Mac, Windows, Linux). Alternative installation methods exist for advanced users, including Miniconda for a lighter installation or installing Python directly and managing packages separately. We make no assumptions throughout this text regarding which operating system or method of obtaining Python readers have chosen. In the rare cases where differences exist based on these options, they will be explicitly addressed.</p>
+<p>For working with Python code, we recommend using either Jupyter notebooks or an integrated development environment (IDE). <strong>Jupyter Lab</strong> or <strong>Jupyter notebooks</strong> provide an excellent interactive environment for data analysis and are included with Anaconda. Alternatively, <strong>VS Code</strong> with the Python extension or <strong>PyCharm</strong> provide full-featured IDE experiences. We will show examples using Jupyter notebooks, which provide a convenient way of running Python code and seeing the output in a single interface.</p>
+<p>In addition to the Python software, walking through the examples in this text requires access to the datasets we explore. Care has been taken to ensure that these are all in the public domain so as to make it easy for us to redistribute to readers. The materials and download instructions can be found at <a href="https://humanitiesdata.org/">https://humanitiesdata.org/</a>. A complete copy of the code from the book is also provided to make replicating (and extending) the results as easy as possible.</p>
+<p>A major selling point of Python is its extensive collection of user-contributed libraries, available through the Python Package Index (PyPI). Details of how to install packages are included in the supplemental materials. Specifically, the supplemental materials have a document called <code>setup.md</code> or a <code>requirements.txt</code> file. These provide instructions for installing all the packages that are needed throughout this book using either <code>pip</code> or <code>conda</code>. Like Python itself, all the packages used here are free and open-source software, thanks to a robust community dedicated to developing and expanding Python’s data science capabilities.</p>
+<p>As mentioned in the preface, we make heavy use in this text of several key Python packages: <strong>pandas</strong> for data manipulation, <strong>plotnine</strong> for visualization using the grammar of graphics, <strong>numpy</strong> for numerical computing, and <strong>matplotlib</strong> for additional plotting capabilities. We may also use specialized packages like <strong>scipy</strong> for statistical functions and <strong>scikit-learn</strong> for machine learning tasks.</p>
+<p>Learning to program is hard and invariably questions and issues will arise in the process (even the most experienced users require help with surprisingly high frequency). As a first source of help, searching a question or error message online will often pull up one of the many third-party question and answer sites, such as <a href="http://stackoverflow.com/">http://stackoverflow.com/</a>, which are heavily frequented by new and advanced Python users alike. If we cannot find an immediate answer to a question, the next best step is to find some local, in-person help. While we have done our best with this static text to explain the concepts for working with Python, nothing beats talking to a real-life person. As a final step, we could post questions directly on third-party sites. It may take a few days to get a response, but usually someone helpful from the Python community will answer. We invite everyone to participate in the community by being active on forums, contributing packages, and supporting colleagues and friends. There are also great groups like PyLadies (<a href="pyladies.com">pyladies.com</a>) and local Python user groups that can provide further connections.</p>
+<div id="fig-elephant" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elephant-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="img/diagram_eda.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1.1: Diagram of the process of exploratory data analysis."><img src="img/diagram_eda.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elephant-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.1: Diagram of the process of exploratory data analysis.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="working-with-notebooks" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="working-with-notebooks"><span class="header-section-number">1.4</span> Working with Notebooks</h2>
+<p>The supplemental materials for this book include all the data and code needed to replicate all of the analyses and visualizations in this book. We include the exact same code that will be printed in the book. We have used Jupyter notebooks (with an <code>.ipynb</code> extension) to store this code, with a file corresponding to each chapter in the text. Jupyter notebooks are an excellent choice for data analysis because they allow us to mix code, visualizations, and explanations within the same file <span class="citation" data-cites="perez2007ipython">[<a href="#ref-perez2007ipython" role="doc-biblioref">8</a>]</span>. In fact, the entire data science workflow—from initial exploration through final presentation—can be contained within a single notebook.</p>
+<p>The Jupyter environment offers a convenient format for viewing and editing notebooks. When we open a Jupyter notebook, we see an interface with cells that can contain either code or markdown text. Running a code cell executes the Python code and displays the output directly below the cell. This interactive approach is ideal for exploratory data analysis because we can experiment with different approaches and immediately see the results.</p>
+<p>Looking at a Jupyter notebook, we’ll see that it consists of cells that contain either code or formatted text (markdown). Code cells have a gray background and can be executed by clicking the run button or pressing Shift+Enter. When we run code to read or create a new dataset, we can examine the data by simply typing the variable name in a cell, or by using methods like <code>.head()</code> or <code>.info()</code> to get summary information.</p>
+<p>As with any digital file, it is a good idea to save the notebook frequently. Jupyter notebooks save both the code and the output, including plots and tables. If we would like to share our results, we can export the notebook to various formats including HTML, PDF, or even convert it to a Python script.</p>
+</section>
+<section id="running-python-code" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="running-python-code"><span class="header-section-number">1.5</span> Running Python Code</h2>
+<p>Now, let’s see some examples of how to run Python code. In this book, we will show snippets of Python code and the output. Though, know that we should think of each of the snippets as occurring inside of a code cell in a Jupyter notebook. In one of its most basic forms, Python can be used as a fancy calculator. We can add 1 and 1 by typing <code>1+1</code> into a code cell. Running the cell will display the output (<code>2</code>) below. In the book, we will write this code and output using a black box with the Python code written inside of it. Any output will be shown below. An example is given below.</p>
+<div id="deb5b96f" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>2</code></pre>
+</div>
+</div>
+<p>In addition to just returning a value, running Python code can also result in storing values through the creation of new variables. Variables in Python are used to store anything—such as numbers, datasets, functions, or models—that we want to use again later. Each variable has a name associated with it that we can use to access it in future code. To create a variable, we use the <code>=</code> (equals) symbol with the name on the left-hand side of the equals sign and code that produces the value on the right-hand side. For example, we can create a new variable called <code>mynum</code> with a value of <code>8</code> by running the following code.</p>
+<div id="a5212814" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mynum <span class="op">=</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Notice that the code here did not print any results because the result was saved as a new variable. We can now use our new variable <code>mynum</code> exactly the same way that we would use the number 8. For example, adding it to 1 to get the number nine:</p>
+<div id="ef30ba57" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mynum <span class="op">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>9</code></pre>
+</div>
+</div>
+<p>Variable names must start with a letter or underscore, but can also use numbers after the first character. We recommend using only lowercase letters and underscores. That makes it easier to read the code later on without needing to remember if and where we used capital letters.</p>
+</section>
+<section id="functions-in-python" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="functions-in-python"><span class="header-section-number">1.6</span> Functions in Python</h2>
+<p>A function in Python is something that takes a set of input values and returns an output value. Generally, a function will have a format similar to that given in the code here:</p>
+<div id="b5c36105" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>function_name(arg1<span class="op">=</span>input1, arg2<span class="op">=</span>input2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Where <code>arg1</code> and <code>arg2</code> are the names of the inputs to the function (they are fixed) and <code>input1</code> and <code>input2</code> are the values that we will assign to them. The number of arguments is not always two, however. There may be any number of arguments, including zero. Also, there may be additional optional arguments that have default values that can be modified. Let us look at an example function: <code>range</code>. This function returns a sequence of numbers. We can give the function a starting point and an ending point.</p>
+<div id="71bd3140" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">101</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>[1,
+ 2,
+ 3,
+ 4,
+ 5,
+ 6,
+ 7,
+ 8,
+ 9,
+ 10,
+ 11,
+ 12,
+ 13,
+ 14,
+ 15,
+ 16,
+ 17,
+ 18,
+ 19,
+ 20,
+ 21,
+ 22,
+ 23,
+ 24,
+ 25,
+ 26,
+ 27,
+ 28,
+ 29,
+ 30,
+ 31,
+ 32,
+ 33,
+ 34,
+ 35,
+ 36,
+ 37,
+ 38,
+ 39,
+ 40,
+ 41,
+ 42,
+ 43,
+ 44,
+ 45,
+ 46,
+ 47,
+ 48,
+ 49,
+ 50,
+ 51,
+ 52,
+ 53,
+ 54,
+ 55,
+ 56,
+ 57,
+ 58,
+ 59,
+ 60,
+ 61,
+ 62,
+ 63,
+ 64,
+ 65,
+ 66,
+ 67,
+ 68,
+ 69,
+ 70,
+ 71,
+ 72,
+ 73,
+ 74,
+ 75,
+ 76,
+ 77,
+ 78,
+ 79,
+ 80,
+ 81,
+ 82,
+ 83,
+ 84,
+ 85,
+ 86,
+ 87,
+ 88,
+ 89,
+ 90,
+ 91,
+ 92,
+ 93,
+ 94,
+ 95,
+ 96,
+ 97,
+ 98,
+ 99,
+ 100]</code></pre>
+</div>
+</div>
+<p>The function returns a sequence of numbers starting from 1 and ending at 100 (note that the end point is exclusive in Python). We used <code>list()</code> to convert the range object to a list so we can see all the values. In addition to specifying arguments by name, we can also pass arguments by position. When specifying arguments by position we need to know and use the default ordering of the arguments. Below is an example of another equivalent way to write the code to produce a sequence of integers from 1 to 100, this time using a different approach with numpy.</p>
+<div id="ec71d3ce" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>np.arange(<span class="dv">1</span>, <span class="dv">101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>How did we know the inputs to each function and what they do? In this text, we will explain the names and usage of the required inputs to new functions as they are introduced. In order to learn more about all of the possible inputs to a function, we can look at a function’s documentation. Python has excellent built-in documentation that can be accessed using the <code>help()</code> function or, in Jupyter notebooks, by using a question mark after the function name.</p>
+<div id="3e3effda" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">help</span>(<span class="bu">range</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># or in Jupyter: range?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Many Python libraries also have extensive online documentation. For example, pandas has comprehensive documentation at <a href="https://pandas.pydata.org/docs/">https://pandas.pydata.org/docs/</a>.</p>
+<p>As shown in the documentation, the <code>range</code> function also has an optional step argument that controls the spacing between each of the numbers. By default the step is equal to 1, but we can change it to create sequences with different intervals. For example, below are the even numbers between 2 and 20.</p>
+<div id="f7de4225" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">2</span>, <span class="dv">21</span>, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>[2, 4, 6, 8, 10, 12, 14, 16, 18, 20]</code></pre>
+</div>
+</div>
+<p>We will learn how to use numerous functions in the coming chapters, each of which will help us in exploring and understanding data. In order to do this, we need to first load our data into Python, which we will show in the next section.</p>
+</section>
+<section id="loading-data-in-python" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="loading-data-in-python"><span class="header-section-number">1.7</span> Loading Data in Python</h2>
+<p>In this book we will be working with data that is stored in a tabular format. Fig. 1.2 shows an example of a tabular dataset consisting of information about metropolitan regions in the United States supplied by the US Census Bureau. These regions are called core-based statistical areas, or CBSA. In the figure we can see rows and columns. Each row of the dataset represents a particular metropolitan region. We call each of the rows an <em>observation</em>. The columns in a tabular dataset represent the measurements that we record for each observation. These measurements are called <em>variables</em>.</p>
+<p>In our example dataset, we have five variables which record the name of the region, the quadrant of the country that the region exists in, the population of the region in millions of people, the density given in tens of thousands of people per square kilometer, and the median age of all people living in the region. More details are given in the following section.</p>
+<div id="fig-img-tidy" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-img-tidy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="img/tidy.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;1.2: Example of a tabular dataset."><img src="img/tidy.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-img-tidy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.2: Example of a tabular dataset.
+</figcaption>
+</figure>
+</div>
+<p>A larger version of this dataset, with more regions and variables, is included in the book’s supplemental materials as a comma separated value (CSV) file. We will make extensive use of this dataset in the following chapters as a common example for creating visualizations and performing data manipulation. In order to read in the dataset we use the function <code>pd.read_csv()</code> from the <strong>pandas</strong> package <span class="citation" data-cites="pandas">[<a href="#ref-pandas" role="doc-biblioref">9</a>]</span>. In order make the functions from <strong>pandas</strong> available, we need to import it. We will use the standard convention of importing pandas as <code>pd</code> and numpy as <code>np</code>.</p>
+<div id="3983da14" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We call the <code>pd.read_csv()</code> function with the path to where the file is located relative to where this script is stored. If we are running the Jupyter notebooks from the supplemental materials, the data will be called <code>acs_cbsa.csv</code> and will be stored in a folder called <code>data</code>. The following code will load the CBSA dataset into Python, save it as a variable called <code>cbsa</code>, and print out the first several rows. The output dataset is stored as a type of Python object called a <em>DataFrame</em>.</p>
+<div id="47488763" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>cbsa <span class="op">=</span> pd.read_csv(<span class="st">"data/acs_cbsa.csv"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>cbsa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">geoid</th>
+<th data-quarto-table-cell-role="th">quad</th>
+<th data-quarto-table-cell-role="th">lon</th>
+<th data-quarto-table-cell-role="th">lat</th>
+<th data-quarto-table-cell-role="th">pop</th>
+<th data-quarto-table-cell-role="th">density</th>
+<th data-quarto-table-cell-role="th">age_median</th>
+<th data-quarto-table-cell-role="th">hh_income_median</th>
+<th data-quarto-table-cell-role="th">percent_own</th>
+<th data-quarto-table-cell-role="th">rent_1br_median</th>
+<th data-quarto-table-cell-role="th">rent_perc_income</th>
+<th data-quarto-table-cell-role="th">division</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>New York</td>
+<td>35620</td>
+<td>NE</td>
+<td>-74.101056</td>
+<td>40.768770</td>
+<td>20.011812</td>
+<td>1051.306467</td>
+<td>42.9</td>
+<td>86445</td>
+<td>55.3</td>
+<td>1430</td>
+<td>31.0</td>
+<td>Middle Atlantic</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Los Angeles</td>
+<td>31080</td>
+<td>W</td>
+<td>-118.148722</td>
+<td>34.219406</td>
+<td>13.202558</td>
+<td>1040.647281</td>
+<td>41.6</td>
+<td>81652</td>
+<td>51.3</td>
+<td>1468</td>
+<td>33.6</td>
+<td>Pacific</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Chicago</td>
+<td>16980</td>
+<td>NC</td>
+<td>-87.958820</td>
+<td>41.700605</td>
+<td>9.607711</td>
+<td>508.629406</td>
+<td>41.9</td>
+<td>78790</td>
+<td>68.9</td>
+<td>1060</td>
+<td>29.0</td>
+<td>East North Central</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Dallas</td>
+<td>19100</td>
+<td>S</td>
+<td>-96.970508</td>
+<td>32.849480</td>
+<td>7.543340</td>
+<td>323.181404</td>
+<td>41.3</td>
+<td>76916</td>
+<td>64.1</td>
+<td>1106</td>
+<td>29.1</td>
+<td>West South Central</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Houston</td>
+<td>26420</td>
+<td>S</td>
+<td>-95.401574</td>
+<td>29.787083</td>
+<td>7.048954</td>
+<td>316.543514</td>
+<td>41.0</td>
+<td>72551</td>
+<td>65.1</td>
+<td>997</td>
+<td>30.0</td>
+<td>West South Central</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">929</td>
+<td>Zapata</td>
+<td>49820</td>
+<td>S</td>
+<td>-99.168533</td>
+<td>27.000573</td>
+<td>0.013945</td>
+<td>5.081383</td>
+<td>41.4</td>
+<td>34406</td>
+<td>77.1</td>
+<td>321</td>
+<td>34.6</td>
+<td>West South Central</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">930</td>
+<td>Ketchikan</td>
+<td>28540</td>
+<td>O</td>
+<td>-130.927217</td>
+<td>55.582484</td>
+<td>0.013939</td>
+<td>1.046556</td>
+<td>44.6</td>
+<td>77820</td>
+<td>67.5</td>
+<td>946</td>
+<td>31.2</td>
+<td>Pacific</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">931</td>
+<td>Craig</td>
+<td>18780</td>
+<td>W</td>
+<td>-108.207523</td>
+<td>40.618749</td>
+<td>0.013240</td>
+<td>1.077471</td>
+<td>44.5</td>
+<td>58583</td>
+<td>72.8</td>
+<td>485</td>
+<td>29.0</td>
+<td>Mountain</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">932</td>
+<td>Vernon</td>
+<td>46900</td>
+<td>S</td>
+<td>-99.240853</td>
+<td>34.080611</td>
+<td>0.012887</td>
+<td>5.086411</td>
+<td>41.5</td>
+<td>45262</td>
+<td>62.0</td>
+<td>503</td>
+<td>22.0</td>
+<td>West South Central</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">933</td>
+<td>Lamesa</td>
+<td>29500</td>
+<td>S</td>
+<td>-101.947637</td>
+<td>32.742488</td>
+<td>0.012371</td>
+<td>5.291467</td>
+<td>41.1</td>
+<td>42778</td>
+<td>71.5</td>
+<td>611</td>
+<td>34.5</td>
+<td>West South Central</td>
+</tr>
+</tbody>
+</table>
+
+<p>934 rows × 13 columns</p>
+</div>
+</div>
+</div>
+<p>Notice that the display shows that there are a total of 934 rows and 13 columns. Or, with our terms defined above, there are 934 observations and 13 variables. Only the first few and last few observations are shown in the output, along with information about the shape of the DataFrame. We can use various methods to explore the data, such as <code>cbsa.head()</code> to see the first few rows, <code>cbsa.info()</code> to get information about the data types, or <code>cbsa.describe()</code> to get summary statistics.</p>
+<p>The data types shown by pandas tell us the types of data stored in each column. The type <code>object</code> typically indicates text data (strings), such as the <code>name</code>, <code>quad</code> (quadrant), and <code>division</code> columns. String data can consist of any sequence of letters, numbers, spaces, and punctuation marks. String variables are often used to represent fixed categories, such as the quadrant and division of each CBSA region. They can also provide unique identifiers and descriptions for each row, such as the name of the CBSA region in our example.</p>
+<p>The other data types we see are numeric types like <code>int64</code> and <code>float64</code>, which indicate that a column contains integer or floating-point numeric data. While there are technical differences between these types (integers are whole numbers, floats can have decimal places), we will refer to any variable of either type as <em>numeric</em> data for our purposes.</p>
+<p>Knowing the types of data for each column is important because, as we will see throughout the book, they will affect the kinds of visualizations and analysis that can be applied. The data types in the DataFrame are automatically determined by the <code>pd.read_csv()</code> function. Optional arguments like <code>dtype</code> can be set to specify alternatives, or we can modify data types after the DataFrame has been created using techniques shown in Chapter 3. The string and numeric data types are by far the most common. Other possible options are explored in Chapter 7 (dates and times), Chapter 9 (spatial variables), and Chapter 11 (lists and logical values).</p>
+</section>
+<section id="datasets" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="datasets"><span class="header-section-number">1.8</span> Datasets</h2>
+<p>Throughout this book, we will use multiple datasets to illustrate different concepts and show how each approach can be used across multiple application domains. We draw on data that animates humanities inquiry in areas such as American Studies, history, literary studies, and visual culture studies. While we will briefly reintroduce new datasets as they appear, for readers making their way selectively through the text, we offer a somewhat more detailed description of the main datasets that we will use in this section.</p>
+<p>To introduce the concept of EDA, we will make sustained use of the CBSA dataset in Chapters 2-5 to demonstrate new concepts in data visualization and manipulation. As described above, the data comes from an annual survey conducted by the United States Census Bureau called the American Community Survey (ACS). The survey consists of data collected from a sample of 3.5 million households in the United States. Outside of the constitutionally mandated decennial census, this is the largest survey completed by the Census Bureau. It asks several dozen questions covering topics such as gender, race, income, housing, education, and transportation. Aggregated data are released on a regular schedule, with summaries over one-, three-, and five-year periods. Our data comes from the five-year summary from the most recently published version (2021) at the time of writing. We selected a small set of measurements that we felt did not require extensive background knowledge, while capturing variations across the county. As seen in the table above, we have selected the median age, median household income (USD), the percentage of households owning their housing, the median rent for a one-bedroom apartment (USD), and the median household spending on rent.</p>
+<p>The American Community Survey aggregates data to a variety of different geographic regions. Most regions correspond to political boundaries, such as states, counties, and cities. One particularly interesting geographic region are the core-based statistical areas, or CBSA. These regions, of which there are nearly a thousand, are defined by the United States Office of Management and Budget. Regions are defined in the documentation as “an area containing a large population nucleus and adjacent communities that have a high degree of integration with that nucleus.” We chose these regions for our dataset because their social, rather than political, definition makes them particularly well suited for humanities research questions. Our dataset includes a short, common name for each CBSA, as well as a unique identifier (<code>geoid</code>), and several geographic categorizations derived from spatial data provided by the Census Bureau.</p>
+<p>The core chapters of the book also make use of a dataset illustrating the relative change in the price of various food items for over 140 years in the United States. This collection was published as-is by Davis S. Jacks for his publication “From boom to bust: a typology of real commodity prices in the long run” <span class="citation" data-cites="ch02:jacks2019boom">[<a href="#ref-ch02:jacks2019boom" role="doc-biblioref">10</a>]</span>. The data is organized with one observation per year, and variables capturing the relative price of each of thirteen food commodities. We can read this dataset into Python using the same function that we used for the CBSA dataset, shown below.</p>
+<div id="a81caeb2" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>food_prices <span class="op">=</span> pd.read_csv(<span class="st">"data/food_prices.csv"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>food_prices</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">tea</th>
+<th data-quarto-table-cell-role="th">sugar</th>
+<th data-quarto-table-cell-role="th">peanuts</th>
+<th data-quarto-table-cell-role="th">coffee</th>
+<th data-quarto-table-cell-role="th">cocoa</th>
+<th data-quarto-table-cell-role="th">wheat</th>
+<th data-quarto-table-cell-role="th">rye</th>
+<th data-quarto-table-cell-role="th">rice</th>
+<th data-quarto-table-cell-role="th">corn</th>
+<th data-quarto-table-cell-role="th">barley</th>
+<th data-quarto-table-cell-role="th">pork</th>
+<th data-quarto-table-cell-role="th">beef</th>
+<th data-quarto-table-cell-role="th">lamb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1870</td>
+<td>128.845647</td>
+<td>151.406650</td>
+<td>203.422160</td>
+<td>88.067280</td>
+<td>78.817566</td>
+<td>88.102178</td>
+<td>103.393214</td>
+<td>83.478261</td>
+<td>121.373971</td>
+<td>103.241107</td>
+<td>107.813162</td>
+<td>73.540373</td>
+<td>63.257185</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1871</td>
+<td>131.730769</td>
+<td>167.156863</td>
+<td>221.774193</td>
+<td>108.728711</td>
+<td>66.686484</td>
+<td>118.157238</td>
+<td>105.251996</td>
+<td>84.543919</td>
+<td>88.393285</td>
+<td>130.236487</td>
+<td>68.466144</td>
+<td>86.755952</td>
+<td>73.411017</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1872</td>
+<td>134.455128</td>
+<td>161.764706</td>
+<td>188.508064</td>
+<td>140.092762</td>
+<td>71.591359</td>
+<td>121.523799</td>
+<td>102.095808</td>
+<td>92.905405</td>
+<td>69.229178</td>
+<td>124.662162</td>
+<td>58.644715</td>
+<td>85.119048</td>
+<td>78.072034</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1873</td>
+<td>136.337312</td>
+<td>154.104124</td>
+<td>178.826474</td>
+<td>172.869998</td>
+<td>65.752662</td>
+<td>116.056854</td>
+<td>106.028976</td>
+<td>91.034483</td>
+<td>67.136989</td>
+<td>166.034483</td>
+<td>62.871238</td>
+<td>93.563218</td>
+<td>84.444769</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1874</td>
+<td>146.088815</td>
+<td>153.246661</td>
+<td>230.709444</td>
+<td>187.244900</td>
+<td>69.924808</td>
+<td>113.202047</td>
+<td>125.977031</td>
+<td>99.637681</td>
+<td>127.551727</td>
+<td>174.275362</td>
+<td>87.613692</td>
+<td>89.531573</td>
+<td>77.480963</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">141</td>
+<td>2011</td>
+<td>33.092175</td>
+<td>34.758403</td>
+<td>49.430540</td>
+<td>104.633987</td>
+<td>30.950856</td>
+<td>32.303050</td>
+<td>56.050786</td>
+<td>26.970989</td>
+<td>56.191498</td>
+<td>76.784074</td>
+<td>18.957462</td>
+<td>195.682011</td>
+<td>199.901823</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">142</td>
+<td>2012</td>
+<td>32.169401</td>
+<td>28.216065</td>
+<td>50.480016</td>
+<td>70.519447</td>
+<td>24.339000</td>
+<td>32.329419</td>
+<td>54.278655</td>
+<td>27.791165</td>
+<td>60.997731</td>
+<td>87.240944</td>
+<td>17.266451</td>
+<td>196.471582</td>
+<td>179.915106</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">143</td>
+<td>2013</td>
+<td>31.300000</td>
+<td>22.830000</td>
+<td>31.508720</td>
+<td>51.984920</td>
+<td>24.449543</td>
+<td>30.635729</td>
+<td>55.776368</td>
+<td>24.481270</td>
+<td>55.410171</td>
+<td>72.322420</td>
+<td>17.782412</td>
+<td>190.347418</td>
+<td>164.486798</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">144</td>
+<td>2014</td>
+<td>29.530000</td>
+<td>21.790000</td>
+<td>29.420000</td>
+<td>74.140000</td>
+<td>30.470000</td>
+<td>26.370000</td>
+<td>53.558470</td>
+<td>19.970000</td>
+<td>36.750000</td>
+<td>50.220000</td>
+<td>20.960000</td>
+<td>229.492089</td>
+<td>184.540000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">145</td>
+<td>2015</td>
+<td>29.174600</td>
+<td>17.087190</td>
+<td>28.121785</td>
+<td>58.715669</td>
+<td>30.967121</td>
+<td>22.009427</td>
+<td>51.521938</td>
+<td>17.670020</td>
+<td>32.904916</td>
+<td>68.492986</td>
+<td>13.747636</td>
+<td>203.667366</td>
+<td>149.682263</td>
+</tr>
+</tbody>
+</table>
+
+<p>146 rows × 14 columns</p>
+</div>
+</div>
+</div>
+<p>All of the prices are given on a relative scale where <span class="math inline">\(100\)</span> is equal to the price in 1900. We will use this dataset to show how to build data visualizations that show change over time. It will also be useful for our study of table pivots in Chapter 4.</p>
+<p>Part II turns to data types. The first three application chapters focus on text analysis, temporal analysis, and network analysis, respectively. While these three chapters introduce different methods, we will make use of a consistent core dataset across all three that we have created from Wikipedia. Specifically, we have a dataset consisting of the text, links, page views, and change histories of a set of 75 Wikipedia pages sampled from a set of British authors. These data are contained in several different tables, each of which will be introduced as needed. The main metadata for the set of 75 pages is shown in the data loaded by the following code.</p>
+<div id="851d1a5f" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>meta <span class="op">=</span> pd.read_csv(<span class="st">"data/wiki_uk_meta.csv.gz"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>meta</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">born</th>
+<th data-quarto-table-cell-role="th">died</th>
+<th data-quarto-table-cell-role="th">era</th>
+<th data-quarto-table-cell-role="th">gender</th>
+<th data-quarto-table-cell-role="th">link</th>
+<th data-quarto-table-cell-role="th">short</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Marie de France</td>
+<td>1160</td>
+<td>1215</td>
+<td>Early</td>
+<td>female</td>
+<td>Marie_de_France</td>
+<td>Marie d. F.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Geoffrey Chaucer</td>
+<td>1343</td>
+<td>1400</td>
+<td>Early</td>
+<td>male</td>
+<td>Geoffrey_Chaucer</td>
+<td>Chaucer</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>John Gower</td>
+<td>1330</td>
+<td>1408</td>
+<td>Early</td>
+<td>male</td>
+<td>John_Gower</td>
+<td>Gower</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>William Langland</td>
+<td>1332</td>
+<td>1386</td>
+<td>Early</td>
+<td>male</td>
+<td>William_Langland</td>
+<td>Langland</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Margery Kempe</td>
+<td>1373</td>
+<td>1438</td>
+<td>Early</td>
+<td>female</td>
+<td>Margery_Kempe</td>
+<td>Kempe</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">70</td>
+<td>Stephen Spender</td>
+<td>1909</td>
+<td>1995</td>
+<td>Twentieth C</td>
+<td>male</td>
+<td>Stephen_Spender</td>
+<td>Spender</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">71</td>
+<td>Christopher Isherwood</td>
+<td>1904</td>
+<td>1986</td>
+<td>Twentieth C</td>
+<td>male</td>
+<td>Christopher_Isherwood</td>
+<td>Isherwood</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">72</td>
+<td>Edward Upward</td>
+<td>1903</td>
+<td>2009</td>
+<td>Twentieth C</td>
+<td>male</td>
+<td>Edward_Upward</td>
+<td>Upward</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">73</td>
+<td>Rex Warner</td>
+<td>1905</td>
+<td>1986</td>
+<td>Twentieth C</td>
+<td>male</td>
+<td>Rex_Warner</td>
+<td>Warner</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">74</td>
+<td>Seamus Heaney</td>
+<td>1939</td>
+<td>1939</td>
+<td>Twentieth C</td>
+<td>male</td>
+<td>Seamus_Heaney</td>
+<td>Heaney</td>
+</tr>
+</tbody>
+</table>
+
+<p>75 rows × 7 columns</p>
+</div>
+</div>
+</div>
+<p>We decided to use Wikipedia data because it is freely available and can be easily generated in the same format for other collection of pages that correspond to nearly any other topic of interest. Wikipedia is also helpful because it allows us look at pages in other languages, which will allow us to demonstrate how to extend our techniques to texts that are not in English. Finally, we will return to the Wikipedia data in Chapter 12 to demonstrate how to build a dataset (specifically, this one) by calling an API from within Python using the <strong>requests</strong> library.</p>
+<p>Several other datasets will be used throughout the book within a single chapter. For example, Chapter 9 on spatial data makes use of a dataset showing the location of French cities and Parisian metro stops as a source in our study of geographic data. Chapter 10 on image data shows a collection of documentary photographs and associated metadata in our analysis of images. As these datasets are used only a single point in the book, we will introduce them in more detail as they are introduced.</p>
+</section>
+<section id="formatting-python-code" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="formatting-python-code"><span class="header-section-number">1.9</span> Formatting Python Code</h2>
+<p>It is very important to properly format Python code in a consistent way. Even though the code may run without errors and produce the desired results, keeping the code well-formatted will make it easier to read and debug. We will follow the following guidelines throughout this book (based on PEP 8, Python’s official style guide):</p>
+<ol type="1">
+<li>one space before and after an equals sign and around operators</li>
+<li>one space after a comma, but no space before a comma</li>
+<li>one space around mathematical operations (such as <code>+</code> and <code>*</code>)</li>
+<li>if a line of code becomes too long, split it across multiple lines with proper indentation (typically 4 spaces)</li>
+<li>use lowercase with underscores for variable names (snake_case)</li>
+</ol>
+<p>We have found it makes our life a lot easier if we use these rules right from the start and whenever we are writing Python code.</p>
+</section>
+<section id="extensions" class="level2" data-number="1.10">
+<h2 data-number="1.10" class="anchored" data-anchor-id="extensions"><span class="header-section-number">1.10</span> Extensions</h2>
+<p>Each chapter in this book contains a short, concluding section of extensions on the main material. These include references for further study, additional Python packages, and other suggested methods that may be of interest to the study of each specific type of humanities data.</p>
+<p>In this chapter, we will mention a few standard Python references that might be useful to use in parallel or in sequence with our text. The classic introduction to the Python language is <em>Learning Python</em> by Mark Lutz <span class="citation" data-cites="lutz2013learning">[<a href="#ref-lutz2013learning" role="doc-biblioref">11</a>]</span>. For those specifically interested in data science applications, <em>Python for Data Analysis</em> by Wes McKinney (the creator of pandas) provides comprehensive coverage of the core data science libraries <span class="citation" data-cites="mckinney2022python">[<a href="#ref-mckinney2022python" role="doc-biblioref">7</a>]</span>. This book covers pandas, numpy, matplotlib, and related tools in great detail.</p>
+<p>For the specific approach to data analysis that we follow in this book, <em>Python Data Science Handbook</em> by Jake VanderPlas is an excellent reference <span class="citation" data-cites="vanderplas2016python">[<a href="#ref-vanderplas2016python" role="doc-biblioref">12</a>]</span>. It covers the full stack of data science tools in Python, from basic data manipulation through machine learning. The book is also available freely online.</p>
+<p>When working through the code in this book’s supplemental materials, as mentioned above, we will be using Jupyter notebooks. More information about Jupyter and what can be done with it can be found in the <em>Jupyter Notebook documentation</em> and various online tutorials. The philosophy behind interactive computing can be found in research on computational notebooks and reproducible research <span class="citation" data-cites="perez2007ipython">[<a href="#ref-perez2007ipython" role="doc-biblioref">8</a>]</span>.</p>
+<p>For those interested in the grammar of graphics approach to visualization that we use throughout this book, <em>The Grammar of Graphics</em> by Leland Wilkinson provides the theoretical foundation <span class="citation" data-cites="wilkinson2012grammar">[<a href="#ref-wilkinson2012grammar" role="doc-biblioref">13</a>]</span>. The <strong>plotnine</strong> library implements these concepts in Python, closely following the <strong>ggplot2</strong> implementation from R.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+
+
+<div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-ch1:tukey1977exploratory" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline">Tukey, J W (1977 ). <em>Exploratory Data Analysis</em>. Addison-Wesley</div>
+</div>
+<div id="ref-brillinger2002john" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">Brillinger, D R (2002 ). John w. Tukey: His life and professional contributions. <em>Annals of Statistics</em>. JSTOR. 1535–75</div>
+</div>
+<div id="ref-ch1:becker1984s" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline">Becker, R A and Chambers, J M (1984 ). <em><span>S</span>: An Interactive Environment for Data Analysis and Graphics</em>. CRC Press</div>
+</div>
+<div id="ref-ch1:becker1985extending" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline">Becker, R A and Chambers, J M (1985 ). <em>Extending the <span>S</span> System</em>. Wadsworth Advanced Books; Software</div>
+</div>
+<div id="ref-ch1:becker1988new" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[5] </div><div class="csl-right-inline">Becker, R A, Chambers, J M and Wilks, A R (1988 ). <em>The New <span>S</span> Language: A Programming Environment for Data Analysis and Graphics</em>. Wadsworth Advanced Books; Software</div>
+</div>
+<div id="ref-ch1:chambers1991statistical" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[6] </div><div class="csl-right-inline">Chambers, J M and Hastie, T J (1991 ). <em>Statistical Models in <span>S</span></em>. CRC Press</div>
+</div>
+<div id="ref-mckinney2022python" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[7] </div><div class="csl-right-inline">McKinney, W (2012 ). <em>Python for Data Analysis: Data Wrangling with Pandas, NumPy, and IPython</em>. " O’Reilly Media, Inc."</div>
+</div>
+<div id="ref-perez2007ipython" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[8] </div><div class="csl-right-inline">Pérez, F and Granger, B E (2007 ). IPython: A system for interactive scientific computing. <em>Computing in science &amp; engineering</em>. IEEE. <strong>9</strong> 21–9</div>
+</div>
+<div id="ref-pandas" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[9] </div><div class="csl-right-inline">McKinney, W and others (2011 ). Pandas: A foundational python library for data analysis and statistics. <em>Python for high performance and scientific computing</em>. Dallas, TX. <strong>14</strong> 1–9</div>
+</div>
+<div id="ref-ch02:jacks2019boom" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[10] </div><div class="csl-right-inline">Jacks, D S (2019 ). From boom to bust: A typology of real commodity prices in the long run. <em>Cliometrica</em>. Springer. <strong>13</strong> 201–20</div>
+</div>
+<div id="ref-lutz2013learning" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[11] </div><div class="csl-right-inline">Lutz, M (2013 ). <em>Learning Python: Powerful Object-Oriented Programming</em>. " O’Reilly Media, Inc."</div>
+</div>
+<div id="ref-vanderplas2016python" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[12] </div><div class="csl-right-inline">VanderPlas, J, Granger, B, Heer, J, Moritz, D, Wongsuphasawat, K, Satyanarayan, A, Lees, E, Timofeev, I, Welsh, B and Sievert, S (2018 ). Altair: Interactive statistical visualizations for python. <em>Journal of open source software</em>. The Open Journal. <strong>3</strong> 1057</div>
+</div>
+<div id="ref-wilkinson2012grammar" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[13] </div><div class="csl-right-inline">Wilkinson, L (2012 ). <em>The Grammar of Graphics</em>. Springer</div>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/distant-viewing\.github\.io\/hdpy");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Welcome">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Welcome</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./02_graphics.html" class="pagination-link" aria-label="EDA I: Visualizing Data">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">EDA I: Visualizing Data</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Taylor Arnold and Lauren Tilton</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>A <a href="https://distantviewing.org/">Distant Viewing Lab</a> project</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

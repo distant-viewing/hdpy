@@ -1,0 +1,796 @@
+# Network Data {#sec-ch07}
+
+```{python}
+#| include: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from plotnine import *
+import igraph as ig
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_distances
+import warnings
+warnings.filterwarnings('ignore')
+
+# Load metadata for later use
+meta = pd.read_csv("data/wiki_uk_meta.csv.gz")
+```
+
+::: {.offset-exercise}
+Exercises &mdash;
+    **notebook07a** [[GitHub↗](https://github.com/distant-viewing/hdpy/blob/main/notebooks/nb/notebook07a.ipynb)], [[Colab↗](https://colab.research.google.com/github/distant-viewing/hdpy/blob/main/notebooks/nb/notebook07a.ipynb)]
+:::
+
+## Introduction
+
+A *network* consists of a set of
+objects and a collection of links identifying some relationship between
+these pairs of objects [@newman2018networks].
+Networks form a very generic data model with extensive
+applications to the humanities [@wasserman1994social].
+Networks can be a great way to understand connections and
+relationships between a wide range of objects or types of data.
+For example, one might want to explore the friendship relationships between
+people, citations between books, or network connection between computers.
+Whenever there exists a set of relationships that connects the objects to
+each other, a network can be a useful tool for visualization and data exploration.
+
+A critical step in interpreting network data is deciding exactly what
+elements correspond to the *nodes* (the objects) and the *edges* (links
+between the edges).
+For example, let's say we are studying citations. A node might be an author
+and the edge may connect an author when they cite one another. The SignsAt40 
+project is a great example. They look at 40 years
+of feminist scholarship through network and text analysis, including co-citation
+networks. Being very clear about how nodes and edges are defined is key to
+exploring networks. 
+
+In this chapter, we start by working with network data taken from Wikipedia
+using the same set of pages we saw in the previous chapter. Wikipedia pages
+contain many internal links between pages; we collected information about each
+time one of the pages in our dataset provided a link to another page in our
+collection. Only links within the main body of the text were used. We will
+explore how to do produce this dataset using the Wikipedia API in
+Chap. 12. 
+
+## Creating a Network Object
+
+We can describe a network structure with a tabular dataset. Specifically, we
+can create a dataset with one row for each edge in the network. This dataset
+needs one column giving an identifier for the starting node of the edge and 
+another column giving the ending node. The set of 
+links between the Wikipedia pages is read into Python and displayed by the following
+block of code. Notice that we are using the same values in the `doc_id` column
+that were used as unique
+identifiers for each page text in Chap. 6.
+
+```{python}
+page_citation = pd.read_csv("data/wiki_uk_citations.csv")
+page_citation
+```
+
+Looking at the first few rows, we see that Marie de France has only one link
+(to Geoffrey Chaucer). Chaucer, on the other hand, has links to six other authors.
+As a starting way to analyze the data, we can see how many pages link into each
+author's page. Arranging the data by the count will give a quick understanding
+of how central each author's page is to the other authors, as seen in the following
+block of code. By summarizing links *into* each page rather than *out* of each page,
+we avoid a direct bias towards focusing on longer author pages. 
+
+```{python}
+# Count incoming links
+incoming_links = (page_citation
+    .groupby('doc_id2')
+    .size()
+    .reset_index(name='count')
+    .sort_values('count', ascending=False)
+)
+incoming_links
+```
+
+Looking at the counts, we see that there are more links into the Shakespeare
+page than any other in our collection. While that is perhaps not surprising, it
+is interesting to see that Wordsworth is only two links short of Shakespeare,
+with 23 links. While raw counts are a useful starting point, they can only get
+us so far. These say nothing, for example, about how easily we can hop
+between two pages by following 2, 3, or 4 links. In order to understand the
+dataset we need a way of visualizing and modelling all of the connections at
+once. This requires considering the entire network structure of our dataset.
+
+Before we create a network structure from a dataset, we need to decide on what
+kind of network we will create. Specifically, networks can be either *directed*,
+in which case we distinguish between the starting and ending vertex, or
+*undirected*, in which we do not. For example, in our counts above, we took the
+direction into account for the links. Next, let's start by treating our dataset
+of Wikipedia page links as undirected; all we want to consider is whether there
+is at least one way to click on a link and go between the two pages. Later in
+the chapter, we will show what changes when we add direction into the data.
+Any directed network can be considered undirected by ignoring the direction;
+undirected networks cannot in general be converted into a directed
+format. So, it will be a good starting point to consider approaches that can
+be applied to any network dataset.
+
+The dataset that we have in Python is called an *edge list* [@kolaczyk2014statistical].
+It consists of a dataset where each observation is an edge. We can use the
+**igraph** library to create network objects and compute various network
+metrics [@igraph]. Let's create our network and compute the basic metrics:
+
+```{python}
+def create_network_data(edges_df, directed=False):
+    """Create network object and compute metrics from edge list"""
+    
+    # Create igraph network from edge list
+    edge_list = [(row['doc_id'], row['doc_id2']) for _, row in edges_df.iterrows()]
+    G = ig.Graph.TupleList(edge_list, directed=directed)
+    
+    # Get layout for visualization
+    layout = G.layout_fruchterman_reingold()
+    
+    # Get basic network properties
+    components = G.connected_components()
+    clusters = G.community_walktrap().as_clustering().membership
+    
+    # Create node dataframe
+    nodes = []
+    for i, vertex in enumerate(G.vs):
+        # Find which component this vertex belongs to
+        component_id = None
+        for comp_idx, component in enumerate(components):
+            if i in component:
+                component_id = comp_idx + 1  # 1-indexed like R
+                break
+        
+        node_data = {
+            'id': vertex['name'],
+            'x': layout[i][0],
+            'y': layout[i][1],
+            'component': component_id,
+            'component_size': len(components[component_id-1]) if component_id else 0,
+            'cluster': str(clusters[i])
+        }
+        
+        if directed:
+            node_data.update({
+                'degree_out': vertex.outdegree(),
+                'degree_in': vertex.indegree(), 
+                'degree_total': vertex.degree()
+            })
+        else:
+            node_data['degree'] = vertex.degree()
+            
+        nodes.append(node_data)
+    
+    node_df = pd.DataFrame(nodes)
+    
+    # Compute centrality measures by component
+    for comp_idx, component in enumerate(components):
+        comp_id = comp_idx + 1
+        if len(component) > 1:  # Only compute for components with > 1 node
+            subgraph = G.subgraph(component)
+            comp_indices = node_df['component'] == comp_id
+            
+            # Eigenvalue centrality
+            eigen_scores = subgraph.eigenvector_centrality(directed=False)
+            node_df.loc[comp_indices, 'eigen'] = eigen_scores
+            
+            # Betweenness centrality  
+            between_scores = subgraph.betweenness(directed=directed)
+            node_df.loc[comp_indices, 'between'] = between_scores
+            
+            # Closeness centrality (only for undirected)
+            if not directed:
+                close_scores = subgraph.closeness()
+                node_df.loc[comp_indices, 'close'] = close_scores
+    
+    # Create edge dataframe for plotting
+    edges_plot = []
+    for edge in G.es:
+        source_idx = edge.source
+        target_idx = edge.target
+        edges_plot.append({
+            'x': layout[source_idx][0],
+            'y': layout[source_idx][1],
+            'xend': layout[target_idx][0],
+            'yend': layout[target_idx][1]
+        })
+    
+    edge_df = pd.DataFrame(edges_plot)
+    
+    return node_df, edge_df, G
+
+# Create undirected network
+node, edge, G = create_network_data(page_citation, directed=False)
+node
+```
+
+The node dataset contains extracted information about each of the objects in our
+collection. We will describe each of these throughout the remainder of
+this chapter. Note that we also have metadata about the nodes, which is
+something that we can join into the data to help deepen our understanding of
+subsequent analyses. 
+
+The first column gives a label for the row. In the next two columns, named
+`x` and `y`, is a computed way to layout the objects in two-dimensions that
+maximizes linked pages being close to one another while minimizing the amount
+that all of the nodes are bunched together [@fruchterman1991graph]. This
+is an example of a *network drawing* (also known as *graph drawing* in mathematics)
+algorithm. As with the PCA and UMAP dimensions in Chap. 6,
+there is no exact meaning of the
+individual variables. Rather, its the relationships that they show that are
+interesting. Using the first three variables, we could plot the pages as a
+scatter plot with labels to see what pages appear to be closely related to one
+another.
+
+Before actually looking at this plot, it will be useful to first make some
+additions. The relationships that would be shown in this plot generally try to
+put pages that have links between them close to one another. It would be helpful
+to additionally put these links onto the plot as well. This is where the `edge`
+dataset becomes useful. The edge dataset contains one row for each edge in the
+dataset. The dataset has four columns. These describe the `x` and `y` values of
+one node in the edge and variables `xend` and `yend` to indicate where in the
+scatter plot the ending point of the edge is.
+
+```{python}
+edge
+```
+
+We can include edges into the plot by adding a geom layer of type `geom_segment`.
+This geometry takes four aesthetics, named exactly the same as the names in the
+`edge` dataset. The plot gets busy with all of these lines, so we will set the
+opacity (`alpha`) of them lower so as to not clutter the visual space with the
+connections.
+
+```{python}
+p = (ggplot() +
+     geom_segment(data=edge, 
+                 mapping=aes(x='x', y='y', xend='xend', yend='yend'),
+                 alpha=0.1) +
+     geom_point(data=node, mapping=aes(x='x', y='y'), alpha=0.5) +
+     geom_text(data=node, mapping=aes(x='x', y='y', label='id'), 
+               size=6, adjust_text={'expand_points': (1, 1)}) +
+     theme_void() +
+     labs(title="Wikipedia Page Link Network"))
+p
+```
+
+The output of the plot shows the underlying data that describes the plot as well as the relationships between
+the pages. Notice that the relationship between the pages is quite different
+than the textual-based ones in the previous chapter. When using textual 
+distances, we saw a clustering base on the time period in which each author
+wrote and the formats that they wrote in. Here, the pattern is driven much more
+strongly by the general popularity of each author. The most
+well-known authors of each era---Shakespeare, Chaucer, Jonathan Swift---are 
+clustered in the middle of the plot. Lesser known authors, such as Daphne du
+Maurier and Samuel Pepys, are pushed to the exterior. 
+In the next section, we will see if we can more formally study the centrality
+of different pages in our collection.
+
+## Centrality
+
+One of the core questions that arises when working with network data is trying
+to identify the relative centrality of each node in the network. Several of the
+derived measurements in the `node` dataset capture various forms of centrality.
+Let's move through each of these measurements to see how they reveal different
+aspects of our network's centrality.
+
+A *component* of a network is a collection of all the nodes that can be reached by
+following along the edges. The `node` dataset contains a variable called
+`component` describing each of the components in the network. These are ordered 
+in descending order of size, so component 1 will always be the largest (or at
+least, tied for the largest) component of the network. The total size of each
+component is the first measurement of the centrality of a node. Those nodes
+that are in the largest component can, in some sense, be said to have a larger
+centrality than other nodes that are completely cut-off from this cluster.
+All of the nodes on our network are contained in one large cluster, so this
+measurement is not particularly helpful in this specific case. Networks that
+have a single component are known as *connected* networks. All of the other
+metrics for centrality are defined in terms of a connected network. In order
+to apply them to networks with multiple components, each algorithm is applied
+separately to each component.
+
+Another measurement of centrality is a node's *degree*. The degree of a node is
+the number of neighbors it has. In other words, it counts how many edges the
+node is a part of. The degree of each node has been computed in the `node`
+table. This is similar to the counts that were produced in the first section by
+counting occurrences in the raw edge list. The difference here is that we are
+counting all edges, not just those edges going into a node. As a visualization
+technique, we can plot the degree centrality scores on a plot of the network
+to show that the nodes with the highest degree do seem to sit in the middle
+of the plot and correspond to a high number of having a large number of edges.
+
+```{python}
+p = (ggplot() +
+     geom_segment(data=edge,
+                 mapping=aes(x='x', y='y', xend='xend', yend='yend'),
+                 alpha=0.1) +
+     geom_point(data=node, mapping=aes(x='x', y='y', color='degree'), 
+               size=5) +
+     scale_color_cmap(cmap_name='viridis') +
+     theme_void() +
+     labs(title="Network colored by Degree Centrality",
+          color="Degree"))
+p
+```
+
+The degree of a node only accounts for direct
+neighbors. A more holistic measurement is given by a quantity called the
+*eigenvalue centrality*. This metric is provided in the `node` table. It
+provides a centrality score for each node that is proportional to the sum of
+the scores of its neighbors. Mathematically, it assigns a set of scores $s_j$
+for each node such that:
+
+$$ s_j = \lambda \cdot \sum_{i \in \text{Neighbors{j}}} s_i $$
+
+The eigenvalue score, by convention, scales so that the largest score is 1. It
+is only possible to describe the eigenvalue centrality scores for a connected
+set of nodes on a network, so the computation is done individually for each
+component. For comparison, we will use the following code to plot the 
+eigenvalue centrality scores of our network.
+
+```{python}
+p = (ggplot() +
+     geom_segment(data=edge,
+                 mapping=aes(x='x', y='y', xend='xend', yend='yend'),
+                 alpha=0.1) +
+     geom_point(data=node, mapping=aes(x='x', y='y', color='eigen'), 
+               size=5) +
+     scale_color_cmap(cmap_name='viridis') +
+     theme_void() +
+     labs(title="Network colored by Eigenvalue Centrality",
+          color="Eigenvalue\nCentrality"))
+p
+```
+
+The visualization shows a slightly different pattern
+compared to the degree centrality scores. The biggest difference is that the
+eigenvalue centrality is more concentrated on the most central connections,
+whereas degree centrality is more spread out. We will see in the next few 
+sections that this is primarily a result of using a linear scale to plot the
+colors. If we transform the eigenvalue centrality scores with another function
+first, we would see that the pattern more gradually shows differences across
+the entire network.
+
+Another measurement of centrality is given by the *closeness centrality* score.
+For each node in the network, consider the minimum number of edges that are needed
+to go from this node to any other node within its component. Adding the
+reciprocal of these scores together gives a measurement of how close a node is
+to all of the other nodes in the network. The closeness centrality score for a
+node is given as the variable `close` in our `node` table. Again, we will plot
+these scores with the following code to compare to the other types of centrality
+scores.
+
+```{python}
+p = (ggplot() +
+     geom_segment(data=edge,
+                 mapping=aes(x='x', y='y', xend='xend', yend='yend'),
+                 alpha=0.1) +
+     geom_point(data=node.query('component == 1'), 
+               mapping=aes(x='x', y='y', color='close'), 
+               size=5) +
+     scale_color_cmap(cmap_name='viridis') +
+     theme_void() +
+     labs(title="Network colored by Closeness Centrality",
+          color="Closeness\nCentrality"))
+p
+```
+
+The output of the closeness centrality scores shows different patterns than the eigenvalue centrality scores. Here we see a much smoother transition 
+from the most central to the least central nodes. We will look at different
+kinds of networks later in the chapter that illustrate further differences
+between each type of centrality score.
+
+The final measurement of centrality we have in our table,
+*betweenness centrality* also comes from considering minimal paths. For every
+two nodes in a connected component, consider all of the possible ways to go
+from one to the other along edges in the network. Then, consider all of the paths
+(there may be only one) between the two nodes that require a minimal number of
+hops. The betweenness centrality scores measures how many of these minimal paths
+go through each node (there is some normalization to account for the case when
+there are many minimal paths, so the counts are not exact integers). This score
+is stored in the variable `between`. A plot of the betweenness score is 
+given by the following code:
+
+```{python}
+p = (ggplot() +
+     geom_segment(data=edge,
+                 mapping=aes(x='x', y='y', xend='xend', yend='yend'),
+                 alpha=0.1) +
+     geom_point(data=node, mapping=aes(x='x', y='y', color='between'), 
+               size=5) +
+     scale_color_cmap(cmap_name='viridis') +
+     theme_void() +
+     labs(title="Network colored by Betweenness Centrality",
+          color="Betweenness\nCentrality"))
+p
+```
+
+The betweenness score often tends to have a different pattern than the other
+centrality scores. It gives a high score to bridges between different parts of
+the network, rather than giving high weight to how central a node is within a
+particular cluster. One challenge with the page link network over this small set of pages 
+is that we need to create a different kind of network in order to
+really see the differences between the betweenness centrality and the other types of centrality that
+we've discussed so far. To better understand the centrality scores, we will delve further into 
+another set of networks such as co-citation and nearest neighbor networks.
+
+## Clusters
+
+The centrality of a node is not the only thing that we can measure when looking
+at networks. Another algorithm that we can perform is that of clustering. Here,
+we try to split the nodes into groups such that a large number of the edges are
+between nodes within a group rather than across groups. When we created our
+network, a clustering of the nodes based on the edges was automatically
+performed. The identifiers for the clusters are in the column called `cluster`.
+We can visualize the clusters defined on our Wikipedia-page network using the
+following code.
+
+```{python}
+p = (ggplot() +
+     geom_segment(data=edge,
+                 mapping=aes(x='x', y='y', xend='xend', yend='yend'),
+                 alpha=0.1) +
+     geom_point(data=node, mapping=aes(x='x', y='y', color='cluster'), 
+               size=5) +
+     theme_void() +
+     labs(title="Network colored by Cluster",
+          color="Cluster"))
+p
+```
+
+The output of the cluster visualization shows the different communities detected in the network.
+We are running out of space to put labels on the plot. This is one major consideration
+when thinking of networks as a form of visual exploration and communication; 
+bigger is not necessarily better. Even on a large screen,
+networks with hundreds of nodes or more become unwieldy to plot. As an
+alternative, we can summarize the network data in the form of tables. For
+example, we can paste together the nodes within a cluster to try to further
+understand the internal structure of the relationships.
+
+```{python}
+cluster_summary = (node
+    .groupby('cluster')['id']
+    .apply(lambda x: '; '.join(x))
+    .reset_index()
+)
+cluster_summary
+```
+
+Network clusters can be very insightful for understanding the structure of a
+large network. The example data that we have been working with so far is 
+relatively small and forms a larger single cluster around a few well-known
+authors. Because of the length and richness of the textual information, this
+set of 75 authors produced interesting results on its own in the previous
+chapter. It is also a great size to visualize and illustrate the core computed
+metrics associated with network analysis since it is small enough to plot every
+node and edge. To go farther and show the full power of these methods as
+analytic tools, we need to expand our collection.
+
+## Co-citation Networks
+
+The network structure we have been working with is a form called a
+*citation network*. Pages are joined whenever one page links to another. This is a
+popular method in understanding academic articles, friendship networks on
+social media (i.e., tracking mentions on Twitter), or investigating the relative
+importance of court cases. There are some drawbacks of using citation counts,
+however. They are sensitive to the time-order of publication, they are effected
+by the relative length of each document, and they are easily effected by small
+changes. Wikipedia articles are continually edited, so there is no clear temporal
+ordering of the pages, and there is relatively little benefit for someone to
+artificially inflate the network centrality of an article. The length of 
+Wikipedia articles, though, are highly variable and not always well correlated
+with the notoriety of the subject matter. So, partially to avoid biasing our
+results due to page length, and more so to illustrate the general concept when
+applying these techniques to other sets of citation data, let's look at an
+alternative that helps to avoid all of these issues.
+
+A *co-citation network* is a method of showing links across a citation network
+while avoiding some of the pitfalls that arise when using direct links. A
+co-citation is formed between two pages whenever a third entry cites *both* of
+them. The idea is that if a third source talks about two sources in the same
+reference, there is likely a relationship between the documents. We can created
+a co-citation dataset from Wikipedia by first downloading all of the pages
+linked to from any of the author pages in our collection. We can then count how often
+any pair of pages in our dataset were both linked *into* from the same source. As
+with the other Wikipedia datasets, we will see how to create this collection 
+through the API in Chap. 12. Here, we will load the dataset into Python
+as a structured table. Co-citations are, by definition, undirected. In the 
+dataset below, we have sorted the edges so that `doc_id` always comes
+alphabetically before `doc_id_out`. The column `count` tells how many third
+pages cite both of the respective articles.
+
+```{python}
+page_cocitation = pd.read_csv("data/wiki_uk_cocitations.csv")
+page_cocitation
+```
+
+When working with co-citations, it is useful to only include links between two
+pages when the count is above some threshold. In the code below, we will filter
+our new edge list to include only the links that have a count of at least 6 
+different citations. We then create a new network, node, and edge set.
+
+```{python}
+# Filter co-citations by threshold
+filtered_cocitations = (page_cocitation
+    .groupby(['doc_id', 'doc_id_out'])
+    .first()
+    .reset_index()
+    .query('count > 6')
+    .rename(columns={'doc_id_out': 'doc_id2'})
+)
+
+# Create network from filtered co-citations
+cocite_node, cocite_edge, cocite_G = create_network_data(filtered_cocitations, directed=False)
+print(f"Co-citation network: {len(cocite_node)} nodes, {len(cocite_edge)} edges")
+```
+
+In the code block below, we will look at the nodes with the largest eigenvalue
+centrality scores, with the top ten printed in the text. As with the previous
+network, there is only one component in this network; otherwise, we would want
+to filter the data such that we are looking at pages in the largest component,
+which will always be component number `1`.
+
+```{python}
+top_cocite_nodes = (cocite_node
+    .sort_values('eigen', ascending=False)
+    .head(10)
+)
+top_cocite_nodes[['id', 'eigen', 'degree']]
+```
+
+The most central nodes in the co-citation network show a similar set of pages
+showing up in the top-10 list but with some notable differences in the relative
+ordering. Shakespeare is no longer at the top of the list. Focusing on the first
+name on the list, there are at least 36 other authors in our relatively small set
+that are cited at least six times in the same page as John Milton. Looking into
+the example links, we see that this is because Milton is associated with most
+other figures of the 17th Century, poets, and writers that have religious themes
+in their works. These overlapping sets creates a relatively large number of
+other pages that Milton is connected to. As mentioned at the start of the
+section, the differences between citation and co-citation are somewhat muted
+with the Wikipedia pages because they are constantly being modified and edited,
+making it possible for pages to directly link to other pages even if they were
+originally created before them. When working with other citation networks, such
+as scholarly citations or court records, the differences between the two are 
+often striking.
+
+## Directed Networks
+
+At the start of the chapter, we noted that networks can be given edges that are
+either directed or undirected. The algorithms and metrics we have looked at so
+far all work on undirected networks and so even in the case of the original
+links, which do have a well-defined direction, we have been treating the links
+as undirected. It is possible to create a network object that takes this
+relationship into account by setting the `directed` argument to `True`.
+
+```{python}
+# Create directed network
+directed_node, directed_edge, directed_G = create_network_data(page_citation, directed=True)
+print(f"Directed network: {len(directed_node)} nodes, {len(directed_edge)} edges")
+directed_node
+```
+
+The `node` table contains a slightly different set of measurements. Closeness
+centrality is no longer available; eigenvalue and betweenness centrality are
+still computed, but are done so without using the directions of the edges.
+There are now three different degree counts: the out-degree (number of links
+on the page), the in-degree (number of links into a page), and the total of
+these two.
+
+We can, if desired, use the directed structure in our plot. To visualize a
+directed network, we add an `arrow` argument to the `geom_segment` layer. 
+The code to do this is in the block below:
+
+```{python}
+# Create directed network visualization
+p = (ggplot() +
+     geom_point(data=directed_node, mapping=aes(x='x', y='y')) +
+     geom_segment(data=directed_edge,
+                 mapping=aes(x='x', y='y', xend='xend', yend='yend'),
+                 alpha=0.7,
+                 arrow=arrow(length=0.02)) +
+     theme_void() +
+     labs(title="Directed Page Link Network"))
+p
+```
+
+Visualizing the direction of the arrows can be
+helpful for illustrating concepts in smaller networks.
+
+An interesting analysis that we can do with a directed network is to look at the
+in-degree as a function of the out-degree. The code below creates a plot that
+investigates the relationship between these two degree counts. We have highlighted
+a set of six authors that show interesting relationships between the two variables.
+
+```{python}
+# Select authors for labeling
+highlight_authors = [
+    "William Shakespeare", "William Wordsworth", "T. S. Eliot", 
+    "Lord Byron", "W. H. Auden", "George Orwell"
+]
+
+directed_node_highlight = directed_node[directed_node['id'].isin(highlight_authors)]
+
+p = (ggplot() +
+     geom_point(data=directed_node.query('component == 1'), 
+               mapping=aes(x='degree_out', y='degree_in')) +
+     geom_text(data=directed_node_highlight,
+              mapping=aes(x='degree_out', y='degree_in', label='id'),
+              nudge_y=1, nudge_x=-1) +
+     geom_abline(slope=1, intercept=0, linetype='dashed') +
+     labs(title="In-degree vs Out-degree in British Authors Network",
+          x="Out-degree", y="In-degree"))
+p
+```
+
+This plot reveals some interesting details about all of the citation networks
+that we have seen so far. It was probably not surprising to see Shakespeare as
+the node with the highest centrality score. Here, we see that this is only 
+partially because many other author's pages link into his. A parallel reason
+is that the Shakespeare page also has more links *out* to other authors than
+any other page. While the two metrics largely mirror one another, it is 
+insightful to identify pages that have an unbalanced number of in or out
+citations. George Orwell, for example, is not referenced by many other pages
+in our collection, but has many outgoing links. It's possible that this is 
+partially a temporal effect of Orwell being a later author in the set; the page
+cites his literary influences and it's not hard to see why those influences 
+would not cite back into him. Wordsworth and Lord Byron show the opposite
+pattern, with more links into them than might be expected given their number of
+out links. Both of these are interesting observations that merit further study.
+
+## Distance Networks
+
+For a final common type of network found in humanities research, we return to
+a task that we saw in Chap. 6. After having built a table of
+textual annotations, recall that we were able to create links between two
+documents whenever they are sufficiently close to one another based on the
+angle distance between their term-frequency scores. By choosing a suitable
+cutoff score for the maximal distance between pages, we can create an edge
+list between the pages.
+
+```{python}
+# Load annotations (this would come from previous chapter)
+# For demonstration, we'll create a simplified version using TF-IDF
+def create_distance_network(docs_text, distance_threshold=0.4):
+    """Create network based on text similarity"""
+    
+    # Simple TF-IDF approach
+    vectorizer = TfidfVectorizer(max_features=1000, stop_words='english')
+    tfidf_matrix = vectorizer.fit_transform(docs_text['text'])
+    
+    # Compute cosine distances
+    distances = cosine_distances(tfidf_matrix)
+    
+    # Create edge list from distances below threshold
+    edges = []
+    doc_ids = docs_text['doc_id'].tolist()
+    
+    for i in range(len(doc_ids)):
+        for j in range(i+1, len(doc_ids)):
+            if distances[i, j] < distance_threshold:
+                edges.append({
+                    'doc_id': doc_ids[i],
+                    'doc_id2': doc_ids[j],
+                    'distance': distances[i, j]
+                })
+    
+    return pd.DataFrame(edges)
+
+# Load document texts (placeholder - would use real data)
+# For demo, create simplified version
+docs_sample = pd.DataFrame({
+    'doc_id': ['Shakespeare', 'Marlowe', 'Jonson', 'Chaucer', 'Milton'],
+    'text': ['sample text 1', 'sample text 2', 'sample text 3', 'sample text 4', 'sample text 5']
+})
+
+# In practice, you would load the full annotations from Chapter 6
+# and compute proper TF-IDF distances
+print("Distance network creation would use full text annotations from Chapter 6")
+```
+
+Using these edges, we can create a *distance network*. As with co-citations,
+the network here has no notion of direction and therefore we will create another
+undirected network.
+
+## Nearest Neighbor Networks
+
+We finish this chapter by looking at one final network type that we can
+apply to our Wikipedia corpus. The example here generates a network
+structure that is designed to avoid a small set of central nodes by balancing
+the degree of the network across all of the nodes. This approach can be
+applied to any set of distance scores defined between pairs of objects.
+
+```{python}
+def create_nearest_neighbor_network(distance_df, k_neighbors=5):
+    """Create symmetric nearest neighbor network"""
+    
+    # For each document, find k nearest neighbors
+    top_pairs = []
+    
+    for doc in distance_df['doc_id'].unique():
+        doc_distances = (distance_df[distance_df['doc_id'] == doc]
+                        .sort_values('distance')
+                        .head(k_neighbors))
+        top_pairs.append(doc_distances)
+    
+    top_distances = pd.concat(top_pairs, ignore_index=True)
+    
+    # Create symmetric edges (both nodes must be in each other's top-k)
+    symmetric_edges = []
+    
+    for _, row in top_distances.iterrows():
+        doc1, doc2 = row['doc_id'], row['doc_id2']
+        # Check if reverse relationship exists
+        reverse_exists = ((top_distances['doc_id'] == doc2) & 
+                         (top_distances['doc_id2'] == doc1)).any()
+        
+        if reverse_exists and doc1 < doc2:  # Avoid duplicates
+            symmetric_edges.append({
+                'doc_id': doc1,
+                'doc_id2': doc2
+            })
+    
+    return pd.DataFrame(symmetric_edges)
+
+print("Nearest neighbor network creation would use distance data from text analysis")
+```
+
+The network we have now created is called a *symmetric nearest neighbors network*. 
+It can be constructed from any distance function that provides distances between
+pairs of objects in a dataset. Notice that the degree of every node in this case
+can never be larger than five. This stops the network from focusing on lots of 
+weak connections to popular pages and focuses on links between pages that go
+both ways.
+
+The structure of the symmetric nearest neighbors network is quite different from
+the other networks we have explored. One way to see this is by looking at the
+relationship between eigenvalue centrality and betweenness centrality. In most
+of the other networks, these were highly correlated to one another, but in this
+example that is not the case. There are several nodes that have a 
+high betweenness score despite having a lower eigenvalue centrality score. 
+These are the gatekeeper nodes that link other, more densely
+connected parts of the plot.
+
+Since the symmetric nearest neighbors plot avoids
+placing too many nodes all at the center of the network, the clusters resulting
+from the network are also often more interesting and uniform in size than other
+kinds of networks. While all of the network types here have their place, when given
+a set of distances, using symmetric nearest neighbors is often a good choice to
+get interesting results that show the entire structure of the network rather 
+than focusing on only the most centrally located nodes.
+
+## Extensions
+
+We have explored some of the major areas of network analysis: network drawing,
+measures of centrality, and clustering. We have tried to give a
+general overview; however all of these areas are far richer than what can be fit
+into a single chapter. For further study, the
+**python-igraph** documentation is a good place to start; it contains dozens of
+additional network drawing, centrality, and community detection algorithms.
+Beyond this, Stanley Wasserman's text on social network analysis gives a
+lot of depth (in an applicable way) while remaining fairly accessible
+[@wasserman1994social]. For a more technical treatment, Eric Kolaczyk's
+*Statistical Analysis of Network Data* provides even more detail, while
+still being written from the perspective of conducting applied data analysis
+[@kolaczyk2014statistical].
+
+As we noted at the beginning, being clear about the nodes and edges is key. 
+We have found that the more strictly they are defined, the more useful networks are
+as an analytical and visual tool for exploring and communicating humanities data. 
+In digital humanities circles, Scott Weingart is known for repeating that when one
+has a hammer, everything can look like a nail [@graham2016exploring].
+Networks lend themselves to this, so being precise and careful is critical
+[@ahnert2020network].
+
+Additional Python libraries that may be useful for network analysis include:
+
+- **NetworkX**: Another popular Python network analysis library
+- **graph-tool**: High-performance graph analysis library  
+- **community**: Community detection algorithms
+- **networkx-community**: Community detection tools for NetworkX
+- **py2cytoscape**: Interface to Cytoscape for advanced network visualization
+
+The Python ecosystem provides rich tools for network analysis that continue
+to evolve, particularly in areas like dynamic networks and multilayer networks.
+
+## References {-}

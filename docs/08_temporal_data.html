@@ -1,0 +1,3961 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Taylor Arnold and Lauren Tilton">
+
+<title>8&nbsp; Temporal Data – Humanities Data in Python</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./09_spatial_data.html" rel="next">
+<link href="./07_network_data.html" rel="prev">
+<link href="./owl_explore.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-7dd7401653f9b7f7a674e3bd3661a20e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./06_textual_data.html">Part II: Data Types</a></li><li class="breadcrumb-item"><a href="./08_temporal_data.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Temporal Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Humanities Data in Python</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/distant-viewing/hdpy" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I: Core</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">EDA I: Visualizing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_verbs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">EDA II: Organizing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_combine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">EDA III: Restructuring Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_collect.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Collecting Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II: Data Types</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_textual_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Textual Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_network_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Network Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_temporal_data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Temporal Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_spatial_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10_image_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Image Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III: Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Inference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12_supervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13_unsupervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./14_deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./15_transformers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Transformers</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV: Programming</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./16_program.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./17_jsonxml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">JSON + XML</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./18_databases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Databases</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">8.1</span> Introduction</a></li>
+  <li><a href="#temporal-data-and-ordering" id="toc-temporal-data-and-ordering" class="nav-link" data-scroll-target="#temporal-data-and-ordering"><span class="header-section-number">8.2</span> Temporal Data and Ordering</a></li>
+  <li><a href="#date-objects" id="toc-date-objects" class="nav-link" data-scroll-target="#date-objects"><span class="header-section-number">8.3</span> Date Objects</a></li>
+  <li><a href="#datetime-objects" id="toc-datetime-objects" class="nav-link" data-scroll-target="#datetime-objects"><span class="header-section-number">8.4</span> Datetime Objects</a></li>
+  <li><a href="#language-and-time-zones" id="toc-language-and-time-zones" class="nav-link" data-scroll-target="#language-and-time-zones"><span class="header-section-number">8.5</span> Language and Time Zones</a></li>
+  <li><a href="#dates-and-datetimes" id="toc-dates-and-datetimes" class="nav-link" data-scroll-target="#dates-and-datetimes"><span class="header-section-number">8.6</span> Dates and Datetimes</a></li>
+  <li><a href="#window-functions" id="toc-window-functions" class="nav-link" data-scroll-target="#window-functions"><span class="header-section-number">8.7</span> Window Functions</a></li>
+  <li><a href="#range-joins" id="toc-range-joins" class="nav-link" data-scroll-target="#range-joins"><span class="header-section-number">8.8</span> Range Joins</a></li>
+  <li><a href="#extensions" id="toc-extensions" class="nav-link" data-scroll-target="#extensions"><span class="header-section-number">8.9</span> Extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./06_textual_data.html">Part II: Data Types</a></li><li class="breadcrumb-item"><a href="./08_temporal_data.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Temporal Data</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ch08" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Temporal Data</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">8.1</span> Introduction</h2>
+<p>For the second edition of this book, we chose to add this chapter on temporal data. Being able to analyze change over time is key to many kinds of humanities data. For example, we might have a series of letters with dates, photographs with time stamps, and a film with shot and scene times that we are excited to study. These kinds of data animate fields such as history and media studies.</p>
+<p>In this chapter, we discuss techniques for working with data that has some temporal component. This includes any kind of data that has one or more variables that record dates or times, as well as any dataset that has general meaningful ordering of its rows. For example, the annotation object that we created for textual data in Chap. 6 has a meaningful ordering to it and can be treated as having a temporal ordering even if it is not associated specifically with fixed timestamps. We will start by focusing specifically on datasets that contain explicit information about dates and times. In the later sections we will illustrate window functions and range joins, both of which have a wider set of applications to all ordered datasets.</p>
+<p>As we saw in Chap. 5, it is possible to store information about dates and times in a tabular dataset. There are many different formats for storing this information; we recommend that most users start by recording these with separate columns for each numeric component of the date or time. This makes it easier to avoid errors and to record partial information, the latter being a common complication of many humanities datasets. We will begin by looking at a dataset related to the Wikipedia pages we saw in the previous two chapters that has date information stored in such a format.</p>
+<p>In showing the application of line graphs in Chap. 2 and again in Chap. 5, we saw how to visualize the dataset of food prices over a 140-year period. This visualization was fairly straightforward. There was exactly one row for each year. We were able to treat the year variable has any other continuous measurement, with the only change being that it made sense to connect dots with a line when building the visualization. Here we will work with a slightly more complex example corresponding to the Wikipedia pages from the preceding chapters.</p>
+</section>
+<section id="temporal-data-and-ordering" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="temporal-data-and-ordering"><span class="header-section-number">8.2</span> Temporal Data and Ordering</h2>
+<p>Let’s start by loading some data with a temporal component in Python. Below, we will read in data related to the 75 Wikipedia pages from a selection of British authors. Here, we have a different set of information about the pages than we used in the text and network analysis chapters. For each page, we have grabbed page view statistics for a 60-day period from Wikipedia. In other words, we have a record of how many people looked at a particular page each day, for each author. The data are organized with one row for each combination of item and day.</p>
+<div id="435accb1" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>page_views <span class="op">=</span> pd.read_csv(<span class="st">"data/wiki_uk_page_views.csv"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>page_views</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">day</th>
+<th data-quarto-table-cell-role="th">views</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Marie de France</td>
+<td>2023</td>
+<td>8</td>
+<td>1</td>
+<td>121</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Marie de France</td>
+<td>2023</td>
+<td>8</td>
+<td>2</td>
+<td>138</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Marie de France</td>
+<td>2023</td>
+<td>8</td>
+<td>3</td>
+<td>138</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Marie de France</td>
+<td>2023</td>
+<td>8</td>
+<td>4</td>
+<td>129</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Marie de France</td>
+<td>2023</td>
+<td>8</td>
+<td>5</td>
+<td>104</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4485</td>
+<td>Seamus Heaney</td>
+<td>2023</td>
+<td>9</td>
+<td>25</td>
+<td>719</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4486</td>
+<td>Seamus Heaney</td>
+<td>2023</td>
+<td>9</td>
+<td>26</td>
+<td>802</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4487</td>
+<td>Seamus Heaney</td>
+<td>2023</td>
+<td>9</td>
+<td>27</td>
+<td>694</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4488</td>
+<td>Seamus Heaney</td>
+<td>2023</td>
+<td>9</td>
+<td>28</td>
+<td>655</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4489</td>
+<td>Seamus Heaney</td>
+<td>2023</td>
+<td>9</td>
+<td>29</td>
+<td>719</td>
+</tr>
+</tbody>
+</table>
+
+<p>4490 rows × 5 columns</p>
+</div>
+</div>
+</div>
+<p>The time variables are given the way we recommended in Chap. 5, with individual columns for year, month, and day. Here, our dataset is already ordered (within each item type) from the earliest records to the latest. If this were not the case, because all of our variables are stored as numbers, we could use the <code>sort_values()</code> function to sort by year, followed by month, followed by day, to get the same ordering.</p>
+<p>How could we show the change in page views over time for a particular variable? One approach is to add a numeric column running down the dataset using the index. Below is an example of the code to create a line plot using the row number approach:</p>
+<div id="a837bbd5" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for Geoffrey Chaucer and create row numbers</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>chaucer_data <span class="op">=</span> (page_views</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"doc_id == 'Geoffrey Chaucer'"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">'index'</span>: <span class="st">'row_number'</span>})</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (ggplot(chaucer_data, aes(x<span class="op">=</span><span class="st">'row_number'</span>, y<span class="op">=</span><span class="st">'views'</span>)) <span class="op">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>     geom_line(color<span class="op">=</span><span class="st">'red'</span>) <span class="op">+</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>     labs(title<span class="op">=</span><span class="st">"Page Views for Geoffrey Chaucer (by Day Number)"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>          x<span class="op">=</span><span class="st">"Day Number"</span>, y<span class="op">=</span><span class="st">"Views"</span>))</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_temporal_data_files/figure-html/cell-4-output-1.png" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In this case, our starting plot is not a bad place to begin. The x-axis corresponds to the day number, and in many applications that may be exactly what we need. We can clearly see that the number of page views for Chaucer has a relatively stable count, possibly with some periodic swings over the course of the week. There is one day about two-thirds of the way through the plot in which the count spikes. Notice, though, that it is very hard to tell anything from the plot about exactly what days of the year are being represented. We cannot easily see which day has the spike in views, for example. Also, note that the correspondence between the row number and day only works because the data are uniformly sampled (one observation each day) and there is no missing data.</p>
+<p>Another way to work with dates is to convert the data to a fractional year format. Here, the months and days are added to form a fractional day. A quick way to do this is to compute the following fractional year:</p>
+<p><span class="math display">\[ year_{frac} = year + \frac{month - 1}{12} + \frac{day - 1}{12 \cdot 31}\]</span></p>
+<p>We are subtracting one from the month and day so, for example, on a date such as 1 July 2020 (halfway through the year) we have the fractional year equal to <code>2020.5</code>. We could make this even more exact by accounting for the fact that some months have fewer than 31 days, but as a first pass this works relatively well. We can see the output with the following code:</p>
+<div id="bb054227" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create fractional year representation</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>chaucer_fractional <span class="op">=</span> (page_views</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"doc_id == 'Geoffrey Chaucer'"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    .assign(year_frac <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'year'</span>] <span class="op">+</span> (df[<span class="st">'month'</span>] <span class="op">-</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">12</span> <span class="op">+</span> (df[<span class="st">'day'</span>] <span class="op">-</span> <span class="dv">1</span>) <span class="op">/</span> (<span class="dv">12</span> <span class="op">*</span> <span class="dv">31</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (ggplot(chaucer_fractional, aes(x<span class="op">=</span><span class="st">'year_frac'</span>, y<span class="op">=</span><span class="st">'views'</span>)) <span class="op">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>     geom_line(color<span class="op">=</span><span class="st">'red'</span>) <span class="op">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>     labs(title<span class="op">=</span><span class="st">"Page Views for Geoffrey Chaucer (Fractional Year)"</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>          x<span class="op">=</span><span class="st">"Fractional Year"</span>, y<span class="op">=</span><span class="st">"Views"</span>))</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_temporal_data_files/figure-html/cell-5-output-1.png" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This revised visualization improves on several aspects of the original plot. For one thing, we can roughly see exactly what dates correspond to each data point. Also, the code will work fine regardless of whether the data are sorted, evenly distributed, or contain any missing values. As a down-side, the axis labels take some explaining. We can extend the same approach to working with time data. For example, if we also had the (24-hour) time of our data points the formula would become:</p>
+<p><span class="math display">\[ year_{frac} = year + \frac{month - 1}{12} + \frac{day - 1}{12 \cdot 31} + \frac{hour - 1}{24 \cdot 12 \cdot 31}\]</span></p>
+<p>If we are only interested in the time since a specific event, say the start of an experiment, we can use the same approach but take the difference relative to a specific fractional year.</p>
+<p>Fractional times have a number of important applications. Fractional times are convenient because they can represent an arbitrarily precise date or date-time with an ordinary number. This means that they can be used in other models and applications without any special treatment. They may require different model assumptions, but at least the code should work with minimal effort. This is a great way to explore our data. However, particularly when we want to create nice publishable visualizations, it can be useful to work with specific functions for manipulating dates and times.</p>
+</section>
+<section id="date-objects" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="date-objects"><span class="header-section-number">8.3</span> Date Objects</h2>
+<p>Most of the variables that we have worked with so far are either strings or numbers. Dates are in some ways like numbers: they have a natural ordering, we can talk about the difference between two numbers, and it makes sense to color and plot them on a continuous scale. However, they do have some unique properties, particularly when we want to extract information such as the day of the week from a date, that require a unique data type. To create a date object in Python, we can use pandas’ <code>to_datetime()</code> function or the <code>datetime</code> module directly.</p>
+<div id="feb0fdc7" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create date objects using pandas</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>chaucer_with_dates <span class="op">=</span> (page_views</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"doc_id == 'Geoffrey Chaucer'"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .assign(date <span class="op">=</span> <span class="kw">lambda</span> df: pd.to_datetime(df[[<span class="st">'year'</span>, <span class="st">'month'</span>, <span class="st">'day'</span>]]))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>chaucer_with_dates</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">day</th>
+<th data-quarto-table-cell-role="th">views</th>
+<th data-quarto-table-cell-role="th">date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">60</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>1</td>
+<td>2133</td>
+<td>2023-08-01</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">61</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>2</td>
+<td>1977</td>
+<td>2023-08-02</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">62</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>3</td>
+<td>1860</td>
+<td>2023-08-03</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">63</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>4</td>
+<td>1739</td>
+<td>2023-08-04</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">64</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>5</td>
+<td>1849</td>
+<td>2023-08-05</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">65</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>6</td>
+<td>1819</td>
+<td>2023-08-06</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">66</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>7</td>
+<td>1885</td>
+<td>2023-08-07</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">67</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>8</td>
+<td>1984</td>
+<td>2023-08-08</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">68</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>9</td>
+<td>1946</td>
+<td>2023-08-09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">69</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>10</td>
+<td>1942</td>
+<td>2023-08-10</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">70</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>11</td>
+<td>1633</td>
+<td>2023-08-11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">71</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>12</td>
+<td>1749</td>
+<td>2023-08-12</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">72</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>13</td>
+<td>1790</td>
+<td>2023-08-13</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">73</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>14</td>
+<td>1755</td>
+<td>2023-08-14</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">74</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>15</td>
+<td>1685</td>
+<td>2023-08-15</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">75</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>16</td>
+<td>1998</td>
+<td>2023-08-16</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">76</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>17</td>
+<td>1947</td>
+<td>2023-08-17</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">77</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>18</td>
+<td>1773</td>
+<td>2023-08-18</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">78</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>19</td>
+<td>1714</td>
+<td>2023-08-19</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">79</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>20</td>
+<td>1789</td>
+<td>2023-08-20</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">80</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>21</td>
+<td>1879</td>
+<td>2023-08-21</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">81</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>22</td>
+<td>2004</td>
+<td>2023-08-22</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">82</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>23</td>
+<td>1931</td>
+<td>2023-08-23</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">83</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>24</td>
+<td>1880</td>
+<td>2023-08-24</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">84</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>25</td>
+<td>1647</td>
+<td>2023-08-25</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">85</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>26</td>
+<td>1712</td>
+<td>2023-08-26</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">86</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>27</td>
+<td>1820</td>
+<td>2023-08-27</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">87</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>28</td>
+<td>1902</td>
+<td>2023-08-28</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">88</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>29</td>
+<td>1888</td>
+<td>2023-08-29</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">89</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>30</td>
+<td>1745</td>
+<td>2023-08-30</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">90</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>31</td>
+<td>1735</td>
+<td>2023-08-31</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">91</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>1</td>
+<td>1701</td>
+<td>2023-09-01</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">92</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>2</td>
+<td>1564</td>
+<td>2023-09-02</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">93</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>3</td>
+<td>1807</td>
+<td>2023-09-03</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">94</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>4</td>
+<td>1853</td>
+<td>2023-09-04</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">95</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>5</td>
+<td>4214</td>
+<td>2023-09-05</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">96</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>6</td>
+<td>2030</td>
+<td>2023-09-06</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">97</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>7</td>
+<td>2158</td>
+<td>2023-09-07</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">98</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>8</td>
+<td>2174</td>
+<td>2023-09-08</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">99</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>9</td>
+<td>1709</td>
+<td>2023-09-09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">100</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>10</td>
+<td>2038</td>
+<td>2023-09-10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">101</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>11</td>
+<td>2008</td>
+<td>2023-09-11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">102</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>12</td>
+<td>2188</td>
+<td>2023-09-12</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">103</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>13</td>
+<td>2040</td>
+<td>2023-09-13</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">104</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>14</td>
+<td>2178</td>
+<td>2023-09-14</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">105</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>15</td>
+<td>1832</td>
+<td>2023-09-15</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">106</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>16</td>
+<td>2144</td>
+<td>2023-09-16</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">107</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>17</td>
+<td>1911</td>
+<td>2023-09-17</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">108</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>18</td>
+<td>2140</td>
+<td>2023-09-18</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">109</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>19</td>
+<td>2174</td>
+<td>2023-09-19</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">110</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>20</td>
+<td>2276</td>
+<td>2023-09-20</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">111</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>21</td>
+<td>2597</td>
+<td>2023-09-21</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">112</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>22</td>
+<td>1873</td>
+<td>2023-09-22</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">113</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>23</td>
+<td>1658</td>
+<td>2023-09-23</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">114</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>24</td>
+<td>1950</td>
+<td>2023-09-24</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">115</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>25</td>
+<td>2384</td>
+<td>2023-09-25</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">116</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>26</td>
+<td>2188</td>
+<td>2023-09-26</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">117</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>27</td>
+<td>1950</td>
+<td>2023-09-27</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">118</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>28</td>
+<td>2590</td>
+<td>2023-09-28</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">119</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>29</td>
+<td>2082</td>
+<td>2023-09-29</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Notice that the new column has a special data type: <code>datetime64[ns]</code>. If we build a visualization using a date object, plotnine is able to make helpful built-in choices about how to label the axis. For example, the following code will make a line plot that has nicely labeled values on the x-axis.</p>
+<div id="65431359" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (ggplot(chaucer_with_dates, aes(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'views'</span>)) <span class="op">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     geom_line(color<span class="op">=</span><span class="st">'red'</span>) <span class="op">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>     labs(title<span class="op">=</span><span class="st">"Page Views for Geoffrey Chaucer"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>          x<span class="op">=</span><span class="st">"Date"</span>, y<span class="op">=</span><span class="st">"Views"</span>))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_temporal_data_files/figure-html/cell-7-output-1.png" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The output shows that the algorithm decided to label the dates appropriately. We can manually change the frequency of the labels using <code>scale_x_datetime()</code> and setting the <code>date_breaks</code> option. For example, the code below will display one label for each week:</p>
+<div id="19eab132" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (ggplot(chaucer_with_dates, aes(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'views'</span>)) <span class="op">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>     geom_line(color<span class="op">=</span><span class="st">'red'</span>) <span class="op">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>     scale_x_datetime(date_breaks<span class="op">=</span><span class="st">'1 week'</span>, date_labels<span class="op">=</span><span class="st">'%Y-%m-</span><span class="sc">%d</span><span class="st">'</span>) <span class="op">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>     theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">45</span>, hjust<span class="op">=</span><span class="dv">1</span>)) <span class="op">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>     labs(title<span class="op">=</span><span class="st">"Page Views for Geoffrey Chaucer (Weekly Labels)"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>          x<span class="op">=</span><span class="st">"Date"</span>, y<span class="op">=</span><span class="st">"Views"</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_temporal_data_files/figure-html/cell-8-output-1.png" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Once we have a date object, we can also extract useful information from it. For example, we can extract the weekday of the date using pandas’ datetime accessor. Here, we will compute the weekday and then calculate the average number of page views for each day of the week:</p>
+<div id="454e1095" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract weekday and compute average views by day of week</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>weekday_analysis <span class="op">=</span> (chaucer_with_dates</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .assign(weekday <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'date'</span>].dt.day_name())</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'weekday'</span>)[<span class="st">'views'</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    .mean()</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">'views'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>weekday_analysis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">weekday</th>
+<th data-quarto-table-cell-role="th">views</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Tuesday</td>
+<td>2273.111111</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Thursday</td>
+<td>2098.555556</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Wednesday</td>
+<td>1988.111111</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Monday</td>
+<td>1975.750000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Sunday</td>
+<td>1865.500000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Friday</td>
+<td>1828.222222</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Saturday</td>
+<td>1762.375000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Here we see the average number of page views by day of the week. We can also use the date objects to filter the dataset. For example, we can filter the dataset to only include those dates after 15 January 2020, about two-thirds of the way through our dataset:</p>
+<div id="fa1fda7f" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter by date</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>filtered_data <span class="op">=</span> chaucer_with_dates.query(<span class="st">"date &gt; '2020-01-15'"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>filtered_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">day</th>
+<th data-quarto-table-cell-role="th">views</th>
+<th data-quarto-table-cell-role="th">date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">60</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>1</td>
+<td>2133</td>
+<td>2023-08-01</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">61</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>2</td>
+<td>1977</td>
+<td>2023-08-02</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">62</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>3</td>
+<td>1860</td>
+<td>2023-08-03</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">63</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>4</td>
+<td>1739</td>
+<td>2023-08-04</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">64</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>5</td>
+<td>1849</td>
+<td>2023-08-05</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">65</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>6</td>
+<td>1819</td>
+<td>2023-08-06</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">66</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>7</td>
+<td>1885</td>
+<td>2023-08-07</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">67</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>8</td>
+<td>1984</td>
+<td>2023-08-08</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">68</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>9</td>
+<td>1946</td>
+<td>2023-08-09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">69</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>10</td>
+<td>1942</td>
+<td>2023-08-10</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">70</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>11</td>
+<td>1633</td>
+<td>2023-08-11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">71</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>12</td>
+<td>1749</td>
+<td>2023-08-12</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">72</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>13</td>
+<td>1790</td>
+<td>2023-08-13</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">73</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>14</td>
+<td>1755</td>
+<td>2023-08-14</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">74</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>15</td>
+<td>1685</td>
+<td>2023-08-15</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">75</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>16</td>
+<td>1998</td>
+<td>2023-08-16</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">76</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>17</td>
+<td>1947</td>
+<td>2023-08-17</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">77</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>18</td>
+<td>1773</td>
+<td>2023-08-18</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">78</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>19</td>
+<td>1714</td>
+<td>2023-08-19</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">79</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>20</td>
+<td>1789</td>
+<td>2023-08-20</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">80</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>21</td>
+<td>1879</td>
+<td>2023-08-21</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">81</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>22</td>
+<td>2004</td>
+<td>2023-08-22</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">82</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>23</td>
+<td>1931</td>
+<td>2023-08-23</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">83</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>24</td>
+<td>1880</td>
+<td>2023-08-24</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">84</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>25</td>
+<td>1647</td>
+<td>2023-08-25</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">85</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>26</td>
+<td>1712</td>
+<td>2023-08-26</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">86</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>27</td>
+<td>1820</td>
+<td>2023-08-27</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">87</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>28</td>
+<td>1902</td>
+<td>2023-08-28</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">88</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>29</td>
+<td>1888</td>
+<td>2023-08-29</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">89</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>30</td>
+<td>1745</td>
+<td>2023-08-30</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">90</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>8</td>
+<td>31</td>
+<td>1735</td>
+<td>2023-08-31</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">91</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>1</td>
+<td>1701</td>
+<td>2023-09-01</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">92</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>2</td>
+<td>1564</td>
+<td>2023-09-02</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">93</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>3</td>
+<td>1807</td>
+<td>2023-09-03</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">94</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>4</td>
+<td>1853</td>
+<td>2023-09-04</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">95</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>5</td>
+<td>4214</td>
+<td>2023-09-05</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">96</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>6</td>
+<td>2030</td>
+<td>2023-09-06</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">97</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>7</td>
+<td>2158</td>
+<td>2023-09-07</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">98</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>8</td>
+<td>2174</td>
+<td>2023-09-08</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">99</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>9</td>
+<td>1709</td>
+<td>2023-09-09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">100</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>10</td>
+<td>2038</td>
+<td>2023-09-10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">101</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>11</td>
+<td>2008</td>
+<td>2023-09-11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">102</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>12</td>
+<td>2188</td>
+<td>2023-09-12</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">103</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>13</td>
+<td>2040</td>
+<td>2023-09-13</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">104</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>14</td>
+<td>2178</td>
+<td>2023-09-14</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">105</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>15</td>
+<td>1832</td>
+<td>2023-09-15</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">106</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>16</td>
+<td>2144</td>
+<td>2023-09-16</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">107</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>17</td>
+<td>1911</td>
+<td>2023-09-17</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">108</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>18</td>
+<td>2140</td>
+<td>2023-09-18</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">109</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>19</td>
+<td>2174</td>
+<td>2023-09-19</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">110</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>20</td>
+<td>2276</td>
+<td>2023-09-20</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">111</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>21</td>
+<td>2597</td>
+<td>2023-09-21</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">112</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>22</td>
+<td>1873</td>
+<td>2023-09-22</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">113</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>23</td>
+<td>1658</td>
+<td>2023-09-23</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">114</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>24</td>
+<td>1950</td>
+<td>2023-09-24</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">115</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>25</td>
+<td>2384</td>
+<td>2023-09-25</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">116</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>26</td>
+<td>2188</td>
+<td>2023-09-26</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">117</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>27</td>
+<td>1950</td>
+<td>2023-09-27</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">118</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>28</td>
+<td>2590</td>
+<td>2023-09-28</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">119</td>
+<td>Geoffrey Chaucer</td>
+<td>2023</td>
+<td>9</td>
+<td>29</td>
+<td>2082</td>
+<td>2023-09-29</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Note that we can use string representations of dates in filtering operations, and pandas will automatically convert them to the appropriate datetime objects.</p>
+</section>
+<section id="datetime-objects" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="datetime-objects"><span class="header-section-number">8.4</span> Datetime Objects</h2>
+<p>The <code>page_views</code> dataset records the date of each observation. Sometimes we have data that describes the time of an event more specifically in terms of hours, minutes, and even possibly seconds. We will use the term <em>datetime</em> to describe an object that stores the precise time that an event occurs. The idea is that to describe the time that something happens we need to specify a date and a time. Later in the chapter, we will see an object that stores time without reference to a particular day. Whereas dates have a natural precision (a single day), we might desire to work with datetime objects of different levels of granularity. In some cases we might have just hours of the day and in others we might have access to records at the level of a millisecond such as data from radio and TV. In Python, internally all datetime objects are stored with nanosecond precision, but we can regard the precision as whatever granularity we have given in our data for all practical purposes.</p>
+<p>Datetime objects largely function the same as date objects. Let’s grab another dataset from Wikipedia that has precise timestamps. Below, we read in a dataset consisting of the last 500 edits made to each of the 75 British author pages in our collection.</p>
+<div id="dc945e6b" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>page_revisions <span class="op">=</span> pd.read_csv(<span class="st">"data/wiki_uk_page_revisions.csv"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert datetime column to pandas datetime</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>page_revisions[<span class="st">'datetime'</span>] <span class="op">=</span> pd.to_datetime(page_revisions[<span class="st">'datetime'</span>])</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>page_revisions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">user</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">comment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Marie de France</td>
+<td>YurikBot</td>
+<td>2006-07-06 23:24:54+00:00</td>
+<td>3061</td>
+<td>robot Adding: [[it:Maria di Francia]]</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Marie de France</td>
+<td>YurikBot</td>
+<td>2006-07-24 18:39:08+00:00</td>
+<td>3085</td>
+<td>robot Adding: [[pt:Maria de França]]</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Marie de France</td>
+<td>Ccarroll</td>
+<td>2006-09-10 13:36:44+00:00</td>
+<td>3085</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Marie de France</td>
+<td>63.231.20.88</td>
+<td>2006-09-18 04:59:53+00:00</td>
+<td>3105</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Marie de France</td>
+<td>ExplicitImplicity</td>
+<td>2006-09-23 22:27:20+00:00</td>
+<td>3104</td>
+<td>i believe it is stupid to translate one word, ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35465</td>
+<td>Seamus Heaney</td>
+<td>InternetArchiveBot</td>
+<td>2023-09-21 04:51:45+00:00</td>
+<td>85491</td>
+<td>Rescuing 1 sources and tagging 0 as dead.) #IA...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35466</td>
+<td>Seamus Heaney</td>
+<td>81.110.56.233</td>
+<td>2023-09-24 12:10:49+00:00</td>
+<td>85493</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35467</td>
+<td>Seamus Heaney</td>
+<td>149.50.162.177</td>
+<td>2023-09-25 16:06:01+00:00</td>
+<td>85482</td>
+<td>/* Death */</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35468</td>
+<td>Seamus Heaney</td>
+<td>--WikiUser1234945--</td>
+<td>2023-09-25 16:06:11+00:00</td>
+<td>85493</td>
+<td>Reverted edits by [[Special:Contributions/149....</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35469</td>
+<td>Seamus Heaney</td>
+<td>BD2412</td>
+<td>2023-09-27 02:39:46+00:00</td>
+<td>85493</td>
+<td>/* 1957–1969 */Clean up spacing errors around ...</td>
+</tr>
+</tbody>
+</table>
+
+<p>35470 rows × 5 columns</p>
+</div>
+</div>
+</div>
+<p>Notice that each row has a record in the column <code>datetime</code> that provides a precise datetime object giving the second at which the page was modified. The data were stored using the ISO-8601 format (“YYYY-MM-DD HH:MM:SS”), which pandas can automatically parse.</p>
+<p>Our <code>page_revisions</code> dataset includes several pieces of information about each of the edits. We have a username for the person who made the edit (recall that anyone can edit a Wikipedia page), the size in bytes of the page after the edit was made, and a short comment describing what was done in the change. Looking at the page size over time shows when large additions and deletions were made to each record. The code below yields a temporal visualization:</p>
+<div id="b35b4077" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for two authors and create plot</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>selected_authors <span class="op">=</span> [<span class="st">'Geoffrey Chaucer'</span>, <span class="st">'Emily Brontë'</span>]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>revision_subset <span class="op">=</span> page_revisions[page_revisions[<span class="st">'doc_id'</span>].isin(selected_authors)]</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (ggplot(revision_subset, aes(x<span class="op">=</span><span class="st">'datetime'</span>, y<span class="op">=</span><span class="st">'size'</span>, color<span class="op">=</span><span class="st">'doc_id'</span>)) <span class="op">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>     geom_line() <span class="op">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>     scale_color_manual(values<span class="op">=</span>[<span class="st">'red'</span>, <span class="st">'blue'</span>]) <span class="op">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>     labs(title<span class="op">=</span><span class="st">"Wikipedia Page Size Over Time"</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>          x<span class="op">=</span><span class="st">"Date"</span>, y<span class="op">=</span><span class="st">"Page Size (bytes)"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>          color<span class="op">=</span><span class="st">"Author"</span>))</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_temporal_data_files/figure-html/cell-12-output-1.png" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Looking at the plot, we can see that there are a few very large edits (both deletions and additions), likely consisting of large sections added and subtracted from the page. If we want to visualize when these large changes occurred, it would be useful to include a more granular set of labels on the x-axis. We can do this using <code>scale_x_datetime()</code> with custom formatting:</p>
+<div id="4a5daa44" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (ggplot(revision_subset, aes(x<span class="op">=</span><span class="st">'datetime'</span>, y<span class="op">=</span><span class="st">'size'</span>, color<span class="op">=</span><span class="st">'doc_id'</span>)) <span class="op">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>     geom_line() <span class="op">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>     scale_color_manual(values<span class="op">=</span>[<span class="st">'red'</span>, <span class="st">'blue'</span>]) <span class="op">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>     scale_x_datetime(date_breaks<span class="op">=</span><span class="st">'6 months'</span>, date_labels<span class="op">=</span><span class="st">'%b %Y'</span>) <span class="op">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>     theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">90</span>, hjust<span class="op">=</span><span class="dv">1</span>)) <span class="op">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>     labs(title<span class="op">=</span><span class="st">"Wikipedia Page Size Over Time (Custom Labels)"</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>          x<span class="op">=</span><span class="st">"Date"</span>, y<span class="op">=</span><span class="st">"Page Size (bytes)"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>          color<span class="op">=</span><span class="st">"Author"</span>))</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_temporal_data_files/figure-html/cell-13-output-1.png" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can also filter our dataset by a particular range of dates or times. This is useful to zoom into a specific region of our data to investigate patterns that may be otherwise lost. For example, if we wanted to see all of the page sizes for two authors from 2021 onward:</p>
+<div id="c63f5e73" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter by datetime</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>recent_revisions <span class="op">=</span> (page_revisions</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"doc_id in @selected_authors"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"datetime &gt; @pd.Timestamp('2021-01-01', tz='UTC')"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>recent_revisions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">user</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">comment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">650</td>
+<td>Geoffrey Chaucer</td>
+<td>86.31.15.58</td>
+<td>2021-01-18 09:42:33+00:00</td>
+<td>68291</td>
+<td>/* Origin */</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">651</td>
+<td>Geoffrey Chaucer</td>
+<td>86.31.15.58</td>
+<td>2021-01-18 09:43:16+00:00</td>
+<td>68288</td>
+<td>/* Taco Bell */</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">652</td>
+<td>Geoffrey Chaucer</td>
+<td>88.108.207.22</td>
+<td>2021-01-18 11:15:33+00:00</td>
+<td>68284</td>
+<td>/* Career */</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">653</td>
+<td>Geoffrey Chaucer</td>
+<td>Pahunkat</td>
+<td>2021-01-18 11:16:09+00:00</td>
+<td>68288</td>
+<td>Rollback edit(s) by [[Special:Contributions/88...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">654</td>
+<td>Geoffrey Chaucer</td>
+<td>88.108.207.22</td>
+<td>2021-01-18 11:16:40+00:00</td>
+<td>68293</td>
+<td>/* Origin */</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22577</td>
+<td>Emily Brontë</td>
+<td>HeyElliott</td>
+<td>2023-09-16 20:05:37+00:00</td>
+<td>41598</td>
+<td>[[WP:LQ]]</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">22578</td>
+<td>Emily Brontë</td>
+<td>Qwerfjkl (bot)</td>
+<td>2023-09-21 16:34:46+00:00</td>
+<td>41586</td>
+<td>Converting Gutenberg author ID from name to nu...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22579</td>
+<td>Emily Brontë</td>
+<td>Ficaia</td>
+<td>2023-09-27 12:47:22+00:00</td>
+<td>41717</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">22580</td>
+<td>Emily Brontë</td>
+<td>Keith D</td>
+<td>2023-09-27 20:36:18+00:00</td>
+<td>41688</td>
+<td>Remove namespace | Replaced curly quotes with ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22581</td>
+<td>Emily Brontë</td>
+<td>Keith D</td>
+<td>2023-09-27 20:39:51+00:00</td>
+<td>41693</td>
+<td>/* Adulthood */ Cite fix</td>
+</tr>
+</tbody>
+</table>
+
+<p>506 rows × 5 columns</p>
+</div>
+</div>
+</div>
+<p>Notice that the filter includes data from 2021, even though we use a strictly greater than condition. The reason for this is that <code>'2021-01-01'</code> is interpreted as the exact time corresponding to 1 January 2021 at 00:00. Any record that comes at any other time during the year of 2021 will be included in the filter.</p>
+</section>
+<section id="language-and-time-zones" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="language-and-time-zones"><span class="header-section-number">8.5</span> Language and Time Zones</h2>
+<p>So far, we have primarily worked with numeric summaries of the date and datetime objects. In the previous sections, notice that our example of working with the days of the week and the names of the months all had Python create automatically the names of these objects in English. Depending on our audience, it may be desirable to show plots using the names of weekdays and months in another language. This can be controlled by setting the system locale or using custom formatting. Below, for example, are the days of the weeks provided in different languages using pandas datetime functionality:</p>
+<div id="1d86b2b0" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract various datetime components</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>datetime_analysis <span class="op">=</span> (page_revisions</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">10</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    .assign(</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        weekday_en <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.day_name(),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        month_en <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.month_name(),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>        hour <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.hour,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        date_only <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.date</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    .loc[:, [<span class="st">'datetime'</span>, <span class="st">'weekday_en'</span>, <span class="st">'month_en'</span>, <span class="st">'hour'</span>, <span class="st">'date_only'</span>]]</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>datetime_analysis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">weekday_en</th>
+<th data-quarto-table-cell-role="th">month_en</th>
+<th data-quarto-table-cell-role="th">hour</th>
+<th data-quarto-table-cell-role="th">date_only</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2006-07-06 23:24:54+00:00</td>
+<td>Thursday</td>
+<td>July</td>
+<td>23</td>
+<td>2006-07-06</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2006-07-24 18:39:08+00:00</td>
+<td>Monday</td>
+<td>July</td>
+<td>18</td>
+<td>2006-07-24</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2006-09-10 13:36:44+00:00</td>
+<td>Sunday</td>
+<td>September</td>
+<td>13</td>
+<td>2006-09-10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2006-09-18 04:59:53+00:00</td>
+<td>Monday</td>
+<td>September</td>
+<td>4</td>
+<td>2006-09-18</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2006-09-23 22:27:20+00:00</td>
+<td>Saturday</td>
+<td>September</td>
+<td>22</td>
+<td>2006-09-23</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2006-09-23 22:31:03+00:00</td>
+<td>Saturday</td>
+<td>September</td>
+<td>22</td>
+<td>2006-09-23</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2006-10-03 18:18:09+00:00</td>
+<td>Tuesday</td>
+<td>October</td>
+<td>18</td>
+<td>2006-10-03</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2006-10-03 18:19:32+00:00</td>
+<td>Tuesday</td>
+<td>October</td>
+<td>18</td>
+<td>2006-10-03</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2006-10-10 18:48:26+00:00</td>
+<td>Tuesday</td>
+<td>October</td>
+<td>18</td>
+<td>2006-10-10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2006-10-11 05:29:32+00:00</td>
+<td>Wednesday</td>
+<td>October</td>
+<td>5</td>
+<td>2006-10-11</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>For non-English locales, you would typically set the system locale before running the analysis. However, since locale support varies by system, we’ll focus on the English representation here.</p>
+<p>Another regional issue that arises when working with dates and times are time zones. While seemingly not too difficult a concept, getting time zones to work correctly with complex datasets can be incredibly complicated. A wide range of programming bugs have been attributed to all sorts of edge-cases surrounding the processing of time zones.</p>
+<p>All times stored in pandas can be timezone-aware or timezone-naive. By default, times are stored as timezone-naive (no timezone information). The data can be localized to a specific timezone using pandas timezone functionality. All of the times recorded in the dataset <code>page_revisions</code> are given in UTC. This is not surprising; most technical sources with a global focus will use this convention.</p>
+<p>We can convert between time zones using pandas and pytz. The <code>tz_localize()</code> method assigns a timezone to naive datetime data, while <code>tz_convert()</code> converts from one timezone to another. Let’s convert our UTC times to New York time:</p>
+<div id="413dca54" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytz</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert UTC times to New York timezone</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>revision_with_tz <span class="op">=</span> (page_revisions</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">10</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    .assign(</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        datetime_utc <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>],  <span class="co"># Already UTC timezone-aware</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        datetime_nyc <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.tz_convert(<span class="st">'America/New_York'</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract hour information for comparison</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>revision_with_tz <span class="op">=</span> revision_with_tz.assign(</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    hour_utc <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime_utc'</span>].dt.hour,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    hour_nyc <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime_nyc'</span>].dt.hour</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>revision_with_tz[[<span class="st">'datetime_utc'</span>, <span class="st">'datetime_nyc'</span>, <span class="st">'hour_utc'</span>, <span class="st">'hour_nyc'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">datetime_utc</th>
+<th data-quarto-table-cell-role="th">datetime_nyc</th>
+<th data-quarto-table-cell-role="th">hour_utc</th>
+<th data-quarto-table-cell-role="th">hour_nyc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2006-07-06 23:24:54+00:00</td>
+<td>2006-07-06 19:24:54-04:00</td>
+<td>23</td>
+<td>19</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2006-07-24 18:39:08+00:00</td>
+<td>2006-07-24 14:39:08-04:00</td>
+<td>18</td>
+<td>14</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2006-09-10 13:36:44+00:00</td>
+<td>2006-09-10 09:36:44-04:00</td>
+<td>13</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2006-09-18 04:59:53+00:00</td>
+<td>2006-09-18 00:59:53-04:00</td>
+<td>4</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2006-09-23 22:27:20+00:00</td>
+<td>2006-09-23 18:27:20-04:00</td>
+<td>22</td>
+<td>18</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2006-09-23 22:31:03+00:00</td>
+<td>2006-09-23 18:31:03-04:00</td>
+<td>22</td>
+<td>18</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2006-10-03 18:18:09+00:00</td>
+<td>2006-10-03 14:18:09-04:00</td>
+<td>18</td>
+<td>14</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2006-10-03 18:19:32+00:00</td>
+<td>2006-10-03 14:19:32-04:00</td>
+<td>18</td>
+<td>14</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2006-10-10 18:48:26+00:00</td>
+<td>2006-10-10 14:48:26-04:00</td>
+<td>18</td>
+<td>14</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2006-10-11 05:29:32+00:00</td>
+<td>2006-10-11 01:29:32-04:00</td>
+<td>5</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We can use the timezone information to display data in a useful way to a local audience. For example, the code below displays the frequency of updates as a function of the hour of the day in New York City:</p>
+<div id="7448965b" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze edits by hour in New York timezone</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>hourly_edits <span class="op">=</span> (page_revisions</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    .assign(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        datetime_nyc <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.tz_convert(<span class="st">'America/New_York'</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        hour_nyc <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.tz_convert(<span class="st">'America/New_York'</span>).dt.hour</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'hour_nyc'</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    .size()</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">'count'</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (ggplot(hourly_edits, aes(x<span class="op">=</span><span class="st">'hour_nyc'</span>, y<span class="op">=</span><span class="st">'count'</span>)) <span class="op">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>     geom_col() <span class="op">+</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>     labs(title<span class="op">=</span><span class="st">"Wikipedia Edits by Hour (New York Time)"</span>,</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>          x<span class="op">=</span><span class="st">"Hour of Day"</span>, y<span class="op">=</span><span class="st">"Number of Edits"</span>))</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_temporal_data_files/figure-html/cell-17-output-1.png" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>While certainly many editors are living in other English-speaking cities (London, Los Angeles, or Mumbai), it is generally easier for people to do the mental math for what times correspond with relative to their own time zone than relative to UTC.</p>
+</section>
+<section id="dates-and-datetimes" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="dates-and-datetimes"><span class="header-section-number">8.6</span> Dates and Datetimes</h2>
+<p>We have shown above how to create date and datetime objects using pandas <code>to_datetime()</code> function. Also, we have seen how to extract the components from date and datetime objects with the pandas datetime accessor (<code>.dt</code>). There are a variety of other functions that help us create and manipulate these temporal objects. For example, pandas can parse string representations in common formats automatically. While we will not give an entire list of all the available functions in pandas datetime functionality, let’s look at a few of the most useful and representative examples for converting between different ways of representing information about time.</p>
+<p>The <code>page_revisions</code> dataset has revisions recorded with the precision of a second. This is likely overly granular for many applications; it might be better to have the data in a format that is only at the level of an hour, for example. We can truncate any date or datetime object by using pandas’ <code>.dt.floor()</code> method along with a specific frequency. Setting the frequency to “H” (hour), for example, will remove all of the minutes and seconds from the time:</p>
+<div id="03c9b14d" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Truncate datetime to hours</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>revision_hourly <span class="op">=</span> (page_revisions</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">10</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    .assign(</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        datetime_hour <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.floor(<span class="st">'H'</span>),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        datetime_day <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.floor(<span class="st">'D'</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    .loc[:, [<span class="st">'datetime'</span>, <span class="st">'datetime_hour'</span>, <span class="st">'datetime_day'</span>]]</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>revision_hourly</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">datetime_hour</th>
+<th data-quarto-table-cell-role="th">datetime_day</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2006-07-06 23:24:54+00:00</td>
+<td>2006-07-06 23:00:00+00:00</td>
+<td>2006-07-06 00:00:00+00:00</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2006-07-24 18:39:08+00:00</td>
+<td>2006-07-24 18:00:00+00:00</td>
+<td>2006-07-24 00:00:00+00:00</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2006-09-10 13:36:44+00:00</td>
+<td>2006-09-10 13:00:00+00:00</td>
+<td>2006-09-10 00:00:00+00:00</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2006-09-18 04:59:53+00:00</td>
+<td>2006-09-18 04:00:00+00:00</td>
+<td>2006-09-18 00:00:00+00:00</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2006-09-23 22:27:20+00:00</td>
+<td>2006-09-23 22:00:00+00:00</td>
+<td>2006-09-23 00:00:00+00:00</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2006-09-23 22:31:03+00:00</td>
+<td>2006-09-23 22:00:00+00:00</td>
+<td>2006-09-23 00:00:00+00:00</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2006-10-03 18:18:09+00:00</td>
+<td>2006-10-03 18:00:00+00:00</td>
+<td>2006-10-03 00:00:00+00:00</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2006-10-03 18:19:32+00:00</td>
+<td>2006-10-03 18:00:00+00:00</td>
+<td>2006-10-03 00:00:00+00:00</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2006-10-10 18:48:26+00:00</td>
+<td>2006-10-10 18:00:00+00:00</td>
+<td>2006-10-10 00:00:00+00:00</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2006-10-11 05:29:32+00:00</td>
+<td>2006-10-11 05:00:00+00:00</td>
+<td>2006-10-11 00:00:00+00:00</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The benefit of using the <code>.dt.floor()</code> method is that we could then group, join, or summarize the data in a way that treats each value of <code>datetime</code> the same as long as they occur during the same hour. There is also a <code>.dt.round()</code> method for rounding the datetime object to the nearest desired unit. In the special case in which we want to extract just the date part of a datetime, we can use the <code>.dt.date</code> accessor. The code below illustrates this process, as well as showing how reducing the temporal granularity can be a useful first step before grouping and summarizing:</p>
+<div id="ec6d4f14" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count edits by date</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>daily_edit_counts <span class="op">=</span> (page_revisions</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    .assign(date <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.date)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'date'</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    .size()</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">'count'</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">'date'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>daily_edit_counts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4830</td>
+<td>2023-09-30</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4829</td>
+<td>2023-09-29</td>
+<td>11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4828</td>
+<td>2023-09-28</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4827</td>
+<td>2023-09-27</td>
+<td>14</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4826</td>
+<td>2023-09-26</td>
+<td>12</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2003-02-01</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2003-01-29</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2003-01-14</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2003-01-04</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2002-10-26</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+<p>4831 rows × 2 columns</p>
+</div>
+</div>
+</div>
+<p>Above, we effectively remove the time component of the datetime object and treat the variable as having only a date element. Occasionally, we might want to do the opposite. That is, considering only the time component of a datetime object without worrying about the specific date. For example, we might want to summarize the number of edits that are made based on the time of the day. We can do this by extracting the time component:</p>
+<div id="748a7b4c" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract time component and aggregate by hour</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>hourly_edit_pattern <span class="op">=</span> (page_revisions</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    .assign(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        hour <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.floor(<span class="st">'H'</span>).dt.time,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>        hour_numeric <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'datetime'</span>].dt.hour</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'hour_numeric'</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    .size()</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">'count'</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">'hour_numeric'</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>hourly_edit_pattern</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">hour_numeric</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0</td>
+<td>1316</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>1229</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>1149</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>3</td>
+<td>1010</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>4</td>
+<td>982</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>5</td>
+<td>1001</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>6</td>
+<td>930</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>7</td>
+<td>974</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>8</td>
+<td>1145</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>9</td>
+<td>1406</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>10</td>
+<td>1502</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>11</td>
+<td>1479</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>12</td>
+<td>1439</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>13</td>
+<td>1796</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>14</td>
+<td>1856</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>15</td>
+<td>1938</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>16</td>
+<td>2003</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>17</td>
+<td>1836</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>18</td>
+<td>1983</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>19</td>
+<td>1837</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>20</td>
+<td>1838</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>21</td>
+<td>1797</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>22</td>
+<td>1675</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>23</td>
+<td>1349</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This creates a variable that stores time without any date information, which is useful for analyzing patterns that repeat daily.</p>
+</section>
+<section id="window-functions" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="window-functions"><span class="header-section-number">8.7</span> Window Functions</h2>
+<p>At the start of this chapter, we considered time series to be a sequence of events without too much focus on the specific dates and times. This viewpoint can be a useful construct when we want to look at changes over time. For example, we have the overall size of each Wikipedia page after an edit. A measurement that would be useful is the difference in page size made by an edit. To add a variable to a dataset, we usually use the <code>assign()</code> method or direct assignment, and that will again work here. However, in this case we need to reference values that come before or after a certain value. This requires the use of window functions.</p>
+<p>A <em>window function</em> transforms a variable in a dataset into a new variable with the same length in a way that takes into account the entire ordering of the data. Two examples of window functions that are useful when working with time series data are <code>shift()</code> with positive and negative values, which give access to rows preceding or following a row, respectively. Let’s apply this to our dataset of page revisions to get the previous and next values of the page size variable.</p>
+<div id="1ac346bc" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply window functions to get lagged and leading values</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>revision_with_lag <span class="op">=</span> (page_revisions</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    .assign(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        size_last <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'size'</span>].shift(<span class="dv">1</span>),  <span class="co"># lag</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        size_next <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'size'</span>].shift(<span class="op">-</span><span class="dv">1</span>)  <span class="co"># lead</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    .loc[:, [<span class="st">'doc_id'</span>, <span class="st">'datetime'</span>, <span class="st">'size'</span>, <span class="st">'size_last'</span>, <span class="st">'size_next'</span>]]</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>revision_with_lag</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">size_last</th>
+<th data-quarto-table-cell-role="th">size_next</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Marie de France</td>
+<td>2006-07-06 23:24:54+00:00</td>
+<td>3061</td>
+<td>NaN</td>
+<td>3085.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Marie de France</td>
+<td>2006-07-24 18:39:08+00:00</td>
+<td>3085</td>
+<td>3061.0</td>
+<td>3085.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Marie de France</td>
+<td>2006-09-10 13:36:44+00:00</td>
+<td>3085</td>
+<td>3085.0</td>
+<td>3105.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Marie de France</td>
+<td>2006-09-18 04:59:53+00:00</td>
+<td>3105</td>
+<td>3085.0</td>
+<td>3104.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Marie de France</td>
+<td>2006-09-23 22:27:20+00:00</td>
+<td>3104</td>
+<td>3105.0</td>
+<td>3132.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35465</td>
+<td>Seamus Heaney</td>
+<td>2023-09-21 04:51:45+00:00</td>
+<td>85491</td>
+<td>85341.0</td>
+<td>85493.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35466</td>
+<td>Seamus Heaney</td>
+<td>2023-09-24 12:10:49+00:00</td>
+<td>85493</td>
+<td>85491.0</td>
+<td>85482.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35467</td>
+<td>Seamus Heaney</td>
+<td>2023-09-25 16:06:01+00:00</td>
+<td>85482</td>
+<td>85493.0</td>
+<td>85493.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35468</td>
+<td>Seamus Heaney</td>
+<td>2023-09-25 16:06:11+00:00</td>
+<td>85493</td>
+<td>85482.0</td>
+<td>85493.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35469</td>
+<td>Seamus Heaney</td>
+<td>2023-09-27 02:39:46+00:00</td>
+<td>85493</td>
+<td>85493.0</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>35470 rows × 5 columns</p>
+</div>
+</div>
+</div>
+<p>Notice that the first value of <code>size_last</code> is missing because there is no <em>last</em> value for the first item in our data. Similarly, the variable <code>size_next</code> will have a missing value at the end of the dataset. As written above, the code incorrectly crosses the time points at the boundary of each page. That is, for the first row of the second page (Geoffrey Chaucer) it thinks that the size of the last page is the size of the final page of the Marie de France record. To fix this, we can group the dataset by item prior to applying the window functions. Window functions respect the grouping of the data:</p>
+<div id="9600bf40" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply window functions within groups</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>revision_grouped_lag <span class="op">=</span> (page_revisions</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    .sort_values([<span class="st">'doc_id'</span>, <span class="st">'datetime'</span>])  <span class="co"># Ensure proper ordering</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'doc_id'</span>, group_keys<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> group: group.assign(</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        size_last <span class="op">=</span> group[<span class="st">'size'</span>].shift(<span class="dv">1</span>),</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        size_next <span class="op">=</span> group[<span class="st">'size'</span>].shift(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the boundary between groups</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>boundary_data <span class="op">=</span> revision_grouped_lag.iloc[<span class="dv">495</span>:<span class="dv">505</span>]</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>boundary_data[[<span class="st">'doc_id'</span>, <span class="st">'datetime'</span>, <span class="st">'size'</span>, <span class="st">'size_last'</span>, <span class="st">'size_next'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">size_last</th>
+<th data-quarto-table-cell-role="th">size_next</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">495</td>
+<td>A. A. Milne</td>
+<td>2023-08-05 20:59:54+00:00</td>
+<td>44019</td>
+<td>43990.0</td>
+<td>44038.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">496</td>
+<td>A. A. Milne</td>
+<td>2023-08-18 09:26:21+00:00</td>
+<td>44038</td>
+<td>44019.0</td>
+<td>44044.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">497</td>
+<td>A. A. Milne</td>
+<td>2023-08-21 22:05:31+00:00</td>
+<td>44044</td>
+<td>44038.0</td>
+<td>44045.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">498</td>
+<td>A. A. Milne</td>
+<td>2023-08-21 22:07:46+00:00</td>
+<td>44045</td>
+<td>44044.0</td>
+<td>44077.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">499</td>
+<td>A. A. Milne</td>
+<td>2023-08-31 20:41:54+00:00</td>
+<td>44077</td>
+<td>44045.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">500</td>
+<td>Alexander Pope</td>
+<td>2016-04-17 04:03:45+00:00</td>
+<td>31345</td>
+<td>NaN</td>
+<td>31531.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">501</td>
+<td>Alexander Pope</td>
+<td>2016-05-05 22:17:54+00:00</td>
+<td>31531</td>
+<td>31345.0</td>
+<td>31532.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">502</td>
+<td>Alexander Pope</td>
+<td>2016-05-05 22:24:29+00:00</td>
+<td>31532</td>
+<td>31531.0</td>
+<td>31585.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">503</td>
+<td>Alexander Pope</td>
+<td>2016-05-07 19:05:49+00:00</td>
+<td>31585</td>
+<td>31532.0</td>
+<td>31614.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">504</td>
+<td>Alexander Pope</td>
+<td>2016-05-09 17:22:21+00:00</td>
+<td>31614</td>
+<td>31585.0</td>
+<td>31585.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Notice that now, correctly, the dataset has a missing <code>size_next</code> for the final Marie de France record and a missing <code>size_last</code> for the first Geoffrey Chaucer record. Now, let’s use this to compute the change in the page sizes for each of the revisions:</p>
+<div id="2aa1b2d3" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute size differences</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>revision_with_diff <span class="op">=</span> (page_revisions</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    .sort_values([<span class="st">'doc_id'</span>, <span class="st">'datetime'</span>])</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'doc_id'</span>, group_keys<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> group: group.assign(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        size_diff <span class="op">=</span> group[<span class="st">'size'</span>] <span class="op">-</span> group[<span class="st">'size'</span>].shift(<span class="dv">1</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    .loc[:, [<span class="st">'doc_id'</span>, <span class="st">'datetime'</span>, <span class="st">'size'</span>, <span class="st">'size_diff'</span>]]</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>revision_with_diff</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">size</th>
+<th data-quarto-table-cell-role="th">size_diff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>A. A. Milne</td>
+<td>2015-09-04 16:30:26+00:00</td>
+<td>30702</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>A. A. Milne</td>
+<td>2015-09-22 14:51:08+00:00</td>
+<td>30400</td>
+<td>-302.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>A. A. Milne</td>
+<td>2015-11-07 10:23:31+00:00</td>
+<td>30389</td>
+<td>-11.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>A. A. Milne</td>
+<td>2015-11-08 00:48:23+00:00</td>
+<td>30397</td>
+<td>8.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>A. A. Milne</td>
+<td>2015-11-16 03:12:19+00:00</td>
+<td>30427</td>
+<td>30.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35465</td>
+<td>William Wordsworth</td>
+<td>2023-09-25 11:19:40+00:00</td>
+<td>41466</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35466</td>
+<td>William Wordsworth</td>
+<td>2023-09-27 15:10:27+00:00</td>
+<td>41464</td>
+<td>-2.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35467</td>
+<td>William Wordsworth</td>
+<td>2023-09-27 15:11:44+00:00</td>
+<td>41466</td>
+<td>2.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35468</td>
+<td>William Wordsworth</td>
+<td>2023-09-27 15:13:48+00:00</td>
+<td>41467</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35469</td>
+<td>William Wordsworth</td>
+<td>2023-09-27 15:18:10+00:00</td>
+<td>41466</td>
+<td>-1.0</td>
+</tr>
+</tbody>
+</table>
+
+<p>35470 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<p>In the above output, we can see the changes in page sizes. If we wanted to find reversions in the dataset, we could apply the <code>shift()</code> function several times. As an alternative, we can also give a parameter to <code>shift()</code> to indicate that we want to go back (or forward) more than one row. Let’s put this together to indicate which commits seem to be a reversion (the page size exactly matches the page size from two commits prior) as well as the overall size of the reversion:</p>
+<div id="7c5c7fc0" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify reversions</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>revision_with_reversion <span class="op">=</span> (page_revisions</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    .sort_values([<span class="st">'doc_id'</span>, <span class="st">'datetime'</span>])</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'doc_id'</span>, group_keys<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> group: group.assign(</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>        size_diff <span class="op">=</span> group[<span class="st">'size'</span>] <span class="op">-</span> group[<span class="st">'size'</span>].shift(<span class="dv">1</span>),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>        size_two_back <span class="op">=</span> group[<span class="st">'size'</span>].shift(<span class="dv">2</span>),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>        is_reversion <span class="op">=</span> group[<span class="st">'size'</span>] <span class="op">==</span> group[<span class="st">'size'</span>].shift(<span class="dv">2</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'is_reversion == True'</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    .loc[:, [<span class="st">'doc_id'</span>, <span class="st">'datetime'</span>, <span class="st">'size_diff'</span>, <span class="st">'is_reversion'</span>]]</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>revision_with_reversion</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">size_diff</th>
+<th data-quarto-table-cell-role="th">is_reversion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7</td>
+<td>A. A. Milne</td>
+<td>2015-12-17 18:13:11+00:00</td>
+<td>-6.0</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">10</td>
+<td>A. A. Milne</td>
+<td>2016-01-07 18:55:26+00:00</td>
+<td>30407.0</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>A. A. Milne</td>
+<td>2016-04-14 17:38:45+00:00</td>
+<td>36.0</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">26</td>
+<td>A. A. Milne</td>
+<td>2016-04-17 15:06:58+00:00</td>
+<td>-77.0</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">29</td>
+<td>A. A. Milne</td>
+<td>2016-04-27 20:04:19+00:00</td>
+<td>-1.0</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35460</td>
+<td>William Wordsworth</td>
+<td>2023-09-18 06:35:43+00:00</td>
+<td>-1.0</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35463</td>
+<td>William Wordsworth</td>
+<td>2023-09-24 14:54:33+00:00</td>
+<td>8.0</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35465</td>
+<td>William Wordsworth</td>
+<td>2023-09-25 11:19:40+00:00</td>
+<td>0.0</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35467</td>
+<td>William Wordsworth</td>
+<td>2023-09-27 15:11:44+00:00</td>
+<td>2.0</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35469</td>
+<td>William Wordsworth</td>
+<td>2023-09-27 15:18:10+00:00</td>
+<td>-1.0</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+
+<p>4927 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<p>These reversions can be studied to see the nature of the Wikipedia editing process. For example, how long do these reversions tend to take? Are certain pages more likely to undergo reversions? Do these take place during a certain time of the day? These are all questions that we should now be able to address using this dataset and the tools described above.</p>
+</section>
+<section id="range-joins" class="level2" data-number="8.8">
+<h2 data-number="8.8" class="anchored" data-anchor-id="range-joins"><span class="header-section-number">8.8</span> Range Joins</h2>
+<p>We will finish this chapter by looking at <em>range joins</em>, which allow for combining datasets based on inequalities between keys contained in two different datasets. Range joins are functionality that can greatly simplify some operations that arise when working with temporal data. Recall that all of the join functions that we saw in Chap. 5 work by finding a correspondence where keys from one dataset equal the values of keys in another dataset. In some cases it happens that we want to join two tables on inequalities rather than exact values.</p>
+<p>Take, for example, the metadata table for the 75 authors in our Wikipedia collection. Recall that this dataset contains the years that each author was born and the years each author died. What if we wanted to make a dataset by joining the metadata to itself, matching each author with other authors that would have been alive in overlapping years? We can do this using pandas’ <code>merge()</code> function with some custom logic:</p>
+<div id="b76500bd" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load metadata</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>meta <span class="op">=</span> pd.read_csv(<span class="st">"data/wiki_uk_meta.csv.gz"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create overlap pairs using cross join and filtering</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co"># This creates all combinations and then filters for overlaps</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>meta_cross <span class="op">=</span> meta.assign(key<span class="op">=</span><span class="dv">1</span>).merge(meta.assign(key<span class="op">=</span><span class="dv">1</span>), on<span class="op">=</span><span class="st">'key'</span>, suffixes<span class="op">=</span>(<span class="st">''</span>, <span class="st">'2'</span>))</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>overlap_pairs <span class="op">=</span> (meta_cross</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'born &lt;= born2 and died &gt; born2'</span>)  <span class="co"># First author's life overlaps with second's birth</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    .loc[:, [<span class="st">'doc_id'</span>, <span class="st">'doc_id2'</span>, <span class="st">'born'</span>, <span class="st">'died'</span>, <span class="st">'born2'</span>, <span class="st">'died2'</span>]]</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'doc_id != doc_id2'</span>)  <span class="co"># Remove self-matches</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>overlap_pairs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">doc_id2</th>
+<th data-quarto-table-cell-role="th">born</th>
+<th data-quarto-table-cell-role="th">died</th>
+<th data-quarto-table-cell-role="th">born2</th>
+<th data-quarto-table-cell-role="th">died2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">79</td>
+<td>Geoffrey Chaucer</td>
+<td>Margery Kempe</td>
+<td>1343</td>
+<td>1400</td>
+<td>1373</td>
+<td>1438</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">151</td>
+<td>John Gower</td>
+<td>Geoffrey Chaucer</td>
+<td>1330</td>
+<td>1408</td>
+<td>1343</td>
+<td>1400</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">153</td>
+<td>John Gower</td>
+<td>William Langland</td>
+<td>1330</td>
+<td>1408</td>
+<td>1332</td>
+<td>1386</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">154</td>
+<td>John Gower</td>
+<td>Margery Kempe</td>
+<td>1330</td>
+<td>1408</td>
+<td>1373</td>
+<td>1438</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">155</td>
+<td>John Gower</td>
+<td>Thomas Malory</td>
+<td>1330</td>
+<td>1408</td>
+<td>1405</td>
+<td>1471</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5541</td>
+<td>Rex Warner</td>
+<td>Samuel Beckett</td>
+<td>1905</td>
+<td>1986</td>
+<td>1906</td>
+<td>1989</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5542</td>
+<td>Rex Warner</td>
+<td>W. H. Auden</td>
+<td>1905</td>
+<td>1986</td>
+<td>1907</td>
+<td>1973</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5543</td>
+<td>Rex Warner</td>
+<td>Louis MacNeice</td>
+<td>1905</td>
+<td>1986</td>
+<td>1907</td>
+<td>1963</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5545</td>
+<td>Rex Warner</td>
+<td>Stephen Spender</td>
+<td>1905</td>
+<td>1986</td>
+<td>1909</td>
+<td>1995</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5549</td>
+<td>Rex Warner</td>
+<td>Seamus Heaney</td>
+<td>1905</td>
+<td>1986</td>
+<td>1939</td>
+<td>1939</td>
+</tr>
+</tbody>
+</table>
+
+<p>693 rows × 6 columns</p>
+</div>
+</div>
+</div>
+<p>The resulting dataset would make an interesting type of network, showing temporal overlap of authors in the dataset. In fact, it is such a nice example we could create a visualization by bringing together Chap. 7 on networks with our temporal data:</p>
+<div id="eca7256f" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a simple network visualization of temporal overlaps</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># For demonstration, we'll create a subset and simple plot</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>overlap_sample <span class="op">=</span> overlap_pairs.head(<span class="dv">50</span>)  <span class="co"># Sample for clarity</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Count overlaps per author</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>overlap_counts <span class="op">=</span> (overlap_pairs</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'doc_id'</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    .size()</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">'overlap_count'</span>)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    .merge(meta, on<span class="op">=</span><span class="st">'doc_id'</span>)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">'overlap_count'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>overlap_counts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">doc_id</th>
+<th data-quarto-table-cell-role="th">overlap_count</th>
+<th data-quarto-table-cell-role="th">born</th>
+<th data-quarto-table-cell-role="th">died</th>
+<th data-quarto-table-cell-role="th">era</th>
+<th data-quarto-table-cell-role="th">gender</th>
+<th data-quarto-table-cell-role="th">link</th>
+<th data-quarto-table-cell-role="th">short</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Bram Stoker</td>
+<td>22</td>
+<td>1847</td>
+<td>1912</td>
+<td>Victorian</td>
+<td>male</td>
+<td>Bram_Stoker</td>
+<td>Stoker</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">24</td>
+<td>George Bernard Shaw</td>
+<td>21</td>
+<td>1856</td>
+<td>1950</td>
+<td>Victorian</td>
+<td>male</td>
+<td>George_Bernard_Shaw</td>
+<td>Shaw</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">67</td>
+<td>William Blake</td>
+<td>20</td>
+<td>1757</td>
+<td>1827</td>
+<td>Romantic</td>
+<td>male</td>
+<td>William_Blake</td>
+<td>Blake</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">41</td>
+<td>Joseph Conrad</td>
+<td>19</td>
+<td>1857</td>
+<td>1924</td>
+<td>Twentieth C</td>
+<td>male</td>
+<td>Joseph_Conrad</td>
+<td>Conrad</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Alfred, Lord Tennyson</td>
+<td>18</td>
+<td>1809</td>
+<td>1892</td>
+<td>Victorian</td>
+<td>male</td>
+<td>Alfred,_Lord_Tennyson</td>
+<td>Tennyson</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Alexander Pope</td>
+<td>2</td>
+<td>1688</td>
+<td>1744</td>
+<td>Restoration</td>
+<td>male</td>
+<td>Alexander_Pope</td>
+<td>Pope</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">68</td>
+<td>William Langland</td>
+<td>2</td>
+<td>1332</td>
+<td>1386</td>
+<td>Early</td>
+<td>male</td>
+<td>William_Langland</td>
+<td>Langland</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">60</td>
+<td>Stephen Spender</td>
+<td>1</td>
+<td>1909</td>
+<td>1995</td>
+<td>Twentieth C</td>
+<td>male</td>
+<td>Stephen_Spender</td>
+<td>Spender</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">46</td>
+<td>Margery Kempe</td>
+<td>1</td>
+<td>1373</td>
+<td>1438</td>
+<td>Early</td>
+<td>female</td>
+<td>Margery_Kempe</td>
+<td>Kempe</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">23</td>
+<td>Geoffrey Chaucer</td>
+<td>1</td>
+<td>1343</td>
+<td>1400</td>
+<td>Early</td>
+<td>male</td>
+<td>Geoffrey_Chaucer</td>
+<td>Chaucer</td>
+</tr>
+</tbody>
+</table>
+
+<p>71 rows × 8 columns</p>
+</div>
+</div>
+</div>
+<p>The output shows that certain authors have many temporal overlaps with others in our collection, which creates interesting network structures. Adding this chapter on temporal data allows us to explore time and date data. When combined with other chapters such as networks, we can further layer our analysis. Given the calls to add context when working with humanities data, exploring in multiple ways and combining methods offers a way to add nuance. Of course, drawing on other scholarship, archives, and primary sources will also shape our understandings, and provide further insights. No computational method sits in a vacuum. Yet, adding important avenues such as time and date to understand data through a temporal lens is one more way we can work with data in a way that the humanities call for.</p>
+</section>
+<section id="extensions" class="level2" data-number="8.9">
+<h2 data-number="8.9" class="anchored" data-anchor-id="extensions"><span class="header-section-number">8.9</span> Extensions</h2>
+<p>A large portion of the date and datetime operations in pandas have been introduced throughout this chapter. Pandas contains many more functions for converting strings in other formats into date and datetime objects, all of which can be found along with examples in the pandas documentation. The <code>shift()</code> window function shown above is a very useful tool for any data that has a fixed order, which can include temporal data but also sources such as text.</p>
+<p>Additional window functions that operate over an arbitrary number of rows at once are provided by pandas’ <code>.rolling()</code> and <code>.expanding()</code> methods. These are excellent for computing moving averages, rolling statistics, and cumulative calculations over time series data.</p>
+<p>Beyond these programming tools, there is a wide array of specialized techniques for modeling time series data. Some useful Python libraries include:</p>
+<ul>
+<li><strong>statsmodels</strong>: Comprehensive statistical modeling including time series analysis</li>
+<li><strong>scikit-learn</strong>: Machine learning algorithms that can be applied to time series</li>
+<li><strong>prophet</strong>: Facebook’s time series forecasting library</li>
+<li><strong>pyflux</strong>: Bayesian time series modeling</li>
+<li><strong>arch</strong>: Econometric modeling for financial time series</li>
+</ul>
+<p>For theoretical background, Shumway and Stoffer offer a relatively accessible introduction to time-series modeling <span class="citation" data-cites="shumway2017time">[<a href="#ref-shumway2017time" role="doc-biblioref">1</a>]</span>. Fumio Hayashi’s <em>Econometrics</em> provides more theoretical details <span class="citation" data-cites="hayashi2011econometrics">[<a href="#ref-hayashi2011econometrics" role="doc-biblioref">2</a>]</span>. The canonical and encyclopedic reference for temporal analysis is James Hamilton’s <em>Time series analysis</em> <span class="citation" data-cites="hamilton2020time">[<a href="#ref-hamilton2020time" role="doc-biblioref">3</a>]</span>.</p>
+<p>The Python ecosystem provides rich and growing support for temporal data analysis, with particularly strong capabilities in areas like financial time series, econometrics, and forecasting that continue to evolve rapidly.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+
+
+<div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-shumway2017time" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline">Shumway, R H and Stoffer, D S (2017 ). Time series analysis and its applications: With r examples. Springer</div>
+</div>
+<div id="ref-hayashi2011econometrics" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">Hayashi, F (2011 ). <em>Econometrics</em>. Princeton University Press</div>
+</div>
+<div id="ref-hamilton2020time" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline">Hamilton, J D (2020 ). <em>Time Series Analysis</em>. Princeton university press</div>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/distant-viewing\.github\.io\/hdpy");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./07_network_data.html" class="pagination-link" aria-label="Network Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Network Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./09_spatial_data.html" class="pagination-link" aria-label="Spatial Data">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial Data</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Taylor Arnold and Lauren Tilton</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>A <a href="https://distantviewing.org/">Distant Viewing Lab</a> project</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

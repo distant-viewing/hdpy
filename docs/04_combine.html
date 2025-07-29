@@ -1,0 +1,2820 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Taylor Arnold and Lauren Tilton">
+
+<title>4&nbsp; EDA III: Restructuring Data – Humanities Data in Python</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./05_collect.html" rel="next">
+<link href="./03_verbs.html" rel="prev">
+<link href="./owl_explore.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-7dd7401653f9b7f7a674e3bd3661a20e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_intro.html">Part I: Core</a></li><li class="breadcrumb-item"><a href="./04_combine.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">EDA III: Restructuring Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Humanities Data in Python</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/distant-viewing/hdpy" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part I: Core</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">EDA I: Visualizing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_verbs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">EDA II: Organizing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_combine.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">EDA III: Restructuring Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_collect.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Collecting Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part II: Data Types</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_textual_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Textual Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_network_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Network Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_temporal_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Temporal Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_spatial_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10_image_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Image Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part III: Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Inference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12_supervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13_unsupervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./14_deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./15_transformers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Transformers</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Part IV: Programming</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./16_program.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./17_jsonxml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">JSON + XML</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./18_databases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Databases</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">4.1</span> Introduction</a></li>
+  <li><a href="#joining-by-relation" id="toc-joining-by-relation" class="nav-link" data-scroll-target="#joining-by-relation"><span class="header-section-number">4.2</span> Joining by Relation</a></li>
+  <li><a href="#different-types-of-joins" id="toc-different-types-of-joins" class="nav-link" data-scroll-target="#different-types-of-joins"><span class="header-section-number">4.3</span> Different Types of Joins</a></li>
+  <li><a href="#pivot-longer" id="toc-pivot-longer" class="nav-link" data-scroll-target="#pivot-longer"><span class="header-section-number">4.4</span> Pivot Longer</a></li>
+  <li><a href="#pivot-wider" id="toc-pivot-wider" class="nav-link" data-scroll-target="#pivot-wider"><span class="header-section-number">4.5</span> Pivot Wider</a></li>
+  <li><a href="#patterns-for-table-pivots" id="toc-patterns-for-table-pivots" class="nav-link" data-scroll-target="#patterns-for-table-pivots"><span class="header-section-number">4.6</span> Patterns for Table Pivots</a></li>
+  <li><a href="#extensions" id="toc-extensions" class="nav-link" data-scroll-target="#extensions"><span class="header-section-number">4.7</span> Extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_intro.html">Part I: Core</a></li><li class="breadcrumb-item"><a href="./04_combine.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">EDA III: Restructuring Data</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ch04" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">EDA III: Restructuring Data</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">4.1</span> Introduction</h2>
+<p>In the previous chapter, we learned how to use data operations to modify a dataset within Python. These modifications included taking a subset of a DataFrame, such as filtering to a subset of the rows or selecting a reduced set of columns. We saw how to add new columns and how to rearrange the rows of a dataset by sorting by one or more of the columns. We also investigated ways of grouping and summarizing our data, to create an entirely new set of summary statistics that aggregate the original dataset at different levels of granularity. Along the way, we saw how these modifications can help create more informative data visualizations, particularly when there is too much data to label every row as a point on a single plot. In this chapter, we will continue to see how to modify data using increasingly advanced techniques. To start, we will investigate how to combine information from two different data tables. Then, we proceed to data pivots, a relatively complex but powerful method for modifying data.</p>
+<p>Previously, we defined the concept of a data operation as a method that takes a dataset and returns a modified copy of the dataset. The operations that we have seen so far work on a single table. In contrast, <em>merge operations</em> take a pair of datasets and produce a new dataset that combines information from both tables. There are several different variants of merge operations; we will look at most of them in this chapter as each will have a different use-case in the later applications.</p>
+</section>
+<section id="joining-by-relation" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="joining-by-relation"><span class="header-section-number">4.2</span> Joining by Relation</h2>
+<p>To start, we need another dataset that can be combined with the CBSA data we have been using for our examples. A reminder that the Core-Based Statistical Areas data is census data from the American Communities Survey aggregated to economic centers, rather than political divisions. Recall that each CBSA region can cross over state boundaries. In the code block below, we will read into Python a table that indicates which state(s) every CBSA region overlaps, and the proportion (in terms of population) that each region overlaps into a given state. The table lists a unique identifier for the CBSA, the two-letter state code, and the proportion (a number from 0 to 1) of people living in the CBSA that are residents in the given state.</p>
+<div id="fig-img-join" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-img-join-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="img/diagram_join.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;4.1: Visual descriptions table join functions."><img src="img/diagram_join.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-img-join-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.1: Visual descriptions table join functions.
+</figcaption>
+</figure>
+</div>
+<div id="c4c22e06" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>lookup <span class="op">=</span> pd.read_csv(<span class="st">"data/acs_cbsa_to_state.csv"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>lookup</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">geoid</th>
+<th data-quarto-table-cell-role="th">state</th>
+<th data-quarto-table-cell-role="th">prop</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>35620</td>
+<td>NY</td>
+<td>0.648327</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>35620</td>
+<td>NJ</td>
+<td>0.348640</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>35620</td>
+<td>PA</td>
+<td>0.003032</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>31080</td>
+<td>CA</td>
+<td>1.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>16980</td>
+<td>IL</td>
+<td>0.906591</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">991</td>
+<td>49820</td>
+<td>TX</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">992</td>
+<td>28540</td>
+<td>AK</td>
+<td>1.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">993</td>
+<td>18780</td>
+<td>CO</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">994</td>
+<td>46900</td>
+<td>TX</td>
+<td>1.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">995</td>
+<td>29500</td>
+<td>TX</td>
+<td>1.000000</td>
+</tr>
+</tbody>
+</table>
+
+<p>996 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<p>We also have another table that gives the state name, abbreviation, and total population of each state in the United States. This data can be read into Python and saved as the dataset <code>state</code> by using the following code.</p>
+<div id="03653dea" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>state <span class="op">=</span> pd.read_csv(<span class="st">"data/acs_state.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>state</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">state</th>
+<th data-quarto-table-cell-role="th">abb</th>
+<th data-quarto-table-cell-role="th">pop</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Alabama</td>
+<td>AL</td>
+<td>4.997675</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Alaska</td>
+<td>AK</td>
+<td>0.735951</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Arizona</td>
+<td>AZ</td>
+<td>7.079203</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Arkansas</td>
+<td>AR</td>
+<td>3.006309</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>California</td>
+<td>CA</td>
+<td>39.455353</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Colorado</td>
+<td>CO</td>
+<td>5.723176</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Connecticut</td>
+<td>CT</td>
+<td>3.605330</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Delaware</td>
+<td>DE</td>
+<td>0.981892</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Florida</td>
+<td>FL</td>
+<td>21.339762</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Georgia</td>
+<td>GA</td>
+<td>10.625615</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Hawaii</td>
+<td>HI</td>
+<td>1.453498</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Idaho</td>
+<td>ID</td>
+<td>1.811617</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Illinois</td>
+<td>IL</td>
+<td>12.821813</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Indiana</td>
+<td>IN</td>
+<td>6.751340</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Iowa</td>
+<td>IA</td>
+<td>3.179090</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Kansas</td>
+<td>KS</td>
+<td>2.932099</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Kentucky</td>
+<td>KY</td>
+<td>4.494141</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Louisiana</td>
+<td>LA</td>
+<td>4.657305</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Maine</td>
+<td>ME</td>
+<td>1.357046</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Maryland</td>
+<td>MD</td>
+<td>6.148545</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Massachusetts</td>
+<td>MA</td>
+<td>6.991852</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>Michigan</td>
+<td>MI</td>
+<td>10.062512</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>Minnesota</td>
+<td>MN</td>
+<td>5.670472</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>Mississippi</td>
+<td>MS</td>
+<td>2.967023</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>Missouri</td>
+<td>MO</td>
+<td>6.141534</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>Montana</td>
+<td>MT</td>
+<td>1.077978</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>Nebraska</td>
+<td>NE</td>
+<td>1.951480</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>Nevada</td>
+<td>NV</td>
+<td>3.059238</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>New Hampshire</td>
+<td>NH</td>
+<td>1.372175</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>New Jersey</td>
+<td>NJ</td>
+<td>9.234024</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>New Mexico</td>
+<td>NM</td>
+<td>2.109366</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>New York</td>
+<td>NY</td>
+<td>20.114745</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>North Carolina</td>
+<td>NC</td>
+<td>10.367022</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>North Dakota</td>
+<td>ND</td>
+<td>0.773344</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">34</td>
+<td>Ohio</td>
+<td>OH</td>
+<td>11.769923</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35</td>
+<td>Oklahoma</td>
+<td>OK</td>
+<td>3.948136</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">36</td>
+<td>Oregon</td>
+<td>OR</td>
+<td>4.207177</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">37</td>
+<td>Pennsylvania</td>
+<td>PA</td>
+<td>12.970650</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">38</td>
+<td>Rhode Island</td>
+<td>RI</td>
+<td>1.091949</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">39</td>
+<td>South Carolina</td>
+<td>SC</td>
+<td>5.078903</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">40</td>
+<td>South Dakota</td>
+<td>SD</td>
+<td>0.881785</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">41</td>
+<td>Tennessee</td>
+<td>TN</td>
+<td>6.859497</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">42</td>
+<td>Texas</td>
+<td>TX</td>
+<td>28.862581</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">43</td>
+<td>Utah</td>
+<td>UT</td>
+<td>3.231370</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">44</td>
+<td>Vermont</td>
+<td>VT</td>
+<td>0.641637</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">45</td>
+<td>Virginia</td>
+<td>VA</td>
+<td>8.582479</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">46</td>
+<td>Washington</td>
+<td>WA</td>
+<td>7.617364</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">47</td>
+<td>West Virginia</td>
+<td>WV</td>
+<td>1.801049</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">48</td>
+<td>Wisconsin</td>
+<td>WI</td>
+<td>5.871661</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">49</td>
+<td>Wyoming</td>
+<td>WY</td>
+<td>0.576641</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Looking at these two datasets, we see that there should be a way to combine the information in these tables with the information in our <code>cbsa</code> DataFrame. In order to understand exactly how to do this, we need some vocabulary about how different columns can define the rows of a table. A <em>primary key</em> consists of one or more columns that uniquely identify a row of data. In our <code>cbsa</code> dataset, the column <code>geoid</code> is a primary key. The column <code>name</code> might appear to be a primary key, but there are some duplicates, with several CBSA regions having the same (short) name. In the <code>lookup</code> data, the primary key consists of the pair <code>geoid</code> and <code>state</code>; without considering both, we would have multiple rows that have the same value for each individual column. The <code>state</code> dataset has two possible primary keys: <code>state</code> and <code>abb</code>. Using either of these would work fine as a way of describing a unique row of the dataset.</p>
+<p>A <em>foreign key</em> is the appearance of a primary key within a different dataset. The foreign key does not need to have the same names on the two tables; it just needs to have matching information. For example, the primary key <code>geoid</code> in our original datasets appears as a foreign key on the <code>lookup</code> dataset. The primary key <code>abb</code> from the <code>state</code> table appears as a foreign key on the <code>lookup</code> table, where it is called state. Notice that we have chosen different examples here—keys that match exactly, keys match with different names in the two tables, and keys that are both foreign keys and part of the primary key— to illustrate some of the possible different kinds of relationships that commonly occur.</p>
+<p>A primary key and the corresponding foreign key in another table form a <em>relation</em>. Typically, a relation maps a single row in one dataset to many rows in another. A <em>table join</em> is a way of combining two tables based on relations. The goal is to line up a foreign key in one table with the primary key in another table. We can then use these relationships to add new variables from one dataset into another dataset. Several examples will make this notion more clear.</p>
+<p>As an example of performing table joins, we will start with a pared-down version of our <code>cbsa</code> data. A smaller version will make it possible to fit merged tables all within the width of this text.</p>
+<div id="68ea6c09" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cbsa_sml <span class="op">=</span> cbsa[[<span class="st">'name'</span>, <span class="st">'geoid'</span>, <span class="st">'pop'</span>, <span class="st">'density'</span>]]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>cbsa_sml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">geoid</th>
+<th data-quarto-table-cell-role="th">pop</th>
+<th data-quarto-table-cell-role="th">density</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>New York</td>
+<td>35620</td>
+<td>20.011812</td>
+<td>1051.306467</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Los Angeles</td>
+<td>31080</td>
+<td>13.202558</td>
+<td>1040.647281</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Chicago</td>
+<td>16980</td>
+<td>9.607711</td>
+<td>508.629406</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Dallas</td>
+<td>19100</td>
+<td>7.543340</td>
+<td>323.181404</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Houston</td>
+<td>26420</td>
+<td>7.048954</td>
+<td>316.543514</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">929</td>
+<td>Zapata</td>
+<td>49820</td>
+<td>0.013945</td>
+<td>5.081383</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">930</td>
+<td>Ketchikan</td>
+<td>28540</td>
+<td>0.013939</td>
+<td>1.046556</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">931</td>
+<td>Craig</td>
+<td>18780</td>
+<td>0.013240</td>
+<td>1.077471</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">932</td>
+<td>Vernon</td>
+<td>46900</td>
+<td>0.012887</td>
+<td>5.086411</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">933</td>
+<td>Lamesa</td>
+<td>29500</td>
+<td>0.012371</td>
+<td>5.291467</td>
+</tr>
+</tbody>
+</table>
+
+<p>934 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<p>To start, we will line up the values in the <code>lookup</code> table with the values in the <code>cbsa_sml</code> table. What is the relation here? The <code>cbsa_sml</code> table has the primary key <code>geoid</code>, which appears as a foreign key on the table <code>lookup</code>. If we associate each row of the <code>lookup</code> table with the corresponding row of the <code>cbsa_sml</code> dataset, we will be able to combine the two tables into one. The method to do this with is called <code>pd.merge()</code> with <code>how='left'</code>. The method takes the two datasets as arguments, along with an <code>on</code> parameter that indicates the names of the keys that will be used to match the rows of the dataset together. The code below shows the specific syntax and output for performing the join.</p>
+<div id="168c6c3b" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>lookup.merge(cbsa_sml, on<span class="op">=</span><span class="st">'geoid'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">geoid</th>
+<th data-quarto-table-cell-role="th">state</th>
+<th data-quarto-table-cell-role="th">prop</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">pop</th>
+<th data-quarto-table-cell-role="th">density</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>35620</td>
+<td>NY</td>
+<td>0.648327</td>
+<td>New York</td>
+<td>20.011812</td>
+<td>1051.306467</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>35620</td>
+<td>NJ</td>
+<td>0.348640</td>
+<td>New York</td>
+<td>20.011812</td>
+<td>1051.306467</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>35620</td>
+<td>PA</td>
+<td>0.003032</td>
+<td>New York</td>
+<td>20.011812</td>
+<td>1051.306467</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>31080</td>
+<td>CA</td>
+<td>1.000000</td>
+<td>Los Angeles</td>
+<td>13.202558</td>
+<td>1040.647281</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>16980</td>
+<td>IL</td>
+<td>0.906591</td>
+<td>Chicago</td>
+<td>9.607711</td>
+<td>508.629406</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">991</td>
+<td>49820</td>
+<td>TX</td>
+<td>1.000000</td>
+<td>Zapata</td>
+<td>0.013945</td>
+<td>5.081383</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">992</td>
+<td>28540</td>
+<td>AK</td>
+<td>1.000000</td>
+<td>Ketchikan</td>
+<td>0.013939</td>
+<td>1.046556</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">993</td>
+<td>18780</td>
+<td>CO</td>
+<td>1.000000</td>
+<td>Craig</td>
+<td>0.013240</td>
+<td>1.077471</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">994</td>
+<td>46900</td>
+<td>TX</td>
+<td>1.000000</td>
+<td>Vernon</td>
+<td>0.012887</td>
+<td>5.086411</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">995</td>
+<td>29500</td>
+<td>TX</td>
+<td>1.000000</td>
+<td>Lamesa</td>
+<td>0.012371</td>
+<td>5.291467</td>
+</tr>
+</tbody>
+</table>
+
+<p>996 rows × 6 columns</p>
+</div>
+</div>
+</div>
+<p>The new dataset has the same number of rows in the original <code>lookup</code> data along with the original first same four columns. The three columns from <code>cbsa_sml</code> are added to the end, matched up by the variable <code>geoid</code>. We now have every CBSA joined with its corresponding state. We could now proceed to analyze the CBSA data on a state-by-state level.</p>
+<p>Now, let’s consider combining the datasets <code>state</code> and <code>lookup</code>. This would be helpful, for example, if we wanted to know the total population of the state or the full name of the state in conjunction with the CBSA region. The added complexity here is that the primary key now has different names in the two datasets. We can account for this by setting the <code>left_on</code> and <code>right_on</code> parameters to specify the different column names, as shown in the following code chunk.</p>
+<div id="40f026fe" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>lookup.merge(state, left_on<span class="op">=</span><span class="st">'state'</span>, right_on<span class="op">=</span><span class="st">'abb'</span>, how<span class="op">=</span><span class="st">'left'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">geoid</th>
+<th data-quarto-table-cell-role="th">state_x</th>
+<th data-quarto-table-cell-role="th">prop</th>
+<th data-quarto-table-cell-role="th">state_y</th>
+<th data-quarto-table-cell-role="th">abb</th>
+<th data-quarto-table-cell-role="th">pop</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>35620</td>
+<td>NY</td>
+<td>0.648327</td>
+<td>New York</td>
+<td>NY</td>
+<td>20.114745</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>35620</td>
+<td>NJ</td>
+<td>0.348640</td>
+<td>New Jersey</td>
+<td>NJ</td>
+<td>9.234024</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>35620</td>
+<td>PA</td>
+<td>0.003032</td>
+<td>Pennsylvania</td>
+<td>PA</td>
+<td>12.970650</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>31080</td>
+<td>CA</td>
+<td>1.000000</td>
+<td>California</td>
+<td>CA</td>
+<td>39.455353</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>16980</td>
+<td>IL</td>
+<td>0.906591</td>
+<td>Illinois</td>
+<td>IL</td>
+<td>12.821813</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">991</td>
+<td>49820</td>
+<td>TX</td>
+<td>1.000000</td>
+<td>Texas</td>
+<td>TX</td>
+<td>28.862581</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">992</td>
+<td>28540</td>
+<td>AK</td>
+<td>1.000000</td>
+<td>Alaska</td>
+<td>AK</td>
+<td>0.735951</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">993</td>
+<td>18780</td>
+<td>CO</td>
+<td>1.000000</td>
+<td>Colorado</td>
+<td>CO</td>
+<td>5.723176</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">994</td>
+<td>46900</td>
+<td>TX</td>
+<td>1.000000</td>
+<td>Texas</td>
+<td>TX</td>
+<td>28.862581</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">995</td>
+<td>29500</td>
+<td>TX</td>
+<td>1.000000</td>
+<td>Texas</td>
+<td>TX</td>
+<td>28.862581</td>
+</tr>
+</tbody>
+</table>
+
+<p>996 rows × 6 columns</p>
+</div>
+</div>
+</div>
+<p>As before, this creates a new dataset with one row for each row in the original <code>lookup</code> dataset. All of the original columns are in the new data, and the added columns are joined on the right. One difficulty here is that the dataset <code>state</code> contains a variable called <code>state</code> that conflicts with the variable of the same name in the <code>lookup</code> dataset. It is not possible in pandas to have two columns with the same name; otherwise, we would not know how to refer to them in our code. To account for this, the suffix “_y” has been added to the name in the second table. Usually, in these cases, the suffix “_x” would be added to the first table, but this is not done when the matching name on the first table is also part of the key. We can override the default suffix by providing a <code>suffixes</code> argument to the merge function, as shown in the following code.</p>
+<div id="78c66cc6" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>lookup.merge(state, left_on<span class="op">=</span><span class="st">'state'</span>, right_on<span class="op">=</span><span class="st">'abb'</span>, how<span class="op">=</span><span class="st">'left'</span>, </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>             suffixes<span class="op">=</span>(<span class="st">''</span>, <span class="st">'_name'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">geoid</th>
+<th data-quarto-table-cell-role="th">state</th>
+<th data-quarto-table-cell-role="th">prop</th>
+<th data-quarto-table-cell-role="th">state_name</th>
+<th data-quarto-table-cell-role="th">abb</th>
+<th data-quarto-table-cell-role="th">pop</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>35620</td>
+<td>NY</td>
+<td>0.648327</td>
+<td>New York</td>
+<td>NY</td>
+<td>20.114745</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>35620</td>
+<td>NJ</td>
+<td>0.348640</td>
+<td>New Jersey</td>
+<td>NJ</td>
+<td>9.234024</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>35620</td>
+<td>PA</td>
+<td>0.003032</td>
+<td>Pennsylvania</td>
+<td>PA</td>
+<td>12.970650</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>31080</td>
+<td>CA</td>
+<td>1.000000</td>
+<td>California</td>
+<td>CA</td>
+<td>39.455353</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>16980</td>
+<td>IL</td>
+<td>0.906591</td>
+<td>Illinois</td>
+<td>IL</td>
+<td>12.821813</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">991</td>
+<td>49820</td>
+<td>TX</td>
+<td>1.000000</td>
+<td>Texas</td>
+<td>TX</td>
+<td>28.862581</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">992</td>
+<td>28540</td>
+<td>AK</td>
+<td>1.000000</td>
+<td>Alaska</td>
+<td>AK</td>
+<td>0.735951</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">993</td>
+<td>18780</td>
+<td>CO</td>
+<td>1.000000</td>
+<td>Colorado</td>
+<td>CO</td>
+<td>5.723176</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">994</td>
+<td>46900</td>
+<td>TX</td>
+<td>1.000000</td>
+<td>Texas</td>
+<td>TX</td>
+<td>28.862581</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">995</td>
+<td>29500</td>
+<td>TX</td>
+<td>1.000000</td>
+<td>Texas</td>
+<td>TX</td>
+<td>28.862581</td>
+</tr>
+</tbody>
+</table>
+
+<p>996 rows × 6 columns</p>
+</div>
+</div>
+</div>
+<p>Now, the data has a new column called <code>state_name</code> that has the full name of the state. Note that the suffix is only added to columns that have a duplicate name. Non-overlapping names will remain the same in the joined dataset.</p>
+</section>
+<section id="different-types-of-joins" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="different-types-of-joins"><span class="header-section-number">4.3</span> Different Types of Joins</h2>
+<p>The function <code>pd.merge()</code> with <code>how='left'</code> is an example of a <em>left join</em>. There are three additional similar variations of joins available in <strong>pandas</strong> that have the same syntax as left joins. If the join key is a primary key in one table and there are no missing matches, all of these variations produce exactly the same output. If the join key is a primary key in one table and not all foreign keys in the other table match an entry in the other, the choice of the join type changes what happens with the missing relations. A summary of the four options are:</p>
+<ol type="1">
+<li><code>how='left'</code> only non-matching rows in the first dataset are kept</li>
+<li><code>how='right'</code> only non-matching rows in the second dataset are kept</li>
+<li><code>how='outer'</code> non-matching rows are included from either table</li>
+<li><code>how='inner'</code> only matching rows from both tables are included</li>
+</ol>
+<p>The terminology of left versus right comes from considering the relative positions of the two joining datasets when written as a function. The left join always keeps things in the left (first) dataset, but ignores non-matching keys on the right. The right joins works in an analogous way, but only keeping the originals in the right dataset. An outer join keeps everything and the inner join only keeps things that have a full match.</p>
+<p>Whenever possible, we suggest making sure that the key used in a join is a primary key for the <em>second</em> dataset; that is, it uniquely defines each row of the second dataset, which frequently contains metadata about the first dataset. This is the rule that we followed above when joining the <code>lookup</code> table to the other two tables. If we follow this rule, we will find that we almost always can get by with just left joins (if we are okay with missing values in the metadata) and inner joins (if we want to remove rows that did not have associated metadata).</p>
+<p>In addition to the standard joins, there are ways to identify which rows would match or not match between datasets without actually combining them. We can use the <code>indicator=True</code> parameter in <code>pd.merge()</code> to see which rows come from which dataset. For example, we can check which (if any) rows of the <code>lookup</code> table are not in the <code>state</code> table.</p>
+<div id="ccb7c1ee" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> lookup.merge(state, left_on<span class="op">=</span><span class="st">'state'</span>, right_on<span class="op">=</span><span class="st">'abb'</span>, </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                     how<span class="op">=</span><span class="st">'outer'</span>, indicator<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Column names in result:"</span>, result.columns.tolist())</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>missing_states <span class="op">=</span> result[result[<span class="st">'_merge'</span>] <span class="op">==</span> <span class="st">'left_only'</span>][[<span class="st">'state_x'</span>, <span class="st">'_merge'</span>]]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>missing_states</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Column names in result: ['geoid', 'state_x', 'prop', 'state_y', 'abb', 'pop', '_merge']</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">state_x</th>
+<th data-quarto-table-cell-role="th">_merge</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">122</td>
+<td>DC</td>
+<td>left_only</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>In the result, we see that the District of Columbia is treated as a state code in the lookup table but is not included in the <code>state</code> dataset since it is not technically one of the 50 states. This kind of check is useful for data integrity issues. We can also simulate other filtering operations by using different merge strategies and then filtering the results based on the indicator column. We will employ this trick when working with textual data in Chapter 6.</p>
+<p>There are no built-in three-table merge operations in <strong>pandas</strong>. To combine information from more tables, we can combine two tables first and then chain the output into a second merge. A chain of merges can quickly become powerful, if somewhat complex, tools for data analysis. Let’s consider an example with our three tables. Can we determine which states have the smallest proportion of their total population living within one of the CBSA regions? To do this, we will start with the <code>lookup</code> table and merge it with the <code>cbsa</code> table. Then, we can group by the state and add up the amount of the population that each CBSA contributes to each state. Finally, we merge (carefully) to the state dataset to get the total state populations and arrange the output. These steps are shown in the following block of code.</p>
+<div id="88a4f304" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> (lookup</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    .merge(cbsa, on<span class="op">=</span><span class="st">'geoid'</span>, how<span class="op">=</span><span class="st">'inner'</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .assign(weighted_pop<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="st">'pop'</span>] <span class="op">*</span> x[<span class="st">'prop'</span>])</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'state'</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    .agg({<span class="st">'weighted_pop'</span>: <span class="st">'sum'</span>})</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">'weighted_pop'</span>: <span class="st">'pop'</span>})</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    .merge(state, left_on<span class="op">=</span><span class="st">'state'</span>, right_on<span class="op">=</span><span class="st">'abb'</span>, how<span class="op">=</span><span class="st">'inner'</span>, suffixes<span class="op">=</span>(<span class="st">''</span>, <span class="st">'_full'</span>))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    .assign(percentage<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="st">'pop'</span>] <span class="op">/</span> x[<span class="st">'pop_full'</span>] <span class="op">*</span> <span class="dv">100</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">'percentage'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">'state_full'</span>, <span class="st">'percentage'</span>]])</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">state_full</th>
+<th data-quarto-table-cell-role="th">percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>New Jersey</td>
+<td>101.202785</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Delaware</td>
+<td>100.638565</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Hawaii</td>
+<td>99.996698</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Connecticut</td>
+<td>99.989340</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">38</td>
+<td>Rhode Island</td>
+<td>99.930335</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Massachusetts</td>
+<td>99.716925</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>California</td>
+<td>99.295495</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">32</td>
+<td>Nevada</td>
+<td>98.962879</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Arizona</td>
+<td>98.688270</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Maryland</td>
+<td>98.592417</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Florida</td>
+<td>97.901509</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">46</td>
+<td>Washington</td>
+<td>97.787522</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">33</td>
+<td>New York</td>
+<td>97.496855</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">36</td>
+<td>Oregon</td>
+<td>97.266643</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">37</td>
+<td>Pennsylvania</td>
+<td>97.133737</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>New Hampshire</td>
+<td>96.830430</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">34</td>
+<td>Ohio</td>
+<td>96.205756</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>New Mexico</td>
+<td>95.824812</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">43</td>
+<td>Utah</td>
+<td>95.556598</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">42</td>
+<td>Texas</td>
+<td>95.275283</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Illinois</td>
+<td>95.102558</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Colorado</td>
+<td>94.667891</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>North Carolina</td>
+<td>94.519273</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">39</td>
+<td>South Carolina</td>
+<td>94.494560</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Indiana</td>
+<td>94.187449</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Louisiana</td>
+<td>93.816687</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Georgia</td>
+<td>92.770803</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Idaho</td>
+<td>92.273397</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">21</td>
+<td>Michigan</td>
+<td>92.028750</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Alabama</td>
+<td>91.772661</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">41</td>
+<td>Tennessee</td>
+<td>91.269077</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">44</td>
+<td>Virginia</td>
+<td>90.853613</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>Minnesota</td>
+<td>90.798742</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">47</td>
+<td>Wisconsin</td>
+<td>87.457256</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Kansas</td>
+<td>86.796665</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>Missouri</td>
+<td>86.776798</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35</td>
+<td>Oklahoma</td>
+<td>86.064981</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Arkansas</td>
+<td>83.683737</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>Nebraska</td>
+<td>82.462477</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">48</td>
+<td>West Virginia</td>
+<td>81.342980</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>Mississippi</td>
+<td>81.171164</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Kentucky</td>
+<td>79.732292</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Iowa</td>
+<td>76.036886</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">40</td>
+<td>South Dakota</td>
+<td>75.674932</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">49</td>
+<td>Wyoming</td>
+<td>75.184547</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>North Dakota</td>
+<td>74.709951</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Alaska</td>
+<td>73.738605</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">45</td>
+<td>Vermont</td>
+<td>73.185042</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Maine</td>
+<td>68.801942</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>Montana</td>
+<td>66.985875</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Since the CBSA regions correspond to large metropolitan areas, it is not surprising that states considered relatively rural, such as Montana, Maine, Vermont, and Alaska, have the smallest percentage of the population living inside one of these regions. Sorting the table the other way, with the highest percentages at the top, shows that small, urban states such as New Jersey, Delaware, and Hawaii have some of the largest percentages of the population living in a CBSA.</p>
+<p>The <strong>pandas</strong> library provides comprehensive support for different types of joins and merge operations. While we have covered the most common use cases, there are additional parameters and methods available for more complex scenarios. We will see these when working with time series data in Chapter 7.</p>
+</section>
+<section id="pivot-longer" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="pivot-longer"><span class="header-section-number">4.4</span> Pivot Longer</h2>
+<p>In this section we introduce another set of methods for manipulating datasets. Table pivots, which are related but not identical to the spreadsheet concept of a <em>pivot table</em>, are a way of rearranging the values in a table without adding or losing any additional information. This is achieved by either making the table longer (more rows, fewer columns) or wider (more columns, fewer rows).</p>
+<p>What sort of situations would require going between two different formats with a different number of rows? As an example, consider a hypothetical project where we measure the number of people living in 100 different cities, one per year for 20 years. There are two equally valid but different ways to store this data. We could have 100 rows, one for each city, with variables <code>pop_year1</code>, <code>pop_year2</code>, and so on all the way through <code>pop_year20</code>. Alternatively, we could have 2000 rows with just three columns: an id for the city, a variable for the year, and a variable for population. Notice that both of these options capture the same information, but each privileges a particular kind of analysis. It will often depend on our data and object of study whether a wider of longer table format is amenable to exploratory data analysis. In general, we have found that it is easier to start with a longer table format and then make it wider as needed.</p>
+<div id="fig-img-pivot" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-img-pivot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="img/diagram_pivot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;4.2: Visual description of table pivots."><img src="img/diagram_pivot.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-img-pivot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.2: Visual description of table pivots.
+</figcaption>
+</figure>
+</div>
+<p>In the wider table format, it is straightforward to compute the amount that each city grew over the twenty years using a single assign operation. In the longer table format, it would be straightforward to filter by a specific city and draw a line plot showing the growth of the city over a twenty year period. Both drawing a plot with the wider table or computing the growth with the longer table are possible, but require a surprising amount of work and code.</p>
+<p>In this and the following section, we will introduce two new methods for alternating between wider and longer formats for a dataset. These are principles that will be fundamental to several of the application chapters, particularly with text and temporal datasets in Chapters 6-7. We will use the <code>food_prices</code> dataset as example. As will be shown in our motivation example, pivoting is a particularly useful operation to apply when analyzing data collected over time. As a reminder, the <code>food_prices</code> dataset is organized with year as the observation and each food type as a column, as shown below.</p>
+<div id="bcd995b9" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>food_prices</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">tea</th>
+<th data-quarto-table-cell-role="th">sugar</th>
+<th data-quarto-table-cell-role="th">peanuts</th>
+<th data-quarto-table-cell-role="th">coffee</th>
+<th data-quarto-table-cell-role="th">cocoa</th>
+<th data-quarto-table-cell-role="th">wheat</th>
+<th data-quarto-table-cell-role="th">rye</th>
+<th data-quarto-table-cell-role="th">rice</th>
+<th data-quarto-table-cell-role="th">corn</th>
+<th data-quarto-table-cell-role="th">barley</th>
+<th data-quarto-table-cell-role="th">pork</th>
+<th data-quarto-table-cell-role="th">beef</th>
+<th data-quarto-table-cell-role="th">lamb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1870</td>
+<td>128.845647</td>
+<td>151.406650</td>
+<td>203.422160</td>
+<td>88.067280</td>
+<td>78.817566</td>
+<td>88.102178</td>
+<td>103.393214</td>
+<td>83.478261</td>
+<td>121.373971</td>
+<td>103.241107</td>
+<td>107.813162</td>
+<td>73.540373</td>
+<td>63.257185</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1871</td>
+<td>131.730769</td>
+<td>167.156863</td>
+<td>221.774193</td>
+<td>108.728711</td>
+<td>66.686484</td>
+<td>118.157238</td>
+<td>105.251996</td>
+<td>84.543919</td>
+<td>88.393285</td>
+<td>130.236487</td>
+<td>68.466144</td>
+<td>86.755952</td>
+<td>73.411017</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1872</td>
+<td>134.455128</td>
+<td>161.764706</td>
+<td>188.508064</td>
+<td>140.092762</td>
+<td>71.591359</td>
+<td>121.523799</td>
+<td>102.095808</td>
+<td>92.905405</td>
+<td>69.229178</td>
+<td>124.662162</td>
+<td>58.644715</td>
+<td>85.119048</td>
+<td>78.072034</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1873</td>
+<td>136.337312</td>
+<td>154.104124</td>
+<td>178.826474</td>
+<td>172.869998</td>
+<td>65.752662</td>
+<td>116.056854</td>
+<td>106.028976</td>
+<td>91.034483</td>
+<td>67.136989</td>
+<td>166.034483</td>
+<td>62.871238</td>
+<td>93.563218</td>
+<td>84.444769</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1874</td>
+<td>146.088815</td>
+<td>153.246661</td>
+<td>230.709444</td>
+<td>187.244900</td>
+<td>69.924808</td>
+<td>113.202047</td>
+<td>125.977031</td>
+<td>99.637681</td>
+<td>127.551727</td>
+<td>174.275362</td>
+<td>87.613692</td>
+<td>89.531573</td>
+<td>77.480963</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">141</td>
+<td>2011</td>
+<td>33.092175</td>
+<td>34.758403</td>
+<td>49.430540</td>
+<td>104.633987</td>
+<td>30.950856</td>
+<td>32.303050</td>
+<td>56.050786</td>
+<td>26.970989</td>
+<td>56.191498</td>
+<td>76.784074</td>
+<td>18.957462</td>
+<td>195.682011</td>
+<td>199.901823</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">142</td>
+<td>2012</td>
+<td>32.169401</td>
+<td>28.216065</td>
+<td>50.480016</td>
+<td>70.519447</td>
+<td>24.339000</td>
+<td>32.329419</td>
+<td>54.278655</td>
+<td>27.791165</td>
+<td>60.997731</td>
+<td>87.240944</td>
+<td>17.266451</td>
+<td>196.471582</td>
+<td>179.915106</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">143</td>
+<td>2013</td>
+<td>31.300000</td>
+<td>22.830000</td>
+<td>31.508720</td>
+<td>51.984920</td>
+<td>24.449543</td>
+<td>30.635729</td>
+<td>55.776368</td>
+<td>24.481270</td>
+<td>55.410171</td>
+<td>72.322420</td>
+<td>17.782412</td>
+<td>190.347418</td>
+<td>164.486798</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">144</td>
+<td>2014</td>
+<td>29.530000</td>
+<td>21.790000</td>
+<td>29.420000</td>
+<td>74.140000</td>
+<td>30.470000</td>
+<td>26.370000</td>
+<td>53.558470</td>
+<td>19.970000</td>
+<td>36.750000</td>
+<td>50.220000</td>
+<td>20.960000</td>
+<td>229.492089</td>
+<td>184.540000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">145</td>
+<td>2015</td>
+<td>29.174600</td>
+<td>17.087190</td>
+<td>28.121785</td>
+<td>58.715669</td>
+<td>30.967121</td>
+<td>22.009427</td>
+<td>51.521938</td>
+<td>17.670020</td>
+<td>32.904916</td>
+<td>68.492986</td>
+<td>13.747636</td>
+<td>203.667366</td>
+<td>149.682263</td>
+</tr>
+</tbody>
+</table>
+
+<p>146 rows × 14 columns</p>
+</div>
+</div>
+</div>
+<p>This format makes it straightforward to compute the correlation between the prices of different kinds of food items. A longer format for the dataset would, instead, have one row for each combination of year and food type.</p>
+<p>In order to make this table longer, we will apply the <code>pd.melt()</code> function. This function requires knowing which current variables in the dataset should remain as identifier variables and which should be turned into values in the output dataset. In the code below, we indicate that the year value should remain as an identifier variable in the output dataset.</p>
+<div id="12cffd58" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>food_prices.melt(id_vars<span class="op">=</span>[<span class="st">'year'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">variable</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1870</td>
+<td>tea</td>
+<td>128.845647</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1871</td>
+<td>tea</td>
+<td>131.730769</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1872</td>
+<td>tea</td>
+<td>134.455128</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1873</td>
+<td>tea</td>
+<td>136.337312</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1874</td>
+<td>tea</td>
+<td>146.088815</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1893</td>
+<td>2011</td>
+<td>lamb</td>
+<td>199.901823</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1894</td>
+<td>2012</td>
+<td>lamb</td>
+<td>179.915106</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1895</td>
+<td>2013</td>
+<td>lamb</td>
+<td>164.486798</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1896</td>
+<td>2014</td>
+<td>lamb</td>
+<td>184.540000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1897</td>
+<td>2015</td>
+<td>lamb</td>
+<td>149.682263</td>
+</tr>
+</tbody>
+</table>
+
+<p>1898 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<p>Already this looks close to what a long form of the food prices dataset should look like. One improvement that we can make is to set better column names, which can be done by setting the <code>var_name</code> and <code>value_name</code> parameters in the function call. An example is given in the following code.</p>
+<div id="3e45cf21" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>food_prices.melt(id_vars<span class="op">=</span>[<span class="st">'year'</span>], var_name<span class="op">=</span><span class="st">'food'</span>, value_name<span class="op">=</span><span class="st">'price'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">food</th>
+<th data-quarto-table-cell-role="th">price</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1870</td>
+<td>tea</td>
+<td>128.845647</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1871</td>
+<td>tea</td>
+<td>131.730769</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1872</td>
+<td>tea</td>
+<td>134.455128</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1873</td>
+<td>tea</td>
+<td>136.337312</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1874</td>
+<td>tea</td>
+<td>146.088815</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1893</td>
+<td>2011</td>
+<td>lamb</td>
+<td>199.901823</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1894</td>
+<td>2012</td>
+<td>lamb</td>
+<td>179.915106</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1895</td>
+<td>2013</td>
+<td>lamb</td>
+<td>164.486798</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1896</td>
+<td>2014</td>
+<td>lamb</td>
+<td>184.540000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1897</td>
+<td>2015</td>
+<td>lamb</td>
+<td>149.682263</td>
+</tr>
+</tbody>
+</table>
+
+<p>1898 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<p>The longer form of the dataset makes it much easier to do some kinds of analysis. For example, we can draw a line chart of all of the food prices with a single graphics layer.</p>
+<div id="a6490de6" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>food_long <span class="op">=</span> food_prices.melt(id_vars<span class="op">=</span>[<span class="st">'year'</span>], var_name<span class="op">=</span><span class="st">'food'</span>, value_name<span class="op">=</span><span class="st">'price'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>(ggplot(food_long, aes(<span class="st">'year'</span>, <span class="st">'price'</span>, color<span class="op">=</span><span class="st">'food'</span>)) <span class="op">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    geom_line() <span class="op">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    scale_color_cmap_d())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="04_combine_files/figure-html/cell-14-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Plot showing the relative cost of thirteen different food items over time, with the value 100 corresponding to the price in 1900.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Drawing this plot with the original dataset would require manually including a layer for each food type, selecting their colors, and building a manual legend. The alternative using the longer table is the preferred approach.</p>
+</section>
+<section id="pivot-wider" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="pivot-wider"><span class="header-section-number">4.5</span> Pivot Wider</h2>
+<p>Just as we sometimes have a dataset in a wide format that we need to convert to a long one, it is sometimes the case that we have a long dataset that needs to be made wider. To illustrate making a table wider, let’s create a new dataset consisting of the long format of the food prices dataset from just the years 1950 and 1975.</p>
+<div id="e5b6a7ab" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>food_prices_long <span class="op">=</span> (food_prices</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    .melt(id_vars<span class="op">=</span>[<span class="st">'year'</span>], var_name<span class="op">=</span><span class="st">'food'</span>, value_name<span class="op">=</span><span class="st">'price'</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'year in [1950, 1975]'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As described in our motivating example, it makes sense for some analyses to make each time point a column in a wider dataset. To do this, we use the <code>pd.pivot()</code> or <code>pd.pivot_table()</code> function. We need to indicate which variable contains the values that will become new columns (<code>columns</code> parameter), which variable to use as the index (<code>index</code> parameter), and the variable from which to take the values for the new columns (<code>values</code> parameter). Here, the column names will come from the <code>year</code> column (we want a new column for 1950 and another one for 1975) and the values will be filled in with prices.</p>
+<div id="2c194a61" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>food_prices_long.pivot(index<span class="op">=</span><span class="st">'food'</span>, columns<span class="op">=</span><span class="st">'year'</span>, values<span class="op">=</span><span class="st">'price'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">1950</th>
+<th data-quarto-table-cell-role="th">1975</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">food</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">barley</td>
+<td>98.837209</td>
+<td>91.315409</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">beef</td>
+<td>62.416235</td>
+<td>268.415155</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">cocoa</td>
+<td>64.589223</td>
+<td>54.066178</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">coffee</td>
+<td>209.554560</td>
+<td>105.491333</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">corn</td>
+<td>134.582748</td>
+<td>112.703291</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">lamb</td>
+<td>33.789828</td>
+<td>186.110848</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">peanuts</td>
+<td>118.859179</td>
+<td>95.590279</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">pork</td>
+<td>52.338904</td>
+<td>88.811119</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">rice</td>
+<td>62.698668</td>
+<td>74.174218</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">rye</td>
+<td>88.389666</td>
+<td>71.218633</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">sugar</td>
+<td>59.484424</td>
+<td>114.289677</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">tea</td>
+<td>68.941159</td>
+<td>54.068946</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">wheat</td>
+<td>106.400588</td>
+<td>74.799223</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>One issue with the default output is that the column names now start with a number, which can be awkward to work with. It is better to add a prefix to the names to make them more descriptive. This can be done by renaming the columns after pivoting.</p>
+<div id="e35f6086" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>pivoted <span class="op">=</span> food_prices_long.pivot(index<span class="op">=</span><span class="st">'food'</span>, columns<span class="op">=</span><span class="st">'year'</span>, values<span class="op">=</span><span class="st">'price'</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>pivoted.columns <span class="op">=</span> [<span class="ss">f'year_</span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> col <span class="kw">in</span> pivoted.columns]</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>pivoted <span class="op">=</span> pivoted.reset_index()</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>pivoted</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">food</th>
+<th data-quarto-table-cell-role="th">year_1950</th>
+<th data-quarto-table-cell-role="th">year_1975</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>barley</td>
+<td>98.837209</td>
+<td>91.315409</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>beef</td>
+<td>62.416235</td>
+<td>268.415155</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>cocoa</td>
+<td>64.589223</td>
+<td>54.066178</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>coffee</td>
+<td>209.554560</td>
+<td>105.491333</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>corn</td>
+<td>134.582748</td>
+<td>112.703291</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>lamb</td>
+<td>33.789828</td>
+<td>186.110848</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>peanuts</td>
+<td>118.859179</td>
+<td>95.590279</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>pork</td>
+<td>52.338904</td>
+<td>88.811119</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>rice</td>
+<td>62.698668</td>
+<td>74.174218</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>rye</td>
+<td>88.389666</td>
+<td>71.218633</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>sugar</td>
+<td>59.484424</td>
+<td>114.289677</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>tea</td>
+<td>68.941159</td>
+<td>54.068946</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>wheat</td>
+<td>106.400588</td>
+<td>74.799223</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This new form of the dataset makes it straightforward to plot the price of each food type in 1975 as a function of its price in 1950, by putting the 1950 price on the x-axis and the 1975 price on the y-axis. The code to do this is shown below.</p>
+<div id="6e272783" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>pivoted <span class="op">=</span> food_prices_long.pivot(index<span class="op">=</span><span class="st">'food'</span>, columns<span class="op">=</span><span class="st">'year'</span>, values<span class="op">=</span><span class="st">'price'</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>pivoted.columns <span class="op">=</span> [<span class="ss">f'year_</span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> col <span class="kw">in</span> pivoted.columns]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>pivoted <span class="op">=</span> pivoted.reset_index()</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>(ggplot(pivoted, aes(<span class="st">'year_1950'</span>, <span class="st">'year_1975'</span>)) <span class="op">+</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    geom_point() <span class="op">+</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    geom_text(aes(label<span class="op">=</span><span class="st">'food'</span>), nudge_y<span class="op">=</span><span class="dv">5</span>, size<span class="op">=</span><span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="04_combine_files/figure-html/cell-18-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Plot showing the relative cost of thirteen different food items in 1950 and 1975. Prices are on a scale where all products cost 100 in 1900.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We can now begin to delve into which products got much more expensive, much less expensive, and stayed about the same between 1950 and 1975.</p>
+</section>
+<section id="patterns-for-table-pivots" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="patterns-for-table-pivots"><span class="header-section-number">4.6</span> Patterns for Table Pivots</h2>
+<p>The syntax for making tables wider or longer is, on the surface, not much more complex than other table operations that we have covered in this text. The biggest challenges with table pivots are identifying when they will simplify an analysis and not over-using them. The best way to avoid these issues is to store data in the longest format that makes sense for the data. For example, in the motivating example about city growth, it is better if possible to store the data with 2000 rows and 3 columns.</p>
+<p>Storing data in a longer format has a number of benefits. Reducing the number of columns makes it easier to document the (smaller set of) variables with a well-written data dictionary, a topic we will see next in Chapter 5. Also, pivoting wider also often requires less code and results in fewer bugs. Several of these are illustrated in the chapter’s exercises.</p>
+<p>Perhaps the biggest benefit of storing data in a longer format is to avoid the potentially complex chain of operations required to make the plot at the end of the previous section. The original dataset is stored with years as rows and items as columns. Producing the plot requires thinking of years and columns and items as rows; this needed us to first pivot longer and then pivot wider. Keeping data in a longer format avoids the need for double pivots, while also making the different kinds of analysis (item and year, year by item, item by year) all reasonably accessible.</p>
+<p>Let’s put together all of the elements of pivots together to produce a plot of wheat prices that highlights the differences in prices following World War I and following World War II. We will add a complete set of titles and captions. We selected the second color by picking the complementary color of the maroon used for the first time period.</p>
+<div id="96bf9964" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create filtered datasets for different time periods  </span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>ww1_period <span class="op">=</span> food_prices[(food_prices[<span class="st">'year'</span>] <span class="op">&gt;=</span> <span class="dv">1919</span>) <span class="op">&amp;</span> (food_prices[<span class="st">'year'</span>] <span class="op">&lt;=</span> <span class="dv">1939</span>)]</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>ww2_period <span class="op">=</span> food_prices[(food_prices[<span class="st">'year'</span>] <span class="op">&gt;=</span> <span class="dv">1945</span>) <span class="op">&amp;</span> (food_prices[<span class="st">'year'</span>] <span class="op">&lt;=</span> <span class="dv">2015</span>)]</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>(ggplot(food_prices, aes(<span class="st">'year'</span>, <span class="st">'wheat'</span>)) <span class="op">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    geom_line(color<span class="op">=</span><span class="st">'grey85'</span>) <span class="op">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    geom_line(color<span class="op">=</span><span class="st">'maroon'</span>, data<span class="op">=</span>ww1_period) <span class="op">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    geom_line(color<span class="op">=</span><span class="st">'#30b080'</span>, data<span class="op">=</span>ww2_period) <span class="op">+</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">'Wheat Price Index, 1850 to 2015'</span>,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>        subtitle<span class="op">=</span><span class="st">'Commodity prices are given as a price index relative to real prices in 1900'</span>,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>        caption<span class="op">=</span><span class="st">'Jacks, D.S. (2019), "A Typology of Real Commodity Prices in the Long Run." Cliometrica 13(2), 202-220.'</span>,</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">'Year'</span>,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">'Price Index of Wheat (1900 = 100)'</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To finish the plot off, and make it look particularly professional, it would be nice to add annotations explaining the main points that we want our audience to take-away from the plot. It is possible to do this directly in Python with <strong>plotnine</strong> annotations, but these can be somewhat awkward and time consuming to work with. Often, a better solution is to open the figure in another program such as Google Slides, Microsoft PowerPoint, or image editing software.</p>
+<div id="fig-wheatprice" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wheatprice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="img/wheat_price.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;4.3: Plot showing the relative cost of wheat between 1850 and 2015, with manual annotations."><img src="img/wheat_price.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wheatprice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.3: Plot showing the relative cost of wheat between 1850 and 2015, with manual annotations.
+</figcaption>
+</figure>
+</div>
+<p>Notice that the plot both shows all of the data for the viewer, but guides them to the specific points of interest. Annotations explaining peaks and trends can be shown in smaller font sizes and in dark grey, because they are secondary to the main points we want to make about the overall trends in the two post-war periods.</p>
+<p>Overall, the process of combining, joining, and pivoting is a powerful way to connect and analyze information across datasets. The approaches also speak to why we must be very careful when creating datasets, from variable names to the relationship between columns and rows to the shape of our dataset. How datasets are collected, built, and organized will shape which data we can put in conversation and explore.</p>
+</section>
+<section id="extensions" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="extensions"><span class="header-section-number">4.7</span> Extensions</h2>
+<p>We have seen in this chapter the core methods for combining two datasets using merges and for rearranging the rows and columns of a dataset with pivots. In Chapter 8 we will see how to use range-based merges that combine datasets based on inequalities between numeric keys in place of the exact matches as shown above. Each of the merge functions and pivot functions that we have shown have a number of additional options that can extend and refine the results. The <em>Python for Data Analysis</em> book by Wes McKinney is a good reference for these additional details <span class="citation" data-cites="mckinney2022python">[<a href="#ref-mckinney2022python" role="doc-biblioref">1</a>]</span>. The package documentation for <strong>pandas</strong> provides even more in-depth descriptions of each of the options.</p>
+<p>To better understand relational joins, it is useful to understand the concepts of database normalization. In database theory, there are a variety of different terms to describe how the relations in different tables are connected via their keys. For a good and concise introduction to the five most common normal forms, we recommend the “simple guide” from William Kent <span class="citation" data-cites="kent1983simple">[<a href="#ref-kent1983simple" role="doc-biblioref">2</a>]</span>. Textbooks in relational database design can provide further examples and motivations <span class="citation" data-cites="date2019database">[<a href="#ref-date2019database" role="doc-biblioref">3</a>]</span>. In the next chapter, we will discuss best practices to avoid requiring overly complex chains of pivots through good dataset design.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+
+
+<div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-mckinney2022python" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline">McKinney, W (2012 ). <em>Python for Data Analysis: Data Wrangling with Pandas, NumPy, and IPython</em>. " O’Reilly Media, Inc."</div>
+</div>
+<div id="ref-kent1983simple" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">Kent, W (1983 ). A simple guide to five normal forms in relational database theory. <em>Communications of the ACM</em>. ACM New York, NY, USA. <strong>26</strong> 120–5</div>
+</div>
+<div id="ref-date2019database" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline">Date, C J (2019 ). <em>Database Design and Relational Theory: Normal Forms and All That Jazz</em>. Apress</div>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/distant-viewing\.github\.io\/hdpy");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./03_verbs.html" class="pagination-link" aria-label="EDA II: Organizing Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">EDA II: Organizing Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./05_collect.html" class="pagination-link" aria-label="Collecting Data">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Collecting Data</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Taylor Arnold and Lauren Tilton</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>A <a href="https://distantviewing.org/">Distant Viewing Lab</a> project</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

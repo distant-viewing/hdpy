@@ -1,0 +1,13 @@
+```{python}
+1 + 1
+```
+
+
+```{python}
+#| include: false
+import pandas as pd
+import numpy as np
+from plotnine import *
+```
+
+Just seeing if this works!

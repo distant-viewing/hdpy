@@ -1,0 +1,905 @@
+# Image Data {#sec-ch10}
+
+```{python}
+#| include: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from plotnine import *
+from PIL import Image
+import cv2
+from skimage import color, io
+from sklearn.decomposition import PCA
+import warnings
+warnings.filterwarnings('ignore')
+
+# Set up matplotlib for better image display
+plt.rcParams['figure.figsize'] = (12, 8)
+```
+
+## Introduction
+
+A large amount of humanities data consists of digitized image data,
+and there is an active push to digitize even more. Examples of large
+corpora include Google Books, HathiTrust, U.S. Library of Congress, the
+Getty Museum, Europeana, Wikimedia, and the Rijksmuseum. In some cases,
+these image collections represent scans of mostly textual
+data. In others, the images represent digitized art works or photographic
+prints; in these cases the images serve as direct historical evidence,
+objects of study in their own right, or both. Converting images with text
+into raw text data is an interesting problem in computer vision, known as 
+*optical character recognition* or OCR. However, 
+we will concentrate in this chapter only on the cases where images
+directly represent artwork and historical documents that are known
+for their visual semantics.
+
+While many humanities projects have worked with image data over the years, it has
+only been recently that there has been a large push to analyze
+the actual images themselves. Our own work has theorized and offered a
+method for computationally working with digital images called 
+Distant Viewing, which we expand on in an open
+access book by the same name [@arnold2023distant]. Others have offered
+concepts such as deep watching and cultural analytics [@bermeitinger2019deep]
+[@manovich2020cultural]. All are concerned
+with how to computationally analyze images for there are many possibilities
+from fields such as art history, film and media studies, visual culture studies and more.
+
+## Loading Images
+
+We will be working with a new dataset in this chapter. Our collection consists
+of the images taken by the photographic unit of the United States Farm
+Securities Administration and Office of War Information, commonly called the
+FSA-OWI. While best known for the over 170 thousand black-and-white images
+documenting the United States during the Great Depression and World War II, the
+FSA-OWI also created over sixteen hundred color photographs. Both of
+these collections are ones that we have worked extensively with in a variety
+of projects. The color subset is a perfect size to demonstrate the methods in
+this chapter and, unlike the black-and-white images, will allow us to start
+with a study of several color-based analyses. 
+
+Our analysis of image data in Python will in many ways follow the pattern seen in
+the previous chapters. We work to organize our data into structured, tabular
+datasets that capture information and models about the data. Then, we use the
+visualization and manipulation approaches in the first five chapters to
+understand the information in each table. To start, we will load a CSV file 
+into Python that contains metadata about each of the images:
+
+```{python}
+fsac = pd.read_csv("data/fsac_metadata.csv.bz2")
+fsac.sample(10)
+```
+
+The metadata includes a unique identifier for each image in the first column. 
+It also contains the year in which the photograph was taken and a short title
+of the photograph. This table also has the dimensions of the image and columns
+that have the file path to two versions of each image. One copy is a small
+thumbnail that will be useful to efficiently create visualizations. The other 
+image is the larger version that we will use for most of the actual analyses.
+Unlike other data types that we have seen, image data is usually stored as a
+set of separate files, with one file storing the information about a single
+image. It is not necessary when working with an image collection to have two versions
+of each image, but if we are given them, as is this case with this collection,
+it can be helpful to keep both to speed up the visualization techniques.
+
+Our work with images in this chapter will use several powerful Python libraries.
+**PIL (Python Imaging Library)** and **OpenCV** will handle image loading and basic
+processing. **scikit-image** provides additional image processing capabilities.
+For computer vision tasks, we'll use **OpenCV** and potentially **MediaPipe** for
+more advanced features. **matplotlib** will handle visualization, and we'll use
+**numpy** extensively for array operations since images are represented as
+numerical arrays.
+
+```{python}
+from PIL import Image
+import cv2
+from skimage import color
+import matplotlib.pyplot as plt
+```
+
+As a starting point, we will read a single image into Python and see how it is 
+represented. Python's PIL library makes this straightforward:
+
+```{python}
+# Load the first image
+image_path = fsac['thm_path'].iloc[0]
+
+# Load with PIL
+img_pil = Image.open(image_path)
+print(f"PIL Image size: {img_pil.size}")
+print(f"PIL Image mode: {img_pil.mode}")
+
+# Convert to numpy array for analysis
+img_array = np.array(img_pil)
+print(f"Array shape: {img_array.shape}")
+print(f"Array data type: {img_array.dtype}")
+```
+
+Image data is represented as one or more rectangular grids of pixels,
+the smallest identifiable locations of an image. A pixel is defined by a set of three
+numbers giving the intensity of the red, green, and blue lights needed to 
+represent the color of that part of the image on a digital display. The array
+that we now have in Python represents our image in pixels. We can see that the 
+thumbnail has dimensions corresponding to height, width, and the usual three color 
+channels for red, green, and blue intensities. Let's examine the pixel values:
+
+```{python}
+print(img_array[:4, :4, :])
+print(f"\nPixel value range: {img_array.min()} to {img_array.max()}")
+```
+
+We see that each pixel intensity is given as a number between 0 and 255 for uint8 images
+(the most common format). A value of 255 indicates maximum intensity, while 0 indicates
+no intensity for that color channel.
+
+Working directly with the array format gives us full control, but for analysis
+it's often useful to convert to a tabular format with one row per pixel:
+
+```{python}
+def image_to_dataframe(image_path, image_id=None):
+    """Convert an image to a DataFrame with one row per pixel."""
+    # Load image
+    img = Image.open(image_path)
+    img_array = np.array(img)
+    
+    # Get dimensions
+    height, width = img_array.shape[:2]
+    
+    # Handle grayscale vs color images
+    if len(img_array.shape) == 3:
+        channels = img_array.shape[2]
+    else:
+        channels = 1
+        img_array = img_array[:, :, np.newaxis]
+    
+    # Create coordinate grids
+    rows, cols = np.mgrid[0:height, 0:width]
+    
+    # Flatten everything
+    pixel_data = {
+        'image_id': image_id or 0,
+        'row': rows.flatten(),
+        'col': cols.flatten(),
+        'height': height,
+        'width': width
+    }
+    
+    # Add color channels
+    if channels >= 3:
+        pixel_data['red'] = img_array[:, :, 0].flatten()
+        pixel_data['green'] = img_array[:, :, 1].flatten()
+        pixel_data['blue'] = img_array[:, :, 2].flatten()
+        
+        # Convert RGB to HSV for analysis
+        img_hsv = color.rgb2hsv(img_array / 255.0)  # Convert to 0-1 range for HSV
+        pixel_data['hue'] = img_hsv[:, :, 0].flatten()
+        pixel_data['saturation'] = img_hsv[:, :, 1].flatten()
+        pixel_data['value'] = img_hsv[:, :, 2].flatten()
+        
+        # Create hex color representation
+        hex_colors = []
+        for r, g, b in zip(pixel_data['red'], pixel_data['green'], pixel_data['blue']):
+            hex_colors.append(f'#{r:02x}{g:02x}{b:02x}')
+        pixel_data['hex'] = hex_colors
+    
+    return pd.DataFrame(pixel_data)
+
+# Convert our first image to DataFrame format
+pix_single = image_to_dataframe(fsac['thm_path'].iloc[0], fsac['filename'].iloc[0])
+pix_single
+```
+
+Notice that the output has one row for each pixel. The first column identifies
+the image, followed by row and column coordinates, image dimensions, and then
+the RGB color values. We've also computed HSV (Hue, Saturation, Value) 
+representations and hex color codes. Four other derived measurements are provided
+in the last columns. We will investigate these measurements in the next section.
+
+Now let's create a function to process multiple images:
+
+```{python}
+def process_image_collection(image_paths, image_ids, max_images=None):
+    """Process a collection of images into a combined pixel DataFrame."""
+    if max_images:
+        image_paths = image_paths[:max_images]
+        image_ids = image_ids[:max_images]
+    
+    pixel_dataframes = []
+    
+    for i, (path, img_id) in enumerate(zip(image_paths, image_ids)):
+        try:
+            df = image_to_dataframe(path, img_id)
+            pixel_dataframes.append(df)
+            if (i + 1) % 100 == 0:
+                print(f"Processed {i + 1} images...")
+        except Exception as e:
+            print(f"Error processing {path}: {e}")
+    
+    return pd.concat(pixel_dataframes, ignore_index=True)
+
+# For demonstration, let's process just the first 10 images
+print("Processing first 10 images...")
+pix_sample = process_image_collection(
+    fsac['thm_path'].iloc[:10].tolist(),
+    fsac['filename'].iloc[:10].tolist()
+)
+
+pix_sample
+```
+
+## Pixels and Color
+
+Let's now see if we can use the pixel-level data to do some exploratory data analysis 
+with the images. Since processing all 1,600 images would create an enormous dataset,
+we'll work with subsets and demonstrate the techniques that could be scaled up.
+
+It is tempting to use the red, green, and blue pixel intensities directly to compute 
+summary values for the images. For example, we might want to group by filename and 
+determine which images have the highest average values of green. Unfortunately, our 
+current calculations will not actually indicate very clearly which images contain 
+the color that we would perceive as green. The color of a pixel can be represented 
+as three numbers because the human eye has three different kinds of cells, called 
+*cones*, that are sensitive to three different wavelengths of light.
+
+The blending of colors is what makes it challenging to summarize raw pixel
+intensities. An image that has a large average green intensity could have a 
+lot of green in it. But, if the green is always blended with red, it could be
+primarily yellow. Or, if all three intensities are high, the image might only
+have a large amount of white. In order to work around this issue, it is useful
+to transform the pixel intensities into a new set of numbers that more
+closely represent the way that we think about color working. We will work with 
+the HSV representation, which stands for hue, saturation, and value.
+
+The *value* of a pixel represents how bright or intense the pixel is.
+The *saturation* measures the richness of a color, with zero being a shade of grey 
+and one being a "pure" color. The *hue* corresponds to information about where a 
+pixel sits in the rainbow of colors, roughly corresponding to a color wheel.
+
+Let's visualize the pixel colors from our sample images:
+
+```{python}
+# Create HSV visualization for the first few images
+sample_images = pix_sample[pix_sample['image_id'].isin(pix_sample['image_id'].unique()[:6])]
+
+# Create the plot
+p = (ggplot(sample_images, aes(x='hue', y='saturation')) +
+     geom_point(aes(color='hex'), alpha=0.6, size=0.5) +
+     scale_color_identity() +
+     facet_wrap('~image_id', ncol=3) +
+     labs(title="Pixel Colors in Sample Images (HSV Space)",
+          x="Hue", y="Saturation") +
+     theme_minimal())
+
+p
+```
+
+Let's also look at the actual images for reference:
+
+```{python}
+# Display the actual images
+fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+axes = axes.flatten()
+
+for i, img_id in enumerate(pix_sample['image_id'].unique()[:6]):
+    img_path = fsac[fsac['filename'] == img_id]['thm_path'].iloc[0]
+    img = Image.open(img_path)
+    axes[i].imshow(img)
+    axes[i].set_title(f"Image: {img_id}")
+    axes[i].axis('off')
+
+plt.tight_layout()
+plt.show()
+```
+
+Now we can use the HSV measurements to analyze our image collection. Let's find
+the darkest images by computing average brightness (value):
+
+```{python}
+# Compute average brightness for each image
+brightness_summary = (pix_sample
+    .groupby('image_id')
+    .agg({'value': 'mean'})
+    .reset_index()
+    .sort_values('value')
+)
+
+# Join with metadata to see titles
+dark_images = (brightness_summary
+    .merge(fsac, left_on='image_id', right_on='filename')
+    .head(10)
+)
+
+dark_images[['filename', 'title', 'value']]
+```
+
+Similarly, we can look at images with highly saturated colors:
+
+```{python}
+# Find images with saturated colors
+saturation_summary = (pix_sample
+    .query('saturation > 0.8 and value > 0.5')  # Bright and saturated pixels
+    .groupby('image_id')
+    .size()
+    .reset_index(name='saturated_pixel_count')
+)
+
+# Calculate proportion of saturated pixels
+image_totals = (pix_sample
+    .groupby('image_id')
+    .size()
+    .reset_index(name='total_pixels')
+)
+
+saturated_analysis = (saturation_summary
+    .merge(image_totals, on='image_id')
+    .assign(saturated_proportion = lambda df: df['saturated_pixel_count'] / df['total_pixels'])
+    .sort_values('saturated_proportion', ascending=False)
+    .merge(fsac, left_on='image_id', right_on='filename')
+)
+
+saturated_analysis[['filename', 'title', 'saturated_proportion']]
+```
+
+For hue analysis, we can group similar hues into buckets and analyze color distribution:
+
+```{python}
+def analyze_dominant_hues(pixel_df, n_hue_bins=12):
+    """Analyze dominant hues in images."""
+    # Filter to sufficiently bright and saturated pixels
+    filtered_pixels = pixel_df.query('value > 0.2 and saturation > 0.2').copy()
+    
+    # Create hue bins
+    filtered_pixels['hue_bin'] = np.floor(filtered_pixels['hue'] * n_hue_bins).astype(int)
+    
+    # Calculate proportions for each image and hue bin
+    hue_props = (filtered_pixels
+        .groupby(['image_id', 'hue_bin'])
+        .size()
+        .reset_index(name='pixel_count')
+    )
+    
+    # Add total pixels per image for proportion calculation
+    total_pixels = (filtered_pixels
+        .groupby('image_id')
+        .size()
+        .reset_index(name='total_pixels')
+    )
+    
+    hue_analysis = (hue_props
+        .merge(total_pixels, on='image_id')
+        .assign(proportion = lambda df: df['pixel_count'] / df['total_pixels'])
+        .sort_values('proportion', ascending=False)
+    )
+    
+    return hue_analysis
+
+# Analyze hues in our sample
+hue_results = analyze_dominant_hues(pix_sample)
+hue_results.head(10)
+```
+
+Let's create a more comprehensive analysis with a larger sample:
+
+```{python}
+# Process more images for better analysis (first 50 to keep manageable)
+print("Processing first 50 images for comprehensive analysis...")
+pix_extended = process_image_collection(
+    fsac['thm_path'].iloc[:50].tolist(),
+    fsac['filename'].iloc[:50].tolist()
+)
+
+# Analyze color characteristics
+color_summary = (pix_extended
+    .groupby('image_id')
+    .agg({
+        'value': ['mean', 'std'],
+        'saturation': ['mean', 'std'], 
+        'hue': ['mean', 'std']
+    })
+    .round(3)
+)
+
+# Flatten column names
+color_summary.columns = ['_'.join(col).strip() for col in color_summary.columns]
+color_summary = color_summary.reset_index()
+
+color_summary
+```
+
+## Computer Vision with OpenCV
+
+Working with pixel-level data gives us insights into color and basic image properties,
+but to access higher-level aspects like objects, faces, and poses, we need computer 
+vision algorithms. Python's OpenCV library provides excellent built-in capabilities
+for many computer vision tasks.
+
+```{python}
+import cv2
+
+def detect_objects_simple(image_path, min_area=1000):
+    """Simple object detection using contour finding."""
+    # Load image
+    img = cv2.imread(image_path)
+    if img is None:
+        return []
+    
+    # Convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Apply threshold to get binary image
+    _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+    
+    # Find contours
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # Extract bounding boxes for large contours
+    objects = []
+    for contour in contours:
+        area = cv2.contourArea(contour)
+        if area > min_area:
+            x, y, w, h = cv2.boundingRect(contour)
+            objects.append({
+                'x0': x, 'y0': y, 'x1': x + w, 'y1': y + h,
+                'area': area, 'confidence': area / (img.shape[0] * img.shape[1])
+            })
+    
+    return objects
+
+# Test simple object detection
+sample_image = fsac['med_path'].iloc[0]
+simple_objects = detect_objects_simple(sample_image)
+simple_objects
+```
+
+For more sophisticated object detection, we can use pre-trained models. Here's an 
+example using OpenCV's DNN module with a pre-trained model:
+
+```{python}
+def setup_yolo_detection():
+    """Set up YOLO object detection (if model files are available)."""
+    try:
+        # Note: In practice, you would download these files
+        # net = cv2.dnn.readNet('yolov3.weights', 'yolov3.cfg')
+        # classes = open('coco.names').read().strip().split('\n')
+        # return net, classes
+        print("YOLO model files not available in this demo")
+        return None, None
+    except:
+        print("YOLO model setup failed - using placeholder")
+        return None, None
+
+def detect_faces_opencv(image_path):
+    """Detect faces using OpenCV's built-in cascade classifier."""
+    # Load the pre-trained face cascade
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    
+    # Load image
+    img = cv2.imread(image_path)
+    if img is None:
+        return []
+    
+    # Convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Detect faces
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    
+    # Convert to our standard format
+    face_detections = []
+    for (x, y, w, h) in faces:
+        face_detections.append({
+            'x0': x, 'y0': y, 'x1': x + w, 'y1': y + h,
+            'confidence': 0.8  # OpenCV doesn't provide confidence scores for Haar cascades
+        })
+    
+    return face_detections
+
+# Test face detection
+faces_detected = detect_faces_opencv(sample_image)
+faces_detected
+```
+
+Let's create a visualization function to show detection results:
+
+```{python}
+def visualize_detections(image_path, detections, detection_type="objects"):
+    """Visualize detection results on an image."""
+    # Load image
+    img = cv2.imread(image_path)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    
+    # Create plot
+    fig, ax = plt.subplots(1, 1, figsize=(12, 8))
+    ax.imshow(img_rgb)
+    
+    # Draw bounding boxes
+    for detection in detections:
+        x0, y0, x1, y1 = detection['x0'], detection['y0'], detection['x1'], detection['y1']
+        conf = detection.get('confidence', 0)
+        
+        # Draw rectangle
+        rect = plt.Rectangle((x0, y0), x1-x0, y1-y0, 
+                           fill=False, color='orange', linewidth=2)
+        ax.add_patch(rect)
+        
+        # Add label
+        ax.text(x0, y0-10, f"{detection_type} ({conf:.2f})", 
+               color='orange', fontsize=10, fontweight='bold')
+    
+    ax.set_title(f"{detection_type.title()} Detection Results")
+    ax.axis('off')
+    plt.tight_layout()
+    plt.show()
+
+# Visualize face detection results
+if faces_detected:
+    visualize_detections(sample_image, faces_detected, "face")
+else:
+    print("No faces detected in sample image")
+```
+
+For pose detection, we can use MediaPipe (if available) or create a simplified version:
+
+```{python}
+def detect_keypoints_simple(image_path):
+    """Simple keypoint detection using corner detection."""
+    # Load image
+    img = cv2.imread(image_path)
+    if img is None:
+        return []
+    
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Detect corners using Harris corner detection
+    corners = cv2.goodFeaturesToTrack(gray, maxCorners=100, qualityLevel=0.01, minDistance=10)
+    
+    keypoints = []
+    if corners is not None:
+        for corner in corners:
+            x, y = corner.ravel()
+            keypoints.append({
+                'x': float(x), 'y': float(y), 
+                'type': 'corner', 'confidence': 0.5
+            })
+    
+    return keypoints
+
+# Test keypoint detection
+keypoints = detect_keypoints_simple(sample_image)
+print(f"Found {len(keypoints)} keypoints")
+
+# Visualize keypoints
+if keypoints:
+    img = cv2.imread(sample_image)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    
+    fig, ax = plt.subplots(1, 1, figsize=(12, 8))
+    ax.imshow(img_rgb)
+    
+    for kp in keypoints[:20]:  # Show first 20 keypoints
+        ax.plot(kp['x'], kp['y'], 'ro', markersize=4)
+    
+    ax.set_title("Detected Keypoints")
+    ax.axis('off')
+    plt.show()
+```
+
+Let's create a comprehensive computer vision analysis pipeline:
+
+```{python}
+def analyze_image_collection_cv(image_paths, image_ids, max_images=10):
+    """Run computer vision analysis on a collection of images."""
+    results = []
+    
+    for i, (path, img_id) in enumerate(zip(image_paths[:max_images], image_ids[:max_images])):
+        try:
+            # Basic image info
+            img = cv2.imread(path)
+            if img is None:
+                continue
+                
+            height, width = img.shape[:2]
+            
+            # Face detection
+            faces = detect_faces_opencv(path)
+            
+            # Simple object detection
+            objects = detect_objects_simple(path)
+            
+            # Keypoint detection
+            keypoints = detect_keypoints_simple(path)
+            
+            results.append({
+                'image_id': img_id,
+                'width': width,
+                'height': height,
+                'num_faces': len(faces),
+                'num_objects': len(objects),
+                'num_keypoints': len(keypoints),
+                'faces': faces,
+                'objects': objects,
+                'keypoints': keypoints
+            })
+            
+            print(f"Processed {img_id}: {len(faces)} faces, {len(objects)} objects, {len(keypoints)} keypoints")
+            
+        except Exception as e:
+            print(f"Error processing {path}: {e}")
+    
+    return results
+
+# Run computer vision analysis on sample images
+cv_results = analyze_image_collection_cv(
+    fsac['med_path'].iloc[:10].tolist(),
+    fsac['filename'].iloc[:10].tolist()
+)
+
+# Create summary DataFrame
+cv_summary = pd.DataFrame([
+    {k: v for k, v in result.items() 
+     if k not in ['faces', 'objects', 'keypoints']}
+    for result in cv_results
+])
+
+cv_summary
+```
+
+## Embeddings and Similarity
+
+For more sophisticated analysis, we can compute image embeddings using pre-trained
+deep learning models. These embeddings capture high-level semantic features and
+can be used for similarity analysis and clustering:
+
+```{python}
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+
+def compute_simple_image_features(image_path):
+    """Compute simple statistical features from an image."""
+    img = cv2.imread(image_path)
+    if img is None:
+        return None
+    
+    # Convert to different color spaces
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    features = {}
+    
+    # Color statistics
+    for i, color in enumerate(['red', 'green', 'blue']):
+        features[f'{color}_mean'] = np.mean(img_rgb[:, :, i])
+        features[f'{color}_std'] = np.std(img_rgb[:, :, i])
+    
+    # HSV statistics
+    for i, channel in enumerate(['hue', 'saturation', 'value']):
+        features[f'{channel}_mean'] = np.mean(img_hsv[:, :, i])
+        features[f'{channel}_std'] = np.std(img_hsv[:, :, i])
+    
+    # Texture features (simple)
+    features['brightness_mean'] = np.mean(img_gray)
+    features['brightness_std'] = np.std(img_gray)
+    
+    # Edge density
+    edges = cv2.Canny(img_gray, 50, 150)
+    features['edge_density'] = np.sum(edges > 0) / (edges.shape[0] * edges.shape[1])
+    
+    return features
+
+def compute_collection_features(image_paths, image_ids, max_images=50):
+    """Compute features for a collection of images."""
+    feature_list = []
+    
+    for path, img_id in zip(image_paths[:max_images], image_ids[:max_images]):
+        features = compute_simple_image_features(path)
+        if features:
+            features['image_id'] = img_id
+            feature_list.append(features)
+    
+    return pd.DataFrame(feature_list)
+
+feature_df = compute_collection_features(
+    fsac['thm_path'].iloc[:50].tolist(),
+    fsac['filename'].iloc[:50].tolist()
+)
+feature_df
+```
+
+Now let's apply dimensionality reduction to visualize image similarities:
+
+```{python}
+# Prepare features for PCA
+feature_columns = [col for col in feature_df.columns if col != 'image_id']
+X = feature_df[feature_columns].fillna(0)
+
+# Standardize features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Apply PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+# Create PCA results DataFrame
+pca_results = pd.DataFrame({
+    'image_id': feature_df['image_id'],
+    'pca_1': X_pca[:, 0],
+    'pca_2': X_pca[:, 1]
+})
+
+pca_results
+```
+
+Let's visualize the PCA results:
+
+```{python}
+# Create PCA visualization with actual images
+fig, ax = plt.subplots(1, 1, figsize=(15, 12))
+
+# Plot points
+scatter = ax.scatter(pca_results['pca_1'], pca_results['pca_2'], alpha=0.7, s=100)
+
+# Add a few sample images to the plot
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+
+# Select a few representative points
+sample_indices = np.random.choice(len(pca_results), size=min(12, len(pca_results)), replace=False)
+
+for idx in sample_indices:
+    row = pca_results.iloc[idx]
+    img_path = fsac[fsac['filename'] == row['image_id']]['thm_path'].iloc[0]
+    
+    try:
+        img = plt.imread(img_path)
+        
+        # Resize image for display
+        img_resized = cv2.resize(img, (50, 50))
+        
+        imagebox = OffsetImage(img_resized, zoom=1)
+        ab = AnnotationBbox(imagebox, (row['pca_1'], row['pca_2']), frameon=False)
+        ax.add_artist(ab)
+    except:
+        # If image loading fails, just plot a point
+        ax.plot(row['pca_1'], row['pca_2'], 'rx', markersize=8)
+
+ax.set_xlabel(f'First Principal Component (explains {pca.explained_variance_ratio_[0]:.1%} of variance)')
+ax.set_ylabel(f'Second Principal Component (explains {pca.explained_variance_ratio_[1]:.1%} of variance)')
+ax.set_title('Image Collection Visualization using PCA')
+plt.tight_layout()
+plt.show()
+```
+
+For comparison, let's also try UMAP:
+
+```python
+# Apply UMAP for comparison
+umap_reducer = umap.UMAP(n_components=2, random_state=42)
+X_umap = umap_reducer.fit_transform(X_scaled)
+
+umap_results = pd.DataFrame({
+    'image_id': feature_df['image_id'],
+    'umap_1': X_umap[:, 0],
+    'umap_2': X_umap[:, 1]
+})
+
+print("UMAP results:")
+print(umap_results.head())
+
+# Plot UMAP results
+p_umap = (ggplot(umap_results, aes(x='umap_1', y='umap_2')) +
+          geom_point(size=3, alpha=0.7) +
+          labs(title="Image Collection UMAP Visualization",
+               x="UMAP Dimension 1", y="UMAP Dimension 2") +
+          theme_minimal())
+
+p_umap
+```
+
+Finally, let's create a simple image similarity function:
+
+```python
+def find_similar_images(target_image_id, feature_df, pca_results, n_similar=5):
+    """Find images similar to a target image based on PCA coordinates."""
+    from sklearn.metrics.pairwise import euclidean_distances
+    
+    # Get target image features
+    target_row = pca_results[pca_results['image_id'] == target_image_id]
+    if target_row.empty:
+        return None
+    
+    target_coords = target_row[['pca_1', 'pca_2']].values
+    all_coords = pca_results[['pca_1', 'pca_2']].values
+    
+    # Compute distances
+    distances = euclidean_distances(target_coords, all_coords)[0]
+    
+    # Get indices of most similar images (excluding the target itself)
+    similar_indices = np.argsort(distances)[1:n_similar+1]
+    
+    similar_images = pca_results.iloc[similar_indices]
+    similar_images['distance'] = distances[similar_indices]
+    
+    return similar_images
+
+# Find similar images for the first image
+target_id = feature_df['image_id'].iloc[0]
+similar = find_similar_images(target_id, feature_df, pca_results)
+
+print(f"Images similar to {target_id}:")
+print(similar)
+
+# Display the target and similar images
+if similar is not None:
+    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+    axes = axes.flatten()
+    
+    # Show target image first
+    target_path = fsac[fsac['filename'] == target_id]['thm_path'].iloc[0]
+    target_img = plt.imread(target_path)
+    axes[0].imshow(target_img)
+    axes[0].set_title(f"Target: {target_id}")
+    axes[0].axis('off')
+    
+    # Show similar images
+    for i, (_, row) in enumerate(similar.iterrows()):
+        if i >= 5:  # Only show 5 similar images
+            break
+        img_path = fsac[fsac['filename'] == row['image_id']]['thm_path'].iloc[0]
+        img = plt.imread(img_path)
+        axes[i+1].imshow(img)
+        axes[i+1].set_title(f"Similar: {row['image_id'][:8]}\nDist: {row['distance']:.2f}")
+        axes[i+1].axis('off')
+    
+    plt.tight_layout()
+    plt.show()
+```
+
+## Extensions
+
+In this chapter we have shown how Python's rich ecosystem enables direct
+analysis of image collections without requiring external wrappers. Our
+focus has been on practical techniques for extracting meaningful information
+from visual data using established computer vision and machine learning
+approaches.
+
+**For deeper computer vision work:**
+
+- **OpenCV** provides comprehensive computer vision functionality
+- **MediaPipe** offers robust pose detection, face mesh, and holistic analysis
+- **scikit-image** has extensive image processing capabilities
+- **Pillow (PIL)** handles image I/O and basic manipulations
+
+**For advanced deep learning:**
+
+- **PyTorch** and **torchvision** provide state-of-the-art pre-trained models
+- **TensorFlow/Keras** offers alternative deep learning frameworks
+- **YOLO, RCNN, and Detectron2** for object detection
+- **FaceNet, ArcFace** for face recognition
+- **OpenPose, MediaPipe** for pose estimation
+
+**For large-scale analysis:**
+
+- **Dask** for processing image collections larger than memory
+- **Ray** for distributed computing across multiple machines
+- **Hugging Face Transformers** for vision transformer models
+- **CLIP** for text-image similarity
+
+The Python ecosystem provides unparalleled capabilities for image analysis
+that continue to evolve rapidly. Unlike the R version that required Python
+wrappers, Python offers direct access to cutting-edge computer vision
+research and production-ready tools.
+
+For theoretical background, we recommend our *Distant Viewing* [@arnold2023distant] 
+text as well as Lev Manovich's *Cultural Analytics* [@manovich2020cultural]. 
+For technical deep learning background, see *Deep Learning* by Ian Goodfellow 
+[@goodfellow2016deep] and *Computer Vision: Algorithms and Applications* by 
+Richard Szeliski [@szeliski2010computer].
+
+The combination of Python's mature scientific computing ecosystem with 
+rapidly advancing computer vision research makes it an ideal platform for 
+computational analysis of visual culture, art history, media studies, and 
+other image-rich humanities domains.
+
+## References {-}

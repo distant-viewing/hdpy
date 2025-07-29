@@ -1,0 +1,27 @@
+# Welcome {-}
+
+**This book is currently under development. It will be extended and updated throughout Fall 2025 as part of a course we are teaching this semester.**
+
+This is the digital version of the text *Humanities Data in Python*. The
+first part of the text provides an introduction to the core data science
+principles using the Python programming language. The second part explores
+techniques for working with a variety of different kinds of data that
+are common in the humanities and social sciences. These include spatial,
+textual, and temporal data. Example datasets were chosen to be
+interesting without requiring deep specialized knowledge of a subject domain
+while at the same time being engaging enough to illustrate the power
+of the techniques under consideration. While originally designed with
+the needs of students coming from the humanities, the text offers an
+approach that should be useful to anyone looking to learn how to 
+explore rich datasets with the Python programming language.
+
+The authors use this site for teaching courses in data science and the
+digital humanities. Unlike the physical book, this website will be
+continually expanded and updated over time. We currently have this
+version of the text password protected though hope to eventually
+open it to the public. Please use the menu on the left (or above
+on the mobile site) to navigate the text. If you would like to follow
+along, please see the instructions in the setup section for getting
+Python and all of the datasets installed on your machine. As always,
+please contact us if you have any questions or comments about
+the text. We hope that you find it helpful!

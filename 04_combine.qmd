@@ -1,0 +1,501 @@
+# EDA III: Restructuring Data {#sec-ch04}
+
+```{python}
+#| include: false
+import pandas as pd
+import numpy as np
+from plotnine import *
+import warnings
+warnings.filterwarnings('ignore')
+
+# Load data
+cbsa = pd.read_csv("data/acs_cbsa.csv")
+food_prices = pd.read_csv("data/food_prices.csv")
+```
+
+## Introduction
+
+In the previous chapter, we learned how to use data operations to modify a
+dataset within Python. These modifications included taking a subset of a
+DataFrame, such as filtering to a subset of the rows or selecting a reduced set
+of columns. We saw how to add new columns and how to rearrange the rows of
+a dataset by sorting by one or more of the columns. We also investigated ways 
+of grouping and summarizing our data, to create an entirely new set of summary
+statistics that aggregate the original dataset at different levels of 
+granularity. Along the way, we saw how these modifications can help create 
+more informative data visualizations, particularly when there is too much data
+to label every row as a point on a single plot. In this chapter, 
+we will continue to see how to modify data using increasingly advanced
+techniques. To start, we will investigate how to combine information from two
+different data tables. Then, we proceed to data pivots, a relatively complex but
+powerful method for modifying data.
+
+Previously, we defined the concept of a data operation as a method that takes a
+dataset and returns a modified copy of the dataset. The operations that we have seen
+so far work on a single table. 
+In contrast, *merge operations* take a pair of datasets and produce a new dataset that 
+combines information from both tables. There are several different variants of
+merge operations; we will look at most of them in this chapter as each will have
+a different use-case in the later applications.
+
+## Joining by Relation
+
+To start, we need another dataset that can be combined with the CBSA data we
+have been using for our examples. A reminder that the Core-Based Statistical Areas data 
+is census data from the American Communities Survey aggregated to economic centers, 
+rather than political divisions.
+Recall that each CBSA region can cross over
+state boundaries. In the code block below, we will read into Python a table that 
+indicates which state(s) every CBSA region overlaps, and the proportion (in
+terms of population) that each region overlaps into a given state. The table
+lists a unique identifier for the CBSA, the two-letter state code, and the
+proportion (a number from 0 to 1) of people living in the CBSA that are
+residents in the given state.
+
+![Visual descriptions table join functions.](img/diagram_join.png){#fig-img-join .lightbox}
+
+```{python}
+lookup = pd.read_csv("data/acs_cbsa_to_state.csv")
+lookup
+```
+
+We also have another table that gives the state name, abbreviation, and
+total population of each state in the United States. This data can be read
+into Python and saved as the dataset `state` by using the following code.
+
+```{python}
+state = pd.read_csv("data/acs_state.csv")
+state
+```
+
+Looking at these two datasets, we see that there should be a way to
+combine the information in these tables with the information in our `cbsa`
+DataFrame. In order to understand exactly how to do this, we need some 
+vocabulary about how different columns can define the rows of a table.
+A *primary key* consists of one or more columns that uniquely identify a row of
+data. In our `cbsa` dataset, the column `geoid` is a primary key. The column
+`name` might appear to be a primary key, but there are some duplicates, with
+several CBSA regions having the same (short) name. In the `lookup` data, the
+primary key consists of the pair `geoid` and `state`; without considering both,
+we would have multiple rows that have the same value for each individual column. The
+`state` dataset has two possible primary keys: `state` and `abb`. Using either of these
+would work fine as a way of describing a unique row of the dataset.
+
+A *foreign key* is the appearance of a primary key within a different dataset.
+The foreign key does not need to have the same names on the two tables; it just
+needs to have matching information. For example, the primary key `geoid` in
+our original datasets appears as a foreign key on the `lookup` dataset. The
+primary key `abb` from the `state` table appears as a foreign key on the 
+`lookup` table, where it is called state. Notice that we have chosen different
+examples here---keys that match exactly, keys match with different names in
+the two tables, and keys that are both foreign keys and part of the primary
+key--- to illustrate some of the possible different kinds of relationships
+that commonly occur. 
+
+A primary key and the corresponding foreign key in another table form a
+*relation*. Typically, a relation maps a single row in one dataset to many
+rows in another. A *table join* is a way of combining two tables based on
+relations. The goal is to line up a foreign key in one table with the primary
+key in another table. We can then use these relationships to add new variables
+from one dataset into another dataset. Several examples will make this notion
+more clear.
+
+As an example of performing table joins, we will start with a pared-down
+version of our `cbsa` data. A smaller version will make it possible to fit
+merged  tables all within the width of this text.
+
+```{python}
+cbsa_sml = cbsa[['name', 'geoid', 'pop', 'density']]
+cbsa_sml
+```
+
+To start, we will line up the values in the `lookup` table with the values in 
+the `cbsa_sml` table. What is the relation here? The `cbsa_sml` table has
+the primary key `geoid`, which appears as a foreign key on the table `lookup`.
+If we associate each row of the `lookup` table with the corresponding row of
+the `cbsa_sml` dataset, we will be able to combine the two tables into one.
+The method to do this with is called `pd.merge()` with `how='left'`. The method
+takes the two datasets as arguments, along with an `on` parameter that indicates 
+the names of the keys that will be used to match the rows of the dataset together. 
+The code below shows the specific syntax and output for performing the join.
+
+```{python}
+lookup.merge(cbsa_sml, on='geoid', how='left')
+```
+
+The new dataset has the same number of rows in the original `lookup` data along
+with the original first same four columns. The three columns from `cbsa_sml`
+are added to the end, matched up by the variable `geoid`. 
+We now have every CBSA joined with its corresponding state. We could now proceed
+to analyze the CBSA data on a state-by-state level. 
+
+Now, let's consider combining the datasets `state` and `lookup`. This would 
+be helpful, for example, if we wanted to know the total population of the state or
+the full name of the state in conjunction with the CBSA region. The added
+complexity here is that the primary key now has different names in the two
+datasets. We can account for this by setting the `left_on` and `right_on` parameters
+to specify the different column names, as shown in the following code chunk.
+
+```{python}
+lookup.merge(state, left_on='state', right_on='abb', how='left')
+```
+
+As before, this creates a new dataset with one row for each row in the original
+`lookup` dataset. All of the original columns are in the new data, and the 
+added columns are joined on the right. One difficulty here is that the dataset
+`state` contains a variable called `state` that conflicts with the variable
+of the same name in the `lookup` dataset. It is not possible in pandas to have two
+columns with the same name; otherwise, we would not know how to refer to them
+in our code. To account for this, the suffix "_y" has been added to the name
+in the second table. Usually, in these cases, the suffix "_x" would be added
+to the first table, but this is not done when the matching name on the first
+table is also part of the key. We can override the default suffix by providing
+a `suffixes` argument to the merge function, as shown in the following
+code.
+
+```{python}
+lookup.merge(state, left_on='state', right_on='abb', how='left', 
+             suffixes=('', '_name'))
+```
+
+Now, the data has a new column called `state_name` that has the full name of the
+state. Note that the suffix is only added to columns that have a duplicate name.
+Non-overlapping names will remain the same in the joined dataset.
+
+## Different Types of Joins
+
+The function `pd.merge()` with `how='left'` is an example of a *left join*. 
+There are three additional similar variations of joins available in
+**pandas** that have the same syntax as left joins. If the join key is a
+primary key in one table and there are no missing matches, all of these
+variations produce exactly the same output. If the join key is a primary key in
+one table and not all foreign keys in the other table match an entry in the
+other, the choice of the join type changes what happens with the missing 
+relations. A summary of the four options are:
+
+1. `how='left'` only non-matching rows in the first dataset are kept
+2. `how='right'` only non-matching rows in the second dataset are kept
+3. `how='outer'` non-matching rows are included from either table
+4. `how='inner'` only matching rows from both tables are included
+
+The terminology of left versus right comes from considering the relative 
+positions of the two joining datasets when written as a function. The left
+join always keeps things in the left (first) dataset, but ignores non-matching
+keys on the right. The right joins works in an analogous way, but only keeping
+the originals in the right dataset. An outer join keeps everything and the inner
+join only keeps things that have a full match.
+
+Whenever possible, we suggest
+making sure that the key used in a join is a primary key for the *second*
+dataset; that is, it uniquely defines each row of the second dataset, which
+frequently contains metadata about the first dataset. This is the rule that
+we followed above when joining the `lookup` table to the other two tables. 
+If we follow this rule, we will find that we almost always can get by with just
+left joins (if we are okay with missing values in the metadata) and
+inner joins (if we want to remove rows that did not have associated metadata).
+
+In addition to the standard joins, there are ways to identify which rows would
+match or not match between datasets without actually combining them. We can use
+the `indicator=True` parameter in `pd.merge()` to see which rows come from which
+dataset. For example, we can check which (if any) rows of the `lookup` table
+are not in the `state` table. 
+
+```{python}
+result = lookup.merge(state, left_on='state', right_on='abb', 
+                     how='outer', indicator=True)
+print("Column names in result:", result.columns.tolist())
+missing_states = result[result['_merge'] == 'left_only'][['state_x', '_merge']]
+missing_states
+```
+
+In the result, we see that the District of Columbia is treated as a state code
+in the lookup table but is not included in the `state` dataset since it is 
+not technically one of the 50 states. This kind of check is useful
+for data integrity issues. We can also simulate other filtering operations 
+by using different merge strategies and then filtering the results based on the
+indicator column. We will employ
+this trick when working with textual data in Chapter 6.
+
+There are no built-in three-table merge operations in **pandas**. To combine 
+information from more tables, we can combine two tables first and then chain 
+the output into a second merge. A chain of merges can quickly become powerful, if
+somewhat complex, tools for data analysis. Let's consider an example with our
+three tables. Can we determine which states have the smallest proportion of their
+total population living within one of the CBSA regions? To do this, we will
+start with the `lookup` table and merge it with the `cbsa` table. Then, we can group
+by the state and add up the amount of the population that each CBSA contributes
+to each state. Finally, we merge (carefully) to the state dataset to get the 
+total state populations and arrange the output. These steps are shown in the
+following block of code.
+
+```{python}
+result = (lookup
+    .merge(cbsa, on='geoid', how='inner')
+    .assign(weighted_pop=lambda x: x['pop'] * x['prop'])
+    .groupby('state')
+    .agg({'weighted_pop': 'sum'})
+    .reset_index()
+    .rename(columns={'weighted_pop': 'pop'})
+    .merge(state, left_on='state', right_on='abb', how='inner', suffixes=('', '_full'))
+    .assign(percentage=lambda x: x['pop'] / x['pop_full'] * 100)
+    .sort_values('percentage', ascending=False)
+    [['state_full', 'percentage']])
+
+result
+```
+
+Since the CBSA regions correspond to large metropolitan areas, it is not 
+surprising that states considered relatively rural, such as Montana, Maine,
+Vermont, and Alaska, have the smallest percentage of the population living
+inside one of these regions. Sorting the table the other way, with the highest
+percentages at the top, shows that small, urban states such as New Jersey,
+Delaware, and Hawaii have some of the largest percentages of the population
+living in a CBSA.
+
+The **pandas** library provides comprehensive support for different types of
+joins and merge operations. While we have covered the most common use cases,
+there are additional parameters and methods available for more complex scenarios.
+We will see these when working with time series data in Chapter 7.
+
+## Pivot Longer
+
+In this section we introduce another set of methods for manipulating datasets.
+Table pivots, which are related but not identical to the spreadsheet concept of
+a *pivot table*, are a way of rearranging the values in a table without adding
+or losing any additional information. This is achieved by either making the
+table longer (more rows, fewer columns) or wider (more columns, fewer rows).
+
+What sort of situations would require going between two different formats with
+a different number of rows? As an example, consider a hypothetical project
+where we measure the number of people living in 100 different cities, one per
+year for 20 years. There are two equally valid but different ways to store this
+data. We could have 100 rows, one for each city, with variables
+`pop_year1`, `pop_year2`, and so on all the way through `pop_year20`.
+Alternatively, we could have 2000 rows with just three
+columns: an id for the city, a variable for the year, and a variable for 
+population. Notice that both of these options capture the same information, but
+each privileges a particular kind of analysis. It will often depend on our data
+and object of study whether a wider of longer table format is amenable to 
+exploratory data analysis. In general, we have found that it is easier to start 
+with a longer table format and then make it wider as needed.  
+
+![Visual description of table pivots.](img/diagram_pivot.png){#fig-img-pivot .lightbox}
+
+In the wider table format, it is straightforward to compute the amount that each
+city grew over the twenty years using a single assign operation. In the longer table
+format, it would be straightforward to filter by a specific city and draw a
+line plot showing the growth of the city over a twenty year period. Both
+drawing a plot with the wider table or computing the growth with the longer
+table are possible, but require a surprising amount of work and code.
+
+In this and the following section, we will introduce two new methods for
+alternating between wider and longer formats for a dataset. These are principles
+that will be fundamental to several of the application chapters, particularly
+with text and temporal datasets in Chapters 6-7.
+We will use the `food_prices` dataset as example.
+As will be shown in our motivation example, pivoting is a particularly useful
+operation to apply when analyzing data collected over time. As a reminder, the
+`food_prices` dataset is
+organized with year as the observation and each food type as a column, as shown
+below.
+
+```{python}
+food_prices
+```
+
+This format makes it straightforward to compute the correlation between the
+prices of different kinds of food items. A longer format for the dataset would,
+instead, have one row for each combination of year and food type.
+
+In order to make this table longer, we will apply the `pd.melt()` function.
+This function requires knowing which current variables in the dataset should
+remain as identifier variables and which should be turned into values in the output dataset. 
+In the code below, we indicate that the year value should remain as an identifier variable
+in the output dataset.
+
+```{python}
+food_prices.melt(id_vars=['year'])
+```
+
+Already this looks close to what a long form of the food prices dataset should
+look like. One improvement that we can make is to set better column names,
+which can be done by setting the `var_name` and `value_name` parameters in the
+function call. An example is given in the following code.
+
+```{python}
+food_prices.melt(id_vars=['year'], var_name='food', value_name='price')
+```
+
+The longer form of the dataset makes it much easier to do some kinds of
+analysis. For example, we can draw a line chart of all of the food prices with
+a single graphics layer.
+
+```{python}
+#| fig-cap: "Plot showing the relative cost of thirteen different food items over time, with the value 100 corresponding to the price in 1900."
+food_long = food_prices.melt(id_vars=['year'], var_name='food', value_name='price')
+
+(ggplot(food_long, aes('year', 'price', color='food')) +
+    geom_line() +
+    scale_color_cmap_d())
+```
+
+Drawing this plot with the original dataset would require manually including a
+layer for each food type, selecting their colors, and building a manual legend.
+The alternative using the longer table is the preferred approach.
+
+## Pivot Wider
+
+Just as we sometimes have a dataset in a wide format that we need to convert to
+a long one, it is sometimes the case that we have a long dataset that needs to
+be made wider. To illustrate making a table wider, let's create a new dataset
+consisting of the long format of the food prices dataset from just the years
+1950 and 1975.
+
+```{python}
+food_prices_long = (food_prices
+    .melt(id_vars=['year'], var_name='food', value_name='price')
+    .query('year in [1950, 1975]'))
+```
+
+As described in our motivating example, it makes sense for some analyses to make
+each time point a column in a wider dataset. To do this, we use the `pd.pivot()` or
+`pd.pivot_table()` function. We need to indicate which variable contains the values that will
+become new columns (`columns` parameter), which variable to use as the index (`index` parameter), 
+and the variable from which to take the values for the new
+columns (`values` parameter). Here, the column names will come from the `year` column (we want a new
+column for 1950 and another one for 1975) and the values will be filled in with
+prices.
+
+```{python}
+food_prices_long.pivot(index='food', columns='year', values='price')
+```
+
+One issue with the default output is that the column names now start with a
+number, which can be awkward to work with. It is better to add a prefix to the names to make them
+more descriptive. This can be done by renaming the columns after pivoting.
+
+```{python}
+pivoted = food_prices_long.pivot(index='food', columns='year', values='price')
+pivoted.columns = [f'year_{col}' for col in pivoted.columns]
+pivoted = pivoted.reset_index()
+pivoted
+```
+
+This new form of the dataset makes it straightforward to plot the price of each
+food type in 1975 as a function of its price in 1950, by putting the 1950 price
+on the x-axis and the 1975 price on the y-axis. The code to do this is
+shown below.
+
+```{python}
+#| fig-cap: "Plot showing the relative cost of thirteen different food items in 1950 and 1975. Prices are on a scale where all products cost 100 in 1900."
+pivoted = food_prices_long.pivot(index='food', columns='year', values='price')
+pivoted.columns = [f'year_{col}' for col in pivoted.columns]
+pivoted = pivoted.reset_index()
+
+(ggplot(pivoted, aes('year_1950', 'year_1975')) +
+    geom_point() +
+    geom_text(aes(label='food'), nudge_y=5, size=8))
+```
+
+We can now begin to delve into
+which products got much more expensive, much less expensive, and stayed about the same between
+1950 and 1975.
+
+## Patterns for Table Pivots
+
+The syntax for making tables wider or longer is, on the surface, not much more
+complex than other table operations that we have covered in this text. The biggest
+challenges with table pivots are identifying when they will simplify an
+analysis and not over-using them. The best way to avoid these issues is to
+store data in the longest format that makes sense for the data. For
+example, in the motivating example about city growth, it is better if possible
+to store the data with 2000 rows and 3 columns.
+
+Storing data in a longer format has a number of benefits. Reducing the number
+of columns makes it easier to document the (smaller set of) variables with a
+well-written data dictionary, a topic we will see next in Chapter 5.
+Also, pivoting wider
+also often requires less code and results in fewer bugs. Several of these are
+illustrated in the chapter's exercises.
+
+Perhaps the biggest benefit of storing data in a longer format is to avoid the
+potentially complex chain of operations required to make the plot at the end of
+the previous section. The original dataset is stored with years as rows and
+items as columns. Producing the plot requires thinking of years and columns and
+items as rows; this needed us to first pivot longer and then pivot wider.
+Keeping data in a longer format avoids the need for double pivots, while also
+making the different kinds of analysis (item and year, year by item, item by
+year) all reasonably accessible.
+
+Let's put together all of the elements of pivots together to produce a plot of
+wheat prices that highlights the differences in prices following World War I and
+following World War II. We will add a complete set of titles and captions. We selected
+the second color by picking the complementary color of the maroon used for the
+first time period.
+
+```{python}
+#| eval: false
+# Create filtered datasets for different time periods  
+ww1_period = food_prices[(food_prices['year'] >= 1919) & (food_prices['year'] <= 1939)]
+ww2_period = food_prices[(food_prices['year'] >= 1945) & (food_prices['year'] <= 2015)]
+
+(ggplot(food_prices, aes('year', 'wheat')) +
+    geom_line(color='grey85') +
+    geom_line(color='maroon', data=ww1_period) +
+    geom_line(color='#30b080', data=ww2_period) +
+    labs(
+        title='Wheat Price Index, 1850 to 2015',
+        subtitle='Commodity prices are given as a price index relative to real prices in 1900',
+        caption='Jacks, D.S. (2019), "A Typology of Real Commodity Prices in the Long Run." Cliometrica 13(2), 202-220.',
+        x='Year',
+        y='Price Index of Wheat (1900 = 100)'
+    ))
+```
+
+To finish the plot off, and make it look particularly professional, it would be
+nice to add annotations explaining the main points that we want our audience
+to take-away from the plot. It is possible to do this directly in Python with
+**plotnine** annotations, but these can be somewhat awkward and time consuming to
+work with. Often, a better solution is to open the figure in another program
+such as Google Slides, Microsoft PowerPoint, or image editing software.
+
+![Plot showing the relative cost of wheat between 1850 and 2015, with manual annotations.](img/wheat_price.png){#fig-wheatprice .lightbox}
+
+Notice that the plot both shows all of the data for the viewer, but guides them
+to the specific points of interest. Annotations explaining
+peaks and trends can be shown in smaller font sizes and in dark grey,
+because they are secondary to the main points we want to make about the overall
+trends in the two post-war periods.
+
+Overall, the process of combining, joining, and pivoting is a powerful
+way to connect and analyze information across datasets. The approaches
+also speak to why we must be very careful when creating datasets, from
+variable names to the relationship between columns and rows to the shape
+of our dataset. How datasets are collected, built, and organized will shape
+which data we can put in conversation and explore.
+
+## Extensions
+
+We have seen in this chapter the core methods for combining two datasets
+using merges and for rearranging the rows and columns of a dataset with
+pivots. In Chapter 8 we will see how to use range-based merges that 
+combine datasets based on inequalities between numeric keys in place of 
+the exact matches as shown above. Each of
+the merge functions and pivot functions that we have shown have a number
+of additional options that can extend and refine the results. The
+*Python for Data Analysis* book by Wes McKinney is a good reference for these 
+additional details [@mckinney2022python]. The package documentation for **pandas** 
+provides even more in-depth descriptions of each of the
+options.
+
+To better understand relational joins, it is useful to understand the
+concepts of database normalization. In database theory, there are a 
+variety of different terms to describe how the relations in different
+tables are connected via their keys. For a good and concise introduction
+to the five most common normal forms, we recommend the "simple guide"
+from William Kent [@kent1983simple]. Textbooks in relational database
+design can provide further examples and motivations [@date2019database].
+In the next chapter, we will discuss best practices to avoid requiring
+overly complex chains of pivots through good dataset design.
+
+## References {-}

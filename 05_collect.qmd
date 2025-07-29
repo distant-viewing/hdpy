@@ -1,0 +1,321 @@
+# Collecting Data {#sec-ch05}
+
+```{python}
+#| include: false
+import pandas as pd
+import numpy as np
+```
+
+## Introduction
+
+It is a common saying within data science that the majority of our time 
+is spent collecting and cleaning our data. If we can collect data
+in a tidy format from the start, it will allow us to proceed directly to the
+exploration stage once the data have been collected.
+
+There are a number of excellent articles that give an extensive overview of how
+to collect and organize data. Hadley Wickham's "Tidy Data", one of the most
+cited papers across all of data science, offers an extensive
+theoretical framework for describing a process for collecting datasets
+[@ch02:hadley2014tidy].
+Karl Broman and Kara Woo's "Data Organization in Spreadsheets"
+offers a balance between practical advice and an extended discussion of general
+principles for collecting datasets [@ch02:broman2018data].
+Catherine D'Iganzio and Lauren Klein's *Data Feminism* lays out important
+considerations about bias, inequality and power when collecting 
+and organizing data [@klein2020feminism].
+
+This short chapter provides a summarized set of advice for organizing and storing data
+within a spreadsheet program. Rather than an extensive discussion of various
+pros and cons, it primarily focuses on the explicit approaches that we recommend.
+For readers interested in a broader coverage, we suggest reading the sources
+cited above. Because we are not using any fancy spreadsheet functions here, any
+program that we would like to use should be fine. The screenshots come from
+Microsoft Excel, but the same approach will work in Google Sheets, LibreOffice,
+or another spreadsheet program.
+
+## Rectangular Data
+
+In Chapter 1 the concept of a rectangular dataset, with observations
+in rows and variables in columns, was introduced. This is the same format that
+we will use to collect our data. The first thing we will need to do, then, is
+determine what *things* we are observing and what *properties* we would like
+to collect about each thing. If we are observing different kinds of
+things, each of which has a different set of associated properties, we may
+need to store each set in a different table.
+
+To match the format of rectangular data that we have been working with in Python,
+we need to structure our dataset with a single row of column names, followed
+by a row of data for each observation. For example, Fig. 5.1
+shows a screenshot from Excel of a nonsense dataset with three variables.
+
+![Screenshot from Excel of a nonsense dataset with three variables.](img/excel1.png){#fig-excelone .lightbox}
+
+Notice that we need to always start in the first cell, A1, and fill in a
+consistent number of rows and columns. We do not have multiple tables scattered
+around the spreadsheet. We do not have multiple header columns. It is just the
+data itself, stored in an contained rectangle in the upper-left hand corner of
+our spreadsheet. It is okay to include a small amount of formatting of the cells
+to help with the data-entry process (we like to the make the first row bold), but
+do not try to record measurable properties of our data with formatting such as fonts and colors.
+
+Zooming out, a key idea is that each table is an observational unit. For example, we may be 
+interested in food prices or Hollywood films at the box office. 
+Each row has a specific observation associated with it, such as a kind of food or a film. 
+The columns are variables that give us relevant information about the observation in each row. 
+For example, a variable might be the cost at the grocery store for food item
+or, when talking about movies, variables might include the director, time duration, and film studio. 
+When our data is organized in this way, we can explore our data harnessing the full analytical
+power of Python.
+
+## Naming Variables
+
+It is important to choose good variable names. As we have seen, the variable
+names in a dataset are used to describe
+the graphics in the grammar of graphics and for manipulating data with pandas operations.
+If our names are too complex or
+difficult to remember, it will be more difficult to create data visualizations.
+When variables contain spaces or other special characters, it can become nearly
+impossible to work within Python without first cleaning up the variable names after
+loading the data.
+
+We find the best approach to variable names is to only use lower-case letters,
+numbers, and underscores. The underscores can be used in place of spaces, but
+we avoid making variable names more complex than needed. Also, we make sure to start
+the name of a variable with a lower-case letter (starting with a number is
+invalid in Python and many other programming languages). Note that we recommend using
+lowercase even for variable names that should be capitalized, such as acronyms
+and proper nouns. If we selectively capitalize, we will always need to
+remember where this was done. In our scheme, it is one less thing to remember.
+
+Throughout the rest of this chapter, we will
+show examples of a small dataset collecting information about a set of
+cookbooks. Fig. 5.2 shows the table before filling in any information,
+with just the column names.
+
+![Example of a data table before filling in any information other than the column names.](img/excel2.png){#fig-exceltwo .lightbox}
+
+For the specific values within a dataset, spaces, capital letters, and
+other special characters are fine. Just be consistent. Do not use "female" in
+one observations, "Female" in another, and "F" in a third. Just pick a format
+and stick to it. Where applicable, try to use standards-based labels, such as ISO, 
+and schemas, such as Dublin Core, which will also help with connecting
+and restructuring data. This will help if
+we later want to merge our dataset with other sources.
+
+## What Goes in a Cell
+
+Within each cell, there should only be one piece of information. In particular,
+this means that cells should not contain units or current symbols. If we have
+data collected in different units, create a new column and put the units there.
+Though, when possible, it is best to store everything on the same scale.
+If there is something to note about a particular value, do not put a star or
+other mark with it: create a new column. This also means that,
+as mentioned above, we should not try to store two things in one cell by using
+formatting to indicate a secondary piece of information. Again, if we have two
+things to indicate, create a new column. An example of our cookbook
+dataset with these principles applied is shown in Fig. 5.3.
+
+![Example of a small cookbook dataset stored in a tidy format in Excel.](img/excel3.png){#fig-excelthree .lightbox}
+
+If we need to include explanatory notes for some of the data, which is often
+a great idea, we avoid abandoning the rectangular data format. Instead,
+we include an extra column of notes. For example, we explain that one of
+our books is out of print in the notes column shown in Fig. 5.4.
+In our example table, the number of pages and weight of one book is missing
+because it is out of print. In order to indicate this, the corresponding cell
+is blank. Blank values are the only cross-software way to indicate missing
+values in a consistent way.
+
+![Example of a small cookbook dataset stored in a tidy format in Excel. Here we add explanatory notes in a new column.](img/excel4.png){#fig-excelfour .lightbox}
+
+In order to store data in a rectangular format with one thing in each cell,
+it is important to make a new table for each observational unit. So,
+where the table in Fig. 5.4 focuses on information about each
+cookbook, we make a new table shown in Fig. 5.5 
+to record information about the authors. It is possible that one author wrote
+multiple cookbooks and it is also possible that a cookbook was written by 
+multiple people. Keeping each sheet corresponding to a single observational
+unit with each observation helps avoid duplicating information and creating
+data inconsistencies.
+
+## Dates
+
+Dates are important to a significant amount of humanities data.
+Date variables are also a well-known source of error in the collecting and recording
+of data. Our recommendation for the most flexible and least error-prone method
+is to simply record each component of a date as its own column. This means
+one column for year, one for month, and one for day. It will be much easier to
+work with if we keep months as numbers rather than names. If we have time
+information as well, this can be recorded by putting the hours, minutes, and
+seconds as their own columns.
+One benefit of this method is that it will be easy to record historical data
+in cases where we may not be sure of the month or day for every row of the
+dataset. For example, Fig. 5.5 shows a dataset showing properties of
+the cookbook authors from our dataset.
+
+![A small dataset showing properties of cookbook authors using a tidy format in Excel.](img/excel5.png){#fig-excelfive .lightbox}
+
+There is a standard format recommended by the International Organization for
+Standardization (ISO 8601) for representing dates and times in a
+consistent way: `YYYY-MM-DD`. This is often a great format for
+storing data, and one that is used in several example datasets for this book,
+but (1) can lead to errors when opening and re-saving in a spreadsheet program
+and (2) cannot easily store dates with unknown information. We suggest using the
+separate column approach while collecting our initial dataset. Later, if we
+re-save a modified dataset *from within Python*, the ISO 8601 format is a good
+option.
+
+## Output Format
+
+Most sources on collecting data suggest storing our results in a plain text
+format. This is a stripped down representation of the data that contains no
+formatting information and is application agnostic. Excel, GoogleSheets,
+LibreOffice, and any other spreadsheet program, should be able
+to save a dataset in a plain text format. The most commonly used format for
+tabular data in data science is called a comma separated value (CSV) file.
+Here, columns are split by commas and each row is on its own line. The 
+example below shows what a the CSV file of our cookbook authors dataset looks
+like.
+
+```
+variable,long_name,units,description
+book_title,Book Title,,"Book name, given in English"
+author,Author's name,,Authors given and family name
+pages,Number of pages,,Pages in currently available edition
+weight,Book weight,grams,Weight of currently available edition
+nationality,Author's Nationality,,"Using ISO codes"
+birth_year,Author's birth year,,As numeric variable
+birth_month,Author's birth month,,As numeric variable
+birth_day,Author's birth day,,As numeric variable
+```
+
+Nearly all of the dataset provided with this book are stored as CSV files,
+which can be loaded using `pd.read_csv()` from the **pandas** package.
+One thing to be careful of, particularly when using Excel, is that if one's computer
+is configured for a language that uses a comma as a decimal separator, the default
+CSV output may actually use a semicolon (`;`) in place of a comma. To read these
+files in Python, just use `pd.read_csv()` with the `sep=';'` parameter. For
+tabulated datasets with different separators, the flexible `pd.read_csv()` 
+can be used with an appropriate selection for the `sep` parameter.
+If we want to save a dataset in a tabular format, perhaps after doing some
+cleaning or joining with other sources within Python using `.assign()` and `.merge()`
+methods, we can also use the pandas `.to_csv()` method. It takes 
+the filepath as an argument, saving the results as a local file
+for future analyses or to post and share with others.
+
+Unlike some other sources, we are less strict about the need to only export data
+as a plain text file. Plain text is the best way for sharing and storing a dataset once
+an analysis is finished, but if we are going to continue adding and changing
+the dataset, it may actually be preferable to store the data in an `.xlsx`
+file (it avoids errors that are introduced when converting back and forth
+between excel and plain text formats). Data can be loaded directly from an
+excel file with pandas using `pd.read_excel()`. Below is the syntax for using 
+pandas to read in a dataset, with either the first sheet or a named sheet.
+
+```{python}
+#| eval: false
+data = pd.read_excel("authors.xlsx")                      
+data = pd.read_excel("authors.xlsx", sheet_name="sheetname")
+```
+
+Once finished with the data collection and cleaning processing, then
+it is a good idea to store the data in a plain text format for sharing and
+long-term preservation.
+
+## Data Dictionary
+
+So far, our discussion has focused on the specifics of storing the data itself.
+It is also important to document exactly what information is being stored in
+the variables. To do this, we can construct a *data dictionary*. This should
+explain, for each variable, basic information such as the variable's name,
+measurement units, and expected character values. Any decisions that needed to
+be made should also be documented. A data dictionary can be a simple text file,
+or can be stored itself as a structured dataset. Fig. 5.6 shows an
+example of a data dictionary for our authors dataset.
+We included a long name for each variable, which will be useful when creating
+improved graphics labels when preparing data visualizations for publication.
+
+## Summary
+
+There is a lot of information passed along within this chapter. For future
+reference, here are the key formatting guidelines for storing datasets in
+spreadsheets:
+
+1. record a single row of column names, starting in cell A1, followed by rows
+of observations
+2. only use lowercase letters, numbers, and underscores in column names; always
+start the name with a letter, and keep the variable names relatively short
+3. when recording character variables, keep the codes consistent
+4. only one thing in each cell; no units, currency symbols, or notes
+5. keep a separate notes column if needed
+6. blank cells within the rectangle are used if and only if the data is missing
+7. save dates by storing year, month, day, hour, etc. as their own columns
+8. save results as an `xlsx` file while in the middle of data collection; save
+as a CSV file for long-term storage and sharing
+9. create a data dictionary to record important information about the dataset
+
+As mentioned in the introduction, this is an opinionated list and some other
+options are equally valid. The most important thing, however, is consistency.
+If we have a valid reason to avoid some of the advice here, that's fine. For example,
+when making a dataset, we sometimes like to use "none" when data is unknown. 
+We want to be able to distinguish between data that we don't have versus data that we haven't looked for yet.
+The approach has also been helpful when working collaboratively on a new data set. Just
+make sure to document how the data are organized and any interpretive decisions
+that were made in the data collection process.
+
+One final note that not all data that we work with will be tabular data, 
+such as a corpus of text in books. We will see examples in Chapter 12.
+However, the metadata about the books such as author and date published 
+will be necessary to conduct certain kinds of analysis. Tabular data is everywhere, 
+and key to exploratory data analysis. 
+
+![Example of a data dictionary from the cookbook authors dataset.](img/excel6.png){#fig-excelsix .lightbox}
+
+## Extensions
+
+We have provided a consolidation of the information from the research papers
+mentioned in the introduction, with a focus on the issues that are of 
+particular concern for humanities data collection. The first place to go
+for more information would be those same papers: Hadley Wickham's "Tidy Data"
+[@ch02:hadley2014tidy]; 
+Karl Broman and Kara Woo's "Data Organization in Spreadsheets" [@ch02:broman2018data];
+and Catherine D'Iganzio and Lauren Klein's *Data Feminism* [@klein2020feminism].
+Another source for thinking about data dictionaries, data documentation, and
+data publishing is the "Datasheets for Datasets" paper [@gebru2021datasheets].
+While the paper focuses on predictive modeling, it provides several good examples
+of the kinds of documentation that are needed when publishing large datasets and
+has a good critical lens on how choices during the data collection phase have 
+fundamental impacts on the ultimate data analyses that can and will be performed.
+
+The kinds of data that need to be collection and how to collect them ultimately
+depend on one's underlying research questions. The process of going from a research
+question to a quantitative framework is outside the scope of our text, but is a
+very important aspect to carefully consider when working with data to
+address research questions in the humanities. There are many good guides to
+research design, though the majority focus on either scientific, hypothesis-driven
+quantitative designs or purely qualitative data collection. We can recommend
+a few sources that sit at the intersection of these that may be of interest. 
+Content analysis is a common social technique used across a variety of fields.
+It often mixes qualitative questions with quantitative data, and therefore is
+a good place to find research design advice for humanities data analysis
+[@schreier2012qualitative] [@neuendorf2017content] [@krippendorff2018content].
+Similarly, corpus linguistics sits at the boundary of the humanities and social
+sciences and offers many resources for best practices [@paquot2021practical].
+Corpus linguistics often works with both textual and sound data, lending it to
+develop specific techniques for working with the kinds of rich, multimodal datasets
+that will be consider in the following chapters. Finally, sociology is another 
+field that mixes humanistic questions with quantitative data, providing an
+additional source of references for good research design [@bernard2017research].
+While each of these references have domain-specific elements, many of the general
+principles can be extended to other domains.
+
+Finally, notice that we have not started the book with data collection
+even though collecting data is most often the first step in data analysis.
+We saved this until the last core chapter because understanding how to collect
+and store data often goes hand-in-hand with understanding how to visualize,
+organize, and restructure it. A deeper understanding of how to collect data,
+particularly data that has complex components such as text, networks, and images,
+will arise as we work through the remaining chapters.
+
+## References {-}

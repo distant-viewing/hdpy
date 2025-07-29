@@ -1,0 +1,745 @@
+# Spatial Data {#sec-ch09}
+
+```{python}
+#| include: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from plotnine import *
+import geopandas as gpd
+from shapely.geometry import Point, Polygon
+import contextily as cx
+from pyproj import CRS
+import warnings
+warnings.filterwarnings('ignore')
+
+# Set up plotting parameters
+plt.style.use('default')
+```
+
+## Introduction 
+
+There is a popular phrase thrown around by those working with spatial data
+claiming that "80% of data contains a spatial component", likely dating to
+a version of this statement made by Carl Franklin and Paula Hane specifically regarding data
+contained in government databases [@franklin1992introduction]. While
+actually quantifying the "amount of data" with a spatial component is likely
+impossible, the premise that a majority of datasets contain
+some spatial information is a valid one. Consider a dataset containing a record
+for every item held in a particular public library. It may contain explicit
+geospatial data such as the address of the branch where each item is housed,
+but there is a substantial amount of implicit spatial data such as the 
+location of first publication or the birthplaces
+of the authors. Other sources such as letters, newspapers, and photographs
+abound with geographical data. Given the preponderance of geospatial data in general, and its
+particular importance to work in the humanities, this chapter introduces methods
+for exploring and visualizing a number of spatial data types within Python
+[@bivand2008applied] [@gaetan2010spatial].
+
+## Spatial Points
+
+As a starting point, we will begin by working again with the CBSA dataset that
+we used in the introductory chapters. A reminder that CBSA stands for community
+based statistical areas, which are regions defined by the U.S. Office of Management and Budget.
+They are characterized by social and economic ties rather than political boundaries.
+While we did not make use of it at the
+time, this dataset does include spatial information about each region given by
+the longitude and latitude coordinates at the center of each CBSA region. Let's
+read the dataset into Python again, focusing on the spatial information contained in
+the fourth and fifth columns.
+
+```{python}
+cbsa = pd.read_csv("data/acs_cbsa.csv")
+cbsa
+```
+
+What can we do with this spatial information? The longitude and latitude are
+stored as numbers. There is nothing stopping us from plotting them directly
+in a visualization. This would result in a plot that shows the spatial extent
+of the regions and could be roughly identified as having the same shape that we
+see in familiar maps of the United States. This approach is a nice starting
+point. If we were dealing with data from a smaller geographic region, as we
+will see in later sections, this kind of scatter plot can actually be a fine
+base to a spatial visualization. In the case of the United States, we can do
+better by turning this into a special kind of object specifically designed to
+store geospatial information. To do this, we make
+use of geopandas to create a GeoDataFrame from our regular DataFrame. We convert
+the longitude and latitude columns into Point geometries and set the coordinate
+reference system (CRS) to 4326, which indicates that these are "raw" longitude 
+and latitude values.
+
+```{python}
+import geopandas as gpd
+from shapely.geometry import Point
+
+# Create geometry from longitude and latitude
+geometry = [Point(xy) for xy in zip(cbsa['lon'], cbsa['lat'])]
+
+# Create GeoDataFrame
+cbsa_geo = gpd.GeoDataFrame(cbsa, geometry=geometry, crs='EPSG:4326')
+
+cbsa_geo
+```
+
+The output object `cbsa_geo` is now a special kind of DataFrame called a GeoDataFrame that
+includes more specific information about the spatial data attached to each
+observation in addition to the standard information that we are familiar with in a tabular dataset. 
+Printing the `cbsa_geo` data shows how this 
+object differs from other DataFrames we have used in this book. There is
+a special column called `geometry` that has the spatial information attached to it.
+
+One of the benefits of the spatially enhanced version of a dataset is that it
+allows us to create spatial plots using geopandas' built-in plotting functionality
+or using plotnine with spatial awareness. We can create a basic spatial plot
+using geopandas' `.plot()` method:
+
+```{python}
+# Basic spatial plot using geopandas
+fig, ax = plt.subplots(figsize=(12, 8))
+cbsa_geo.plot(ax=ax, markersize=5, alpha=0.7)
+ax.set_title("Centers of CBSA Regions")
+plt.show()
+```
+
+The output shows the spatial distribution of CBSA centers across the United States.
+As we have seen with other plots, such as when working with temporal data in
+Chap. 8, geopandas automatically handles the coordinate system and creates
+appropriate axis labels. One somewhat unique thing about spatial plots is that
+we often don't need to explicitly set x and y coordinates because they are
+inferred from the spatial information. However, we can still modify other
+aesthetic properties such as changing the color and size of the points.
+
+One important operation that we can perform on spatial data before plotting it
+is to change the projection of the points. Projections create a better
+representation of the curved earth on a flat plot based on the region of the
+world that we are looking at. To change the projection, we can use the
+`.to_crs()` method. The method takes one argument, a CRS identifier giving
+the projection. Above, we already saw the 4326 code to indicate that our input 
+projection was in degrees longitude and latitude.
+
+A powerful aspect of spatial analysis is working with coordinate reference systems.
+Each CRS represents points on the earth in terms of two numbers.
+This allows us to adjust our projection such as selecting a Mercator or Albers projection. 
+A better projection when working with the entire United States is the CRS code
+5069, a Conus Albers centered on the continental United States. 
+We can plot the data using this projection:
+
+```{python}
+# Transform to better projection for US
+cbsa_projected = cbsa_geo.to_crs('EPSG:5069')
+
+fig, ax = plt.subplots(figsize=(12, 8))
+cbsa_projected.plot(ax=ax, markersize=5, alpha=0.7)
+ax.set_title("CBSA Centers (Albers Projection)")
+ax.set_axis_off()  # Remove axis for cleaner look
+plt.show()
+```
+
+The output shows the spatial points plot using the 
+updated CRS code. Notice that the lines of longitude and latitude are no longer
+straight when we overlay coordinate grids. They curve, much like they would if we were looking at a round globe
+and spun it around to center our vision on the United States. In order to find
+a good CRS code for a spatial dataset, we need to look up the CRS codes in an
+index. One such free service can be found at [epsg.io](http://epsg.io). Just search the
+broad political terms in the vicinity of the points to find 
+recommended options. Usually searching for the country of our data will
+suffice. For countries with larger geographic scope such the United States,
+Canada, Russia, or China, we may need to narrow down our search to a city or
+region.
+
+We can also add text labels to our spatial plots. Let's add labels for the most
+populous CBSA regions. We'll filter to only show regions with at least one million
+people and focus on the continental United States:
+
+```{python}
+# Filter for large CBSAs in continental US
+large_cbsas = (cbsa_projected
+    .query("quad != 'O' and pop >= 1"))
+
+fig, ax = plt.subplots(figsize=(15, 10))
+large_cbsas.plot(ax=ax, markersize=20, alpha=0.7, color='red')
+
+# Add labels with some offset to avoid overlap
+for idx, row in large_cbsas.iterrows():
+    ax.annotate(row['name'], 
+                xy=(row.geometry.x, row.geometry.y),
+                xytext=(5, 5), textcoords='offset points',
+                fontsize=6, ha='left')
+
+ax.set_title("Major CBSA Centers in Continental United States")
+ax.set_axis_off()
+plt.show()
+```
+
+The output shows the points and labels for the largest CBSA regions, giving us a clear
+view of major population centers across the continental United States.
+
+## Polygons
+
+Polygons are the way that we represent areas on a map. 
+Spatial data can associate regions (i.e. polygons) with each row rather than a
+single point. It is less likely that we will create this type of spatial data
+directly. Instead, we usually read polygon data directly from a file that is already
+designed to store spatial information. The file type we will use is called GeoJSON.
+Geopandas can read GeoJSON files (and many other geospatial formats like ESRI shapefiles)
+using the `read_file()` function. Below, let's
+read in a dataset with polygons describing the shape of each state in the United States.
+
+```{python}
+# Read state polygons from GeoJSON
+state = gpd.read_file("data/geo_state.geojson")
+state
+```
+
+In the output above, we can see that this object already has the spatial
+information attached to it. Unlike our previous dataset, the geometry type 
+here consists of polygons and multipolygons, to indicate that each row is associated with a
+region rather than an individual point. The prefix "multi" is used to indicate
+that some of our observations may be associated with multiple separate polygons.
+For example, Hawaii requires at least one polygon for each
+of the islands that make up the state. As with spatial points, we can create
+a spatial plot of the regions using geopandas plotting methods. 
+
+As with the spatial points, it will be helpful to transform our 
+data before plotting it. In fact, it is often much more clear with polygons how
+distorted the default projection makes everything. Below is the code to produce
+a plot of the states as regions:
+
+```{python}
+# Transform to better projection and plot
+state_projected = state.to_crs('EPSG:5069')
+
+fig, ax = plt.subplots(figsize=(15, 10))
+state_projected.plot(ax=ax, edgecolor='black', facecolor='lightblue', alpha=0.7)
+ax.set_title("United States State Boundaries (Albers Projection)")
+ax.set_axis_off()
+plt.show()
+```
+
+We can also add labels to show state abbreviations at the center of each polygon:
+
+```{python}
+# Plot states with labels, excluding Alaska and Hawaii for cleaner display
+continental_states = state_projected[~state_projected['abb'].isin(['AK', 'HI'])]
+
+fig, ax = plt.subplots(figsize=(15, 10))
+continental_states.plot(ax=ax, edgecolor='black', facecolor='lightblue', alpha=0.7)
+
+# Add state abbreviations at polygon centroids
+for idx, row in continental_states.iterrows():
+    centroid = row.geometry.centroid
+    ax.annotate(row['abb'], 
+                xy=(centroid.x, centroid.y), 
+                ha='center', va='center',
+                fontsize=8, fontweight='bold')
+
+ax.set_title("Continental United States with State Abbreviations")
+ax.set_axis_off()
+plt.show()
+```
+
+As we have been calling them throughout this text, the CBSA regions are, in
+fact, regions. The United States Census Bureau provides shape files that show
+the actual regions defined for each CBSA. Let's read this data and see
+how we can visualize the regions themselves:
+
+```{python}
+# Read CBSA regions
+cbsa_reg = gpd.read_file("data/acs_cbsa_geo.geojson")
+
+# Merge with CBSA data to get names and other attributes
+cbsa_data = pd.read_csv("data/acs_cbsa.csv")
+cbsa_reg = cbsa_reg.merge(cbsa_data[['geoid', 'name']], on='geoid', how='left')
+
+cbsa_reg
+```
+
+The structure of this dataset is similar to the dataset of state regions,
+with a geometry column containing the region shapes and metadata indicating that these
+are polygons and multipolygons. A common technique with spatial information is to encode 
+a variable of interest using the color of each polygon. Since both the x- and
+y-coordinates are used to represent where a region is, color becomes the
+aesthetic that holds the metric of interest that would usually go on one of
+the primary axes. For example, consider trying to show the population of each
+of the CBSA regions. We can do this by setting the color based on the 
+population variable. We'll also add the state boundaries as a reference:
+
+```{python}
+# Filter to continental US and transform projections
+cbsa_continental = cbsa_reg[cbsa_reg['quad'] != 'O'].to_crs('EPSG:5069')
+states_continental = state_projected[~state_projected['abb'].isin(['AK', 'HI'])]
+
+fig, ax = plt.subplots(figsize=(15, 10))
+
+# Plot state boundaries first (as background)
+states_continental.plot(ax=ax, facecolor='white', edgecolor='gray', linewidth=0.5)
+
+# Plot CBSA regions colored by population
+cbsa_continental.plot(ax=ax, column='pop', cmap='Blues', 
+                     edgecolor='none', alpha=0.8, legend=True)
+
+ax.set_title("CBSA Regions Colored by Population")
+ax.set_axis_off()
+plt.show()
+```
+
+The spatial part of the plot works quite well,
+showing the coverage of the CBSA regions over the country. It is possible to
+pick out the largest regions on the map corresponding to New York, Los Angeles,
+and Chicago. However, the default color scale is fairly difficult to interpret because
+the population values are highly skewed. We can improve this by using a 
+logarithmic scale and a better color scheme:
+
+```{python}
+import numpy as np
+
+fig, ax = plt.subplots(figsize=(15, 10))
+
+# Plot state boundaries
+states_continental.plot(ax=ax, facecolor='white', edgecolor='gray', linewidth=0.5)
+
+# Plot CBSA regions with log scale and better colormap
+cbsa_continental_copy = cbsa_continental.copy()
+cbsa_continental_copy['log_pop'] = np.log10(cbsa_continental_copy['pop'])
+
+im = cbsa_continental_copy.plot(ax=ax, column='log_pop', cmap='Spectral_r', 
+                               edgecolor='none', alpha=0.8, legend=True,
+                               legend_kwds={'label': 'Population (log10 scale)'})
+
+ax.set_title("CBSA Regions Colored by Population (Log Scale)")
+ax.set_axis_off()
+plt.show()
+```
+
+The new visualization of the population
+of each CBSA region is much nicer to look at and it is much easier to see all of
+the core population centers in the country as a continuum from the largest to
+the smallest. This kind of spatial plot is often called a *choropleth map*.
+These are frequently used by popular media to illustrate spatial patterns, 
+particularly during events such as elections. Depending on the application, it
+might have made more sense to plot the figure here using the density of each
+region rather than its overall population. This requires knowing the area of
+each region, from which we can define the population density. A running (sort of) joke
+in the spatial analysis community is that most maps claiming to reveal a different
+spatial feature are actually just population maps. We want to be cognizant of this.
+In the next section we will see how to derive metrics such as area from a spatial
+dataset.
+
+## Spatial Metrics
+
+Now that we have seen how to read in spatial polygon data and plot it,
+we can begin to show how we can analyze the spatial data beyond visualizations.
+Geopandas provides a number of methods that we can apply to
+GeoDataFrames to compute summary information about each of
+the geometries. For example, the `.area` property will return the total area of each of the 
+polygons associated with every row of a spatial dataset. When working with a projected
+coordinate system (like our Albers projection), the area will be in the units of that
+projection (typically square meters). To convert to square kilometers, we can divide by one million.
+Let's compute the area of each CBSA region in square kilometers and then arrange in
+ascending order to see the smallest regions by area:
+
+```{python}
+# Compute areas (ensuring we're in a projected CRS for accurate area calculation)
+cbsa_with_area = cbsa_continental.copy()
+cbsa_with_area['area_km2'] = cbsa_with_area.geometry.area / 1e6
+
+# Show smallest areas
+smallest_areas = (cbsa_with_area
+    .sort_values('area_km2')
+    .loc[:, ['name', 'area_km2', 'pop']]
+    .head(10)
+)
+
+smallest_areas
+```
+
+Another useful metric that we can compute from spatial polygon objects are
+the *centroids*, points at the geographic center of each region.
+It can be useful if we want to treat the polygon as a single point or 
+add a label such as a placename in the center of the region.
+Computing this is straightforward using the `.centroid` property:
+
+```{python}
+# Compute centroids
+centroids = cbsa_continental.geometry.centroid
+
+# Extract x, y coordinates
+cbsa_with_centroids = cbsa_continental.copy()
+cbsa_with_centroids['centroid_x'] = centroids.x
+cbsa_with_centroids['centroid_y'] = centroids.y
+
+cbsa_with_centroids[['name', 'centroid_x', 'centroid_y']]
+```
+
+These are the exact centroids that were pre-populated in the `cbsa` dataset 
+that we started with at the beginning of the chapter. In fact, we computed 
+those centroids when building the dataset for the book directly from the
+polygons provided by the United States Census Bureau. Centroids are very 
+helpful for many kinds of analysis. If the regions are fairly
+small in area compared to the total area of analysis, it may be easier and 
+more straightforward to treat each observation as a point rather than as a 
+complex region.
+
+In addition to points and polygons, it is also possible to have spatial data
+that represents spatial lines. These can define, for example, roads, metro
+lines, railways, rivers, or the path of a moving object such as a hurricane.
+As an example, let's read in a dataset of roads from New York City:
+
+```{python}
+# Read road network data
+roads = gpd.read_file("data/geo_ny_roads.geojson")
+roads
+```
+
+One useful application of spatial lines is to add them on top of other spatial
+data visualizations to better understand where different regions are located.
+This is particularly useful when looking at regions within a city where it can
+be hard to understand how to match the plot up with our understanding of the
+city's geography without lines or other markers to orient ourselves. We can also
+compute metrics associated with lines. For example, the `.length` property 
+functions similarly to the `.area` property to give the length of each line.
+Let's apply it to find the longest streets in New York City, grouping together 
+parts of streets that have the same name:
+
+```{python}
+# Compute road lengths and find longest streets
+roads_with_length = roads.copy()
+roads_with_length['length'] = roads_with_length.geometry.length
+
+# Group by name and sum lengths
+longest_streets = (roads_with_length
+    .dropna(subset=['name'])  # Remove unnamed roads
+    .groupby('name')['length']
+    .sum()
+    .sort_values(ascending=False)
+    .head(10)
+)
+
+longest_streets
+```
+
+For those familiar with the geography of New York City, these longest streets
+roughly match the names of the main streets that run the length of Manhattan.
+There are several other metrics that can be used to manipulate spatial objects.
+The main goal of most of these other ones are to find distances and overlaps
+between pairs of geometries. We will cover these as a group in the next section.
+
+## Spatial Joins
+
+One of the most common operations that we can perform on spatial data is to 
+combine information between two different GeoDataFrames. For example, we might want
+to associate the points in one dataset with the polygons that they are contained
+within another dataset. Or we might want to filter one set of polygons 
+based on those that intersect another set of polygons. For example,
+let's say we have a dataset of historical battles or birth places, we can then
+associate them with modern political boundaries. Self-joins are also
+common with spatial data, such as in applications that need to find the
+distances between all pairs of points within a dataset of spatial points. 
+
+Before looking at joining spatial datasets by the spatial information, it will
+be useful to see what happens if we do a traditional table join with spatial
+information. Both the `cbsa` and `cbsa_geo` datasets contain a column called
+`geoid` that can be used to combine them together using an ordinary `merge()`,
+or any other table join function. Because GeoDataFrames are just DataFrames with extra
+information, performing a key-based join works, but we need to be careful about
+maintaining the spatial properties:
+
+```{python}
+# Traditional key-based join with spatial data
+cbsa_subset = cbsa[['geoid', 'name']].copy()  # Remove duplicate columns
+merged_spatial = cbsa_geo.merge(cbsa_subset, on='geoid', suffixes=('', '_extra'))
+
+print(f"Merged data type: {type(merged_spatial)}")
+print(f"Has geometry column: {'geometry' in merged_spatial.columns}")
+print(f"Is GeoDataFrame: {isinstance(merged_spatial, gpd.GeoDataFrame)}")
+```
+
+Notice that the output maintains its GeoDataFrame properties because we started with
+a GeoDataFrame and merged regular DataFrame information into it.
+
+Now, we can move onto joins that function by considering the spatial
+relationships between two datasets. Geopandas provides a function
+`sjoin()` (spatial join) to combine two datasets based on their spatial relationships.
+For example, we can join the spatial points `cbsa_geo` dataset with
+the spatial polygons `state` to find which state each CBSA center point falls within:
+
+```{python}
+# Spatial join: find which state each CBSA center is in
+# First ensure both datasets have the same CRS
+cbsa_geo_proj = cbsa_geo.to_crs('EPSG:5069')
+state_proj = state.to_crs('EPSG:5069')
+
+# Perform spatial join
+cbsa_with_states = gpd.sjoin(cbsa_geo_proj, state_proj, how='left', predicate='within')
+
+# Show results
+result_sample = cbsa_with_states[['name_left', 'name_right', 'abb']].head(10)
+result_sample
+```
+
+As confirmation of our join, we see that each CBSA region is now associated with
+the state it falls within. The New York City CBSA region might be associated with
+New Jersey if its center point falls there, even though the metropolitan area
+spans multiple states.
+
+The spatial join supports different types of spatial relationships through the
+`predicate` parameter. For example, we can use `'touches'` to find geometries that
+share a border. Let's use this to join the state dataset to itself by finding 
+all pairs of states that border one another:
+
+```{python}
+# Find states that border each other
+bordering_states = gpd.sjoin(state_proj, state_proj, how='inner', predicate='touches')
+
+# Remove self-matches and show results
+border_pairs = (bordering_states
+    .query('abb_left != abb_right')
+    .loc[:, ['name_left', 'abb_left', 'name_right', 'abb_right']]
+    .head(10)
+)
+
+border_pairs
+```
+
+Another useful spatial relationship is finding points that are within a certain distance
+of each other. We can compute distances between spatial objects using various methods:
+
+```{python}
+# Find distances between CBSA centers
+# For demonstration, let's find the closest CBSA to each one
+
+# Sample a few CBSAs for efficiency
+cbsa_sample = cbsa_geo_proj.head(20).copy()
+
+# Compute distance matrix
+distances = cbsa_sample.geometry.apply(
+    lambda geom: cbsa_sample.geometry.distance(geom)
+)
+
+# Find closest pairs (excluding self-matches)
+closest_pairs = []
+for i, row in cbsa_sample.iterrows():
+    distances_to_others = cbsa_sample.geometry.distance(row.geometry)
+    # Exclude self (distance = 0)
+    closest_idx = distances_to_others[distances_to_others > 0].idxmin()
+    closest_pairs.append({
+        'cbsa1': row['name'],
+        'cbsa2': cbsa_sample.loc[closest_idx, 'name'],
+        'distance_km': distances_to_others.loc[closest_idx] / 1000
+    })
+
+closest_df = pd.DataFrame(closest_pairs).head()
+closest_df
+```
+
+We can also find the farthest pairs of points by looking at the maximum distances:
+
+```{python}
+# Find the farthest CBSA pairs from our sample
+farthest_pairs = []
+for i, row in cbsa_sample.iterrows():
+    distances_to_others = cbsa_sample.geometry.distance(row.geometry)
+    farthest_idx = distances_to_others.idxmax()
+    if distances_to_others.loc[farthest_idx] > 0:  # Exclude self-matches
+        farthest_pairs.append({
+            'cbsa1': row['name'],
+            'cbsa2': cbsa_sample.loc[farthest_idx, 'name'],
+            'distance_km': distances_to_others.loc[farthest_idx] / 1000
+        })
+
+farthest_df = pd.DataFrame(farthest_pairs).sort_values('distance_km', ascending=False).head()
+farthest_df
+```
+
+Being able to analyze proximity and distance between objects offers a way to
+explore humanities data. Spatial joins can be a powerful type of analysis,
+for often spatial analysis can be valuable beyond producing visualizations through maps.
+
+## Raster Maps
+
+We will finish this chapter by considering a completely different way to
+visualize spatial points. In the introduction, we mentioned that it is possible
+to build a spatial visualization of points by plotting the longitude and
+latitude on a scatterplot. If the points are in a relatively small region of
+the world not too close to either the North or South Pole, the projection of
+the data will not significantly affect the visualization. However, it can be
+difficult to understand a scatter plot of longitude and latitude pairs without
+polygons or lines to orient ourselves. One solution is to plot the points on
+top of a fixed map. One nice aspect of this approach is that we can grab map
+images from the entire world from a single source without having to hunt down
+polygon or line shapefiles for each application [@nie2011design].
+Raster maps are composed of pixels; they are images.
+
+In Python, we can use the **contextily** library to add basemap tiles to our spatial plots.
+This library can fetch map tiles from various providers and overlay them with our spatial data:
+
+```{python}
+import contextily as cx
+
+# For demonstration, let's use a dataset with smaller geographic scope
+# We'll create a sample of French cities
+french_city = pd.read_csv("data/geo_french_city.csv")
+french_city
+```
+
+We can plot these cities on top of a map without needing complex setup. 
+Contextily works well with geopandas to automatically grab map tiles that 
+correspond to our data extent:
+
+```{python}
+# Create GeoDataFrame from French cities
+french_geo = gpd.GeoDataFrame(
+    french_city, 
+    geometry=gpd.points_from_xy(french_city.lon, french_city.lat),
+    crs='EPSG:4326'
+)
+
+# Transform to Web Mercator (required for contextily)
+french_geo_mercator = french_geo.to_crs('EPSG:3857')
+
+# Create plot with basemap
+fig, ax = plt.subplots(figsize=(12, 10))
+
+# Plot the points
+french_geo_mercator.plot(ax=ax, color='red', markersize=50, alpha=0.7)
+
+# Add basemap
+cx.add_basemap(ax, crs=french_geo_mercator.crs, source=cx.providers.OpenStreetMap.Mapnik)
+
+ax.set_title("French Cities with OpenStreetMap Basemap")
+ax.set_axis_off()
+plt.show()
+```
+
+We can also use different basemap providers and styles. Contextily supports many
+different tile sources:
+
+```{python}
+# Plot with a different basemap style
+fig, ax = plt.subplots(figsize=(12, 10))
+
+# Color points by administrative region
+french_geo_mercator.plot(ax=ax, column='admin_name', markersize=50, alpha=0.8, legend=True)
+
+# Add a terrain basemap
+try:
+    cx.add_basemap(ax, crs=french_geo_mercator.crs, source=cx.providers.Stamen.Terrain)
+    ax.set_title("French Cities by Region (Terrain Basemap)")
+except:
+    # Fallback to OpenStreetMap if Stamen is unavailable
+    cx.add_basemap(ax, crs=french_geo_mercator.crs, source=cx.providers.OpenStreetMap.Mapnik)
+    ax.set_title("French Cities by Region (OpenStreetMap Basemap)")
+
+ax.set_axis_off()
+plt.show()
+```
+
+For more complex visualizations, we can work with line data. Let's demonstrate
+with a Paris metro dataset:
+
+```{python}
+# Load Paris metro data
+paris_metro = pd.read_csv("data/geo_paris_metro.csv")
+paris_metro
+```
+
+We can create a more complex visualization showing metro lines with their official colors:
+
+```{python}
+# Filter for a few metro lines and create visualization
+metro_subset = paris_metro[paris_metro['line'] <= 4].copy()
+
+# Create geometries for start and end points
+start_points = gpd.GeoDataFrame(
+    metro_subset,
+    geometry=gpd.points_from_xy(metro_subset.lon, metro_subset.lat),
+    crs='EPSG:4326'
+).to_crs('EPSG:3857')
+
+fig, ax = plt.subplots(figsize=(12, 10))
+
+# Plot points colored by line
+for line_num in sorted(metro_subset['line'].unique()):
+    line_data = start_points[start_points['line'] == line_num]
+    line_color = line_data['line_color'].iloc[0]
+    line_data.plot(ax=ax, color=line_color, markersize=30, alpha=0.8, label=f'Line {line_num}')
+
+# Add basemap
+cx.add_basemap(ax, crs=start_points.crs, source=cx.providers.OpenStreetMap.Mapnik, alpha=0.7)
+
+ax.set_title("Paris Metro Lines (Sample)")
+ax.legend()
+ax.set_axis_off()
+plt.show()
+```
+
+We can also create faceted plots to show different metro lines separately:
+
+```{python}
+# Create subplots for different metro lines
+fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+axes = axes.flatten()
+
+for i, line_num in enumerate(sorted(metro_subset['line'].unique())[:4]):
+    ax = axes[i]
+    
+    # Filter data for this line
+    line_data = start_points[start_points['line'] == line_num]
+    line_color = line_data['line_color'].iloc[0]
+    
+    # Plot line data
+    line_data.plot(ax=ax, color=line_color, markersize=30, alpha=0.8)
+    
+    # Add basemap
+    cx.add_basemap(ax, crs=line_data.crs, source=cx.providers.OpenStreetMap.Mapnik, alpha=0.7)
+    
+    ax.set_title(f'Metro Line {line_num}')
+    ax.set_axis_off()
+
+plt.tight_layout()
+plt.show()
+```
+
+Raster maps when layered with point and line data offer
+a way to quickly garner insights from humanities data. The combination of
+real-world geographic context (through basemap tiles) with our specific
+data points creates rich, interpretable visualizations.
+
+## Extensions
+
+Spatial analysis is a large area with many exciting avenues for humanities data. 
+The spatial turn in the discipline of History along with award-winning digital humanities
+projects like University of Richmond's American Panorama project are just a few examples of how 
+humanities fields have been embracing spatial analysis [@connolly2018mapping].
+Concepts like thick mapping and deep mapping
+are also providing exciting theoretical interventions [@bodenhamer2013deep] [@presner2015mapping].
+
+For extending the methods mentioned in this chapter, consider exploring:
+
+**Python Libraries:**
+- **GeoPandas**: Core spatial data manipulation (used throughout this chapter)
+- **Shapely**: Geometric operations and analysis
+- **Contextily**: Basemap tiles and web map integration  
+- **Folium**: Interactive web mapping
+- **PyProj**: Coordinate system transformations
+- **Rasterio**: Working with raster/satellite imagery data
+- **OSMnx**: Working with OpenStreetMap data for network analysis
+- **PySAL**: Spatial statistics and econometrics
+
+**Theoretical Resources:**
+A next step from this chapter would be exploring more advanced spatial statistics
+and modeling techniques. The concepts translate well from R to Python, with
+similar analytical capabilities available through the PySAL ecosystem.
+The text *Applied Spatial Data Analysis with R* [@bivand2008applied] provides
+excellent conceptual background that applies to Python workflows as well.
+*Spatial statistics and modeling* by Carlo Gaetan and Xavier Guyon provides
+a more extensive introduction to spatial statistics [@gaetan2010spatial].
+For an introductory theoretical text, we recommend 
+*Mapping: A Critical Introduction to Cartography and GIS* [@crampton2010mapping].
+
+The Python spatial ecosystem is rapidly evolving, with particularly strong capabilities
+in areas like satellite imagery analysis, urban analytics, and large-scale
+spatial data processing that continue to grow.
+
+## References {-}

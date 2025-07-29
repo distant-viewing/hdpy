@@ -1,0 +1,668 @@
+# Programming {#sec-ch16}
+
+```{python}
+#| include: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from plotnine import *
+import warnings
+warnings.filterwarnings('ignore')
+```
+
+## Introduction
+
+The majority of the functions and methods that have been introduced
+throughout the first two parts of this text are provided by user-contributed
+packages. Most of these come from a core set of packages that together 
+comprise the modern Python data science ecosystem. Included in this
+set of packages are **pandas**, **numpy**, **matplotlib**, and **plotnine**.
+Benefits of using these libraries include consistent APIs, excellent
+documentation, and the fact that they are often built to express
+theoretical models for data analysis (for example, relational database
+techniques encoded in **pandas** and vectorized operations in **numpy**). 
+Downsides can include their computational overhead for simple operations
+and the learning curve required to understand their abstractions.
+
+There are various opinions about the best approaches to data science in Python,
+from pure pandas workflows to functional programming approaches to object-oriented
+designs. We will avoid a lengthy discussion of these debates here.
+As should be clear at this point, this text has been written with the opinion that
+pandas and the broader scientific Python ecosystem provide an excellent way to do 
+data analysis and an ideal starting point for learning data science in Python. 
+However, eventually it will be useful to learn the underlying built-in methods 
+available within the Python programming language itself.
+
+The functions and data structures available directly from Python without importing
+any third-party packages, commonly known as *built-in Python* or *core Python*, 
+will become particularly important as we learn how to do more complex programming 
+and data scraping within this part of the book. In this chapter we will restart 
+from the very basics by describing the fundamental data types and objects within 
+Python. These topics will be made easier by the fact that we have seen many of 
+them indirectly in the preceding chapters. We will also provide an overview of 
+introductory computer science concepts such as control flow and function 
+definition. The material is intended for readers who had no prior programming 
+experience.
+
+## Data Structures
+
+A list is one of the most fundamental and versatile data structures in Python. 
+It consists of an ordered sequence of values that can be of different types. 
+Unlike some other languages, Python lists can contain a mixture of numbers, 
+strings, and other objects. To create a list, we use square brackets with 
+comma-separated values:
+
+```{python}
+list_example = [1, 2, 3, 4, 10, 20]
+list_example
+```
+
+We should recognize the square bracket notation from our work with pandas, 
+where we used it for selecting columns and filtering data. Lists are 
+fundamental to Python and appear throughout data science workflows.
+
+Mathematical operations can be applied to lists, though the behavior is 
+different from what we might expect coming from R or working with pandas. 
+Adding a number to a list will produce an error, but we can use list 
+comprehensions (which we'll see later) or convert to NumPy arrays for 
+element-wise operations:
+
+```{python}
+# This would cause an error:
+# list_example + 1
+
+# Instead, we can use a list comprehension:
+result = [x + 1 for x in list_example]
+result
+```
+
+We can also combine lists using the `+` operator, which concatenates them:
+
+```{python}
+list1 = [1, 2, 3]
+list2 = [4, 5, 6]
+combined = list1 + list2
+combined
+```
+
+Lists can be multiplied by integers to repeat their contents:
+
+```{python}
+repeated = [1, 2] * 3
+repeated
+```
+
+Python also has other built-in sequence types. **Tuples** are similar to lists 
+but are immutable (cannot be changed after creation). They use parentheses:
+
+```{python}
+tuple_example = (1, 2, 3, 4, 10, 20)
+tuple_example
+```
+
+**Strings** are also sequences in Python, consisting of characters:
+
+```{python}
+string_example = "Hello, World!"
+string_example
+```
+
+Python has several built-in scalar data types that we work with regularly. We can 
+check the type of any object using the `type()` function or `isinstance()` 
+for more sophisticated type checking. Here are the main built-in types:
+
+**Numeric types:**
+
+```{python}
+# Integers
+integer_example = 42
+print(f"Integer: {integer_example}, type: {type(integer_example)}")
+
+# Floats (decimal numbers)
+float_example = 3.14159
+print(f"Float: {float_example}, type: {type(float_example)}")
+
+# Complex numbers
+complex_example = 3 + 4j
+print(f"Complex: {complex_example}, type: {type(complex_example)}")
+```
+
+**Boolean and string types:**
+
+```{python}
+# Booleans
+bool_example = True
+print(f"Boolean: {bool_example}, type: {type(bool_example)}")
+
+# Strings
+str_example = "Data Science"
+print(f"String: {str_example}, type: {type(str_example)}")
+```
+
+**Collections:**
+
+```{python}
+# Lists (mutable sequences)
+list_example = [1, 2, 3]
+print(f"List: {list_example}, type: {type(list_example)}")
+
+# Tuples (immutable sequences)
+tuple_example = (1, 2, 3)
+print(f"Tuple: {tuple_example}, type: {type(tuple_example)}")
+
+# Dictionaries (key-value pairs)
+dict_example = {"name": "Alice", "age": 30}
+print(f"Dict: {dict_example}, type: {type(dict_example)}")
+
+# Sets (unique elements)
+set_example = {1, 2, 3, 3, 2}  # Note: duplicates are removed
+print(f"Set: {set_example}, type: {type(set_example)}")
+```
+
+Data types are important because they determine what operations we can perform. 
+For example, we can add numbers together but not a number and a string directly:
+
+```{python}
+# This works:
+result1 = 5 + 3
+print(f"Number addition: {result1}")
+
+# This would cause an error:
+try:
+    result2 = "5" + 3
+except TypeError as e:
+    print(f"Error: {e}")
+
+# But this works (string concatenation):
+result3 = "5" + "3"
+print(f"String concatenation: {result3}")
+```
+
+The concept of data types should seem familiar as we used the same idea when 
+describing the types of data stored in pandas DataFrame columns (which are 
+called "dtypes" in pandas).
+
+**Dictionaries** deserve special attention as they're fundamental to Python 
+and very useful for data science. They store key-value pairs and are similar 
+to what other languages might call "hash maps" or "associative arrays":
+
+```{python}
+person = {
+    "name": "Alice",
+    "age": 30,
+    "city": "New York",
+    "occupation": "Data Scientist"
+}
+
+print(person)
+print(f"Name: {person['name']}")
+print(f"Keys: {list(person.keys())}")
+print(f"Values: {list(person.values())}")
+```
+
+## Indexing and Slicing
+
+One of the most important differences between Python and R is that Python uses 
+**zero-based indexing**. This means the first element of a sequence is at 
+position 0, not position 1. Let's explore how to select and modify elements 
+in Python sequences:
+
+```{python}
+# Create an example list
+data = [10, 20, 30, 40, 50, 60]
+print(f"Original list: {data}")
+
+# Access single elements (zero-based indexing)
+print(f"First element (index 0): {data[0]}")
+print(f"Third element (index 2): {data[2]}")
+print(f"Last element (index -1): {data[-1]}")
+print(f"Second to last (index -2): {data[-2]}")
+```
+
+**Slicing** allows us to select ranges of elements using the syntax `[start:stop:step]`:
+
+```{python}
+# Slicing examples
+print(f"First three elements [0:3]: {data[0:3]}")
+print(f"Elements from index 2 onward [2:]: {data[2:]}")
+print(f"Elements up to index 4 [:4]: {data[:4]}")
+print(f"Every second element [::2]: {data[::2]}")
+print(f"Reverse the list [::-1]: {data[::-1]}")
+```
+
+We can modify elements in lists (but not tuples, which are immutable):
+
+```{python}
+# Modify single elements
+data[1] = 100
+print(f"After changing index 1: {data}")
+
+# Modify slices
+data[2:4] = [300, 400]
+print(f"After changing slice [2:4]: {data}")
+
+# Add elements
+data.append(70)
+print(f"After appending 70: {data}")
+```
+
+**List comprehensions** provide a powerful way to create new lists based on 
+existing ones:
+
+```{python}
+# Create a new list with each element doubled
+doubled = [x * 2 for x in data]
+print(f"Doubled: {doubled}")
+
+# Create a list with only even numbers
+evens = [x for x in data if x % 2 == 0]
+print(f"Even numbers: {evens}")
+
+# More complex transformations
+squares_of_evens = [x**2 for x in data if x % 2 == 0]
+print(f"Squares of even numbers: {squares_of_evens}")
+```
+
+**Working with dictionaries:**
+
+```{python}
+# Dictionary access and modification
+person = {"name": "Alice", "age": 30, "city": "New York"}
+
+# Access values
+print(f"Name: {person['name']}")
+print(f"Age using get(): {person.get('age', 'Unknown')}")
+
+# Modify values
+person['age'] = 31
+person['country'] = 'USA'  # Add new key-value pair
+print(f"Updated person: {person}")
+
+# Dictionary comprehensions
+squared_dict = {k: v**2 for k, v in {"a": 1, "b": 2, "c": 3}.items()}
+print(f"Squared dictionary: {squared_dict}")
+```
+
+## NumPy Arrays
+
+While Python's built-in lists are versatile, they're not optimized for numerical 
+computation. When working with data science, we often use **NumPy arrays**, 
+which are similar to R's vectors and matrices. NumPy arrays are homogeneous 
+(all elements have the same type) and support efficient element-wise operations:
+
+```{python}
+import numpy as np
+
+# Create arrays from lists
+array_example = np.array([1, 2, 3, 4, 10, 20])
+print(f"NumPy array: {array_example}")
+print(f"Type: {type(array_example)}")
+print(f"Data type: {array_example.dtype}")
+```
+
+Mathematical operations work element-wise on NumPy arrays:
+
+```{python}
+# Element-wise operations
+print(f"Add 1: {array_example + 1}")
+print(f"Multiply by 2: {array_example * 2}")
+print(f"Square: {array_example ** 2}")
+
+# Operations between arrays
+array2 = np.array([1, 1, 1, 1, 2, 2])
+print(f"Add arrays: {array_example + array2}")
+print(f"Multiply arrays: {array_example * array2}")
+```
+
+**Boolean operations** create boolean arrays:
+
+```{python}
+# Boolean operations
+mask = array_example > 4
+print(f"Elements > 4: {mask}")
+print(f"Values where > 4: {array_example[mask]}")
+```
+
+**Two-dimensional arrays** (matrices) are created and manipulated similarly:
+
+```{python}
+# Create a 2D array (matrix)
+matrix_example = np.array([[1, 2, 3], [4, 5, 6]])
+print(f"Matrix shape: {matrix_example.shape}")
+print(f"Matrix:\n{matrix_example}")
+
+# Or create using reshape
+matrix_from_range = np.arange(1, 7).reshape(2, 3)
+print(f"Matrix from range:\n{matrix_from_range}")
+```
+
+**Matrix operations:**
+
+```{python}
+# Element-wise operations
+print(f"Add 1 to matrix:\n{matrix_example + 1}")
+print(f"Matrix squared:\n{matrix_example ** 2}")
+
+# Selecting rows and columns
+print(f"First row: {matrix_example[0, :]}")
+print(f"First column: {matrix_example[:, 0]}")
+print(f"Specific element [1,2]: {matrix_example[1, 2]}")
+```
+
+## Control Flow
+
+When writing more complex programs, we need ways to control the execution flow 
+of our code. Python provides several control structures for this purpose.
+
+**For loops** allow us to repeat code for each item in a sequence:
+
+```{python}
+# Simple for loop
+data = [10, 20, 30, 40]
+print("Original data:", data)
+
+# Loop through indices
+for i in range(len(data)):
+    data[i] = data[i] + i + 1  # Add position + 1 to each element
+
+print("After modification:", data)
+```
+
+**If statements** allow conditional execution:
+
+```{python}
+# Reset data
+data = [10, 20, 30, 40]
+
+# Loop with conditional logic
+for i in range(len(data)):
+    if i > 1:  # Only modify elements at index 2 and beyond
+        data[i] = data[i] + i + 1
+    print(f"Index {i}: {data[i]}")
+
+print("Final data:", data)
+```
+
+**If-else statements** provide alternative actions:
+
+```{python}
+# Reset data
+data = [10, 20, 30, 40]
+
+for i in range(len(data)):
+    if i >= 2:
+        data[i] = data[i] + i + 1
+    else:
+        data[i] = i + 1  # Set first two elements to index + 1
+    print(f"Index {i}: {data[i]}")
+
+print("Final data:", data)
+```
+
+**While loops** repeat while a condition is true:
+
+```{python}
+# Count down example
+count = 5
+while count > 0:
+    print(f"Count: {count}")
+    count -= 1
+print("Done!")
+```
+
+**Functions** allow us to package code for reuse:
+
+```{python}
+def add_one(input_value):
+    """Add one to the input value."""
+    result = input_value + 1
+    return result
+
+# Test the function
+print(f"add_one(30) = {add_one(30)}")
+print(f"add_one(5) = {add_one(5)}")
+```
+
+**Functions with default arguments:**
+
+```{python}
+def add_something(input_value, something=1):
+    """Add 'something' to the input value. Default is 1."""
+    result = input_value + something
+    return result
+
+# Test with and without the optional argument
+print(f"add_something(30) = {add_something(30)}")
+print(f"add_something(30, 4) = {add_something(30, 4)}")
+```
+
+**Functions with multiple return values:**
+
+```{python}
+def analyze_list(data):
+    """Return basic statistics about a list."""
+    total = sum(data)
+    count = len(data)
+    average = total / count if count > 0 else 0
+    return total, count, average
+
+# Test the function
+numbers = [1, 2, 3, 4, 5]
+total, count, avg = analyze_list(numbers)
+print(f"Total: {total}, Count: {count}, Average: {avg}")
+```
+
+## Functional Programming
+
+Python supports functional programming concepts that allow us to apply functions 
+to collections of data efficiently. This is particularly useful for data processing.
+
+**The map() function** applies a function to each element of a sequence:
+
+```{python}
+# Using map with a function
+numbers = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x**2, numbers))
+print(f"Original: {numbers}")
+print(f"Squared: {squared}")
+
+# Map with a custom function
+def double_and_add_one(x):
+    return 2 * x + 1
+
+result = list(map(double_and_add_one, numbers))
+print(f"Doubled and add one: {result}")
+```
+
+**Lambda functions** provide a way to create small anonymous functions:
+
+```{python}
+# Lambda functions for simple operations
+add_ten = lambda x: x + 10
+print(f"Add 10 to 5: {add_ten(5)}")
+
+# Using lambda with map
+cubed = list(map(lambda x: x**3, numbers))
+print(f"Cubed: {cubed}")
+```
+
+**List comprehensions** are often more "Pythonic" than map():
+
+```{python}
+# List comprehension equivalents
+squared_comp = [x**2 for x in numbers]
+cubed_comp = [x**3 for x in numbers]
+doubled_plus_one = [2*x + 1 for x in numbers]
+
+print(f"Squared (comprehension): {squared_comp}")
+print(f"Cubed (comprehension): {cubed_comp}")
+print(f"Doubled plus one: {doubled_plus_one}")
+```
+
+**Filter operations:**
+
+```{python}
+# Using filter() function
+evens = list(filter(lambda x: x % 2 == 0, numbers))
+print(f"Even numbers: {evens}")
+
+# List comprehension with condition (more Pythonic)
+evens_comp = [x for x in numbers if x % 2 == 0]
+print(f"Even numbers (comprehension): {evens_comp}")
+
+# More complex filtering
+large_evens = [x for x in range(1, 21) if x % 2 == 0 and x > 10]
+print(f"Even numbers > 10: {large_evens}")
+```
+
+**Working with nested data:**
+
+```{python}
+# List of lists
+data_nested = [[1, 2, 3], [4, 5, 6], [7, 8, 9, 10]]
+
+# Calculate sum of each sublist
+sums = [sum(sublist) for sublist in data_nested]
+print(f"Sums of sublists: {sums}")
+
+# Calculate length of each sublist
+lengths = [len(sublist) for sublist in data_nested]
+print(f"Lengths of sublists: {lengths}")
+
+# Flatten nested lists
+flattened = [item for sublist in data_nested for item in sublist]
+print(f"Flattened: {flattened}")
+```
+
+**Dictionary operations:**
+
+```{python}
+# Working with dictionaries functionally
+students = [
+    {"name": "Alice", "grade": 85},
+    {"name": "Bob", "grade": 92},
+    {"name": "Charlie", "grade": 78},
+    {"name": "Diana", "grade": 96}
+]
+
+# Extract names
+names = [student["name"] for student in students]
+print(f"Names: {names}")
+
+# Filter high performers
+high_performers = [s for s in students if s["grade"] >= 90]
+print(f"High performers: {high_performers}")
+
+# Calculate average grade
+average_grade = sum(s["grade"] for s in students) / len(students)
+print(f"Average grade: {average_grade:.1f}")
+```
+
+**NumPy functional operations** (for numerical data):
+
+```{python}
+# NumPy array operations
+arr = np.array([1, 2, 3, 4, 5])
+
+# Apply functions element-wise
+print(f"Square root: {np.sqrt(arr)}")
+print(f"Exponential: {np.exp(arr)}")
+print(f"Natural log: {np.log(arr)}")
+
+# Aggregate functions
+print(f"Sum: {np.sum(arr)}")
+print(f"Mean: {np.mean(arr)}")
+print(f"Standard deviation: {np.std(arr)}")
+
+# Apply custom function
+def custom_transform(x):
+    return x**2 + 2*x + 1
+
+transformed = np.vectorize(custom_transform)(arr)
+print(f"Custom transform: {transformed}")
+```
+
+## Working with Files and Data
+
+Python provides excellent built-in support for file operations and data processing:
+
+```{python}
+# Working with files (example - would need actual file)
+# with open('data.txt', 'r') as file:
+#     content = file.read()
+#     lines = content.split('\n')
+
+# Simulating file content
+lines = ["Alice,25,Engineer", "Bob,30,Teacher", "Charlie,35,Doctor"]
+
+# Parse CSV-like data
+people = []
+for line in lines:
+    parts = line.split(',')
+    person = {
+        'name': parts[0],
+        'age': int(parts[1]),
+        'job': parts[2]
+    }
+    people.append(person)
+
+print("Parsed people:")
+for person in people:
+    print(f"  {person}")
+```
+
+**Error handling:**
+
+```{python}
+def safe_divide(a, b):
+    """Safely divide two numbers."""
+    try:
+        result = a / b
+        return result
+    except ZeroDivisionError:
+        print("Error: Cannot divide by zero")
+        return None
+    except TypeError:
+        print("Error: Invalid input types")
+        return None
+
+# Test error handling
+print(f"10 / 2 = {safe_divide(10, 2)}")
+print(f"10 / 0 = {safe_divide(10, 0)}")
+print(f"'10' / 2 = {safe_divide('10', 2)}")
+```
+
+## Extensions
+
+We have given only a brief introduction to core Python programming concepts. 
+There are many excellent resources for learning Python at a much deeper level. 
+
+**For learning core Python:**
+- *Python Crash Course* by Eric Matthes provides an excellent beginner-friendly introduction
+- *Fluent Python* by Luciano Ramalho offers deep insights into Python's more advanced features
+- *Effective Python* by Brett Slatkin provides best practices and idioms
+
+**For data science specific Python:**
+- *Python for Data Analysis* by Wes McKinney (creator of pandas) is the definitive guide
+- *Python Data Science Handbook* by Jake VanderPlas covers the core scientific Python stack
+
+**Online resources:**
+
+- The official Python tutorial at docs.python.org
+- Real Python (realpython.com) for practical tutorials
+- Python's built-in `help()` function and documentation
+
+The concepts covered in this chapter - data structures, control flow, functions, and functional programming - form the foundation for more advanced topics like object-oriented programming, decorators, generators, and the async/await paradigm. Understanding these basics will make it much easier to work effectively with pandas, NumPy, and other data science libraries, as well as to write custom functions for data analysis tasks.
+
+In the context of data science, these programming fundamentals become particularly important when:
+
+- Writing custom data processing functions
+- Handling complex data cleaning tasks
+- Building data pipelines
+- Creating reusable analysis code
+- Debugging issues in data workflows
+
+The transition from interactive data analysis to programmatic data science requires comfort with these core programming concepts, which will serve as the foundation for the more advanced topics we'll cover in subsequent chapters.
+
+## References {-}
+

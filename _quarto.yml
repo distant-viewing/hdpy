@@ -1,0 +1,64 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Humanities Data in Python"
+  reader-mode: true
+  author: "Taylor Arnold and Lauren Tilton"
+
+  site-url: https://distant-viewing.github.io/hdpy
+  repo-url: https://github.com/distant-viewing/hdpy
+  repo-branch: main
+
+  page-footer:
+    left: |
+      Taylor Arnold and Lauren Tilton
+    right: |
+      A <a href="https://distantviewing.org/">Distant Viewing Lab</a> project
+
+  cover-image: owl_explore.png
+  favicon: owl_explore.png
+
+  chapters:
+    - index.qmd
+    - part: "Part I: Core"
+      chapters:
+        - 01_intro.qmd
+        - 02_graphics.qmd
+        - 03_verbs.qmd
+        - 04_combine.qmd
+        - 05_collect.qmd
+    - part: "Part II: Data Types"
+      chapters:
+        - 06_textual_data.qmd
+        - 07_network_data.qmd
+        - 08_temporal_data.qmd
+        - 09_spatial_data.qmd
+        - 10_image_data.qmd
+    - part: "Part III: Models"
+      chapters:
+        - 11_inference.qmd
+        - 12_supervised.qmd
+        - 13_unsupervised.qmd
+        - 14_deeplearning.qmd
+        - 15_transformers.qmd
+    - part: "Part IV: Programming"
+      chapters:
+        - 16_program.qmd
+        - 17_jsonxml.qmd
+        - 18_databases.qmd
+
+bibliography: refs.bib
+csl: journal-of-combinatorics.csl
+
+format:
+  html:
+    theme:
+      - cosmo
+      - custom.scss
+
+    link-external-newwindow: true
+    
+    author-meta: "Taylor Arnold and Lauren Tilton"
+    callout-appearance: simple

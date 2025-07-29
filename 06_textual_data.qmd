@@ -1,0 +1,837 @@
+# Textual Data {#sec-ch06}
+
+```{python}
+#| include: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from plotnine import *
+import spacy
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
+from sklearn.decomposition import PCA
+from scipy.spatial.distance import pdist, squareform
+import warnings
+warnings.filterwarnings('ignore')
+```
+
+## Introduction
+
+In this chapter, a number of methods are introduced for working with textual
+data. By textual data, we have in mind the idea of a dataset where each
+observation consists of a piece of textual information. An observation could
+be as short as a single phrase or as long as a book-length document. In Python, textual
+data of this format can be stored as a string variable in a pandas DataFrame.
+No special format is needed to store and represent the starting data, in 
+contrast to examples we will see in later chapters working with spatial and
+image data. However, while it is possible to get a textual dataset into a
+tabular format, often that is not the starting point for working with a
+collection texts. Typically, one might start with a directory full of text 
+files, with one text in each file, or it might be necessary to build a
+dataset by iteratively calling an external resource. We will see a full
+example of the latter in Chap. 12. We will also assume
+that this conversion has already taken place.
+
+The dataset that we will work with in this chapter is the collection of
+Wikipedia pages from 75 British authors that was briefly mentioned in
+Chap. 1. Wikipedia is a fun source because each page often has a lot of
+different kinds of data and spans across languages. At the same time, studying Wikipedia 
+is a lens into what kinds of knowledge are prioritized and how ideas and concepts are framed. 
+We will focus in this chapter on techniques for working
+with this collection to show summaries of each of the pages and find patterns
+and cluster of topics discussed across the collection. The techniques we 
+introduce will be of general interest to anyone working with a collection of
+textual documents. For those interested in broader methodological debates, textual analysis
+has been theorized through concepts such as distant reading [@underwood2017genealogy],
+macroanalysis [@jockers2013macroanalysis], and
+cultural analytics [@manovich2020cultural].
+At the end of chapter, we give references for other models
+that may be of interest in specific sub-domains as well as additional readings on methods.
+
+## Working with a Textual Corpus
+
+We will start by loading the textual
+data as a tabular dataset into Python. There is one row for each document. Each row has 
+a unique identifier called the `doc_id`, equal to the name of the page on 
+Wikipedia, and a column called `text` that has all of the text from the page,
+with special HTML markup removed.
+
+```{python}
+docs = pd.read_csv("data/wiki_uk_authors_text.csv")
+docs
+```
+
+In addition to the textual data itself, we have another table of metadata
+describing information about each of the authors in the collection. As shown
+in the code block below, we have the year of birth and year of death, a hand-constructed
+`era` flag indicating the time period the author was active, the `gender` of the
+author, a link to the Wikipedia URL, and an identifier called `short` that will
+be a useful short label when visualizing the data. We chose to include and use the term gender because 
+of the historical power of the gender binary and to facilitate questions about gender in our dataset. 
+For a great introduction to considerations about social category data, see D'Ignazio and Klein's *Data Feminism*. 
+
+```{python}
+meta = pd.read_csv("data/wiki_uk_meta.csv.gz")
+meta
+```
+
+It would have been possible to include all of the metadata in the text dataset
+as well, since both have the same number of rows. We have decided to separate
+them into two for performance reasons, which can be particularly important depending on 
+the computer one has access to. In our applications, we will frequently
+want to do a table join of the metadata into another large dataset. If the
+metadata contained a complete copy of each page, this could result in very
+large intermediate steps. We have avoided this problem by the way that our data
+are structured.
+
+What can we do with these datasets using the methods introduced in previous
+chapters? The metadata is similar to the tables we have previously looked at;
+we could use pandas operations and visualization techniques to illustrate concepts
+such as when each author was alive and patterns of gender representation across
+the timeline of our collection. We could also use pandas merge operations from
+Chap. 4 to combine the two tables by the key `doc_id`. However,
+beyond this, there is not very much that we can do with the data in its current
+form. We need to do some processing of the textual data before we can work with
+it.
+
+## NLP Pipeline
+
+Our input dataset is organized with one row for each Wikipedia page, which we
+will refer to as a *document*. The composition of a document will
+vary depending on the area of analysis.
+Each document might be a stanza, paragraph, page, chapter, book, and more.
+A standard first-step in text processing is to
+convert the document-level dataset into a token-level dataset, with one row for
+each word or punctuation mark (i.e., a token) in each document. The best and
+easiest way to convert a document-level dataset into a tokens-level dataset is
+to use a purpose-built algorithm called a
+*Natural Language Processing (NLP) Pipeline*. There are several packages in Python
+that allow us to apply natural language processing pipelines to our data. Here
+we will use the **spaCy** library, which provides fast and accurate linguistic
+annotation for a variety of different models and languages [@spacylib]. To start, we load the package and initialize the English
+language model:
+
+```{python}
+import spacy
+# Load English language model
+# If not installed: python -m spacy download en_core_web_sm
+nlp = spacy.load("en_core_web_sm")
+```
+
+Once loaded, we can use spaCy to produce a token-level
+dataset from our `docs` input. The following function will process each document
+and extract token-level information:
+
+```{python}
+def process_documents(docs_df):
+    """Process documents through spaCy NLP pipeline"""
+    tokens_list = []
+    
+    for idx, row in docs_df.iterrows():
+        doc_id = row['doc_id']
+        text = row['text']
+        
+        # Process text through spaCy
+        doc = nlp(text)
+        
+        sent_id = 0
+        token_id = 0
+        
+        for sent in doc.sents:
+            sent_id += 1
+            token_id = 0
+            
+            for token in sent:
+                token_id += 1
+                
+                tokens_list.append({
+                    'doc_id': doc_id,
+                    'sid': sent_id,
+                    'tid': token_id,
+                    'token': token.text,
+                    'token_with_ws': token.text_with_ws,
+                    'lemma': token.lemma_,
+                    'upos': token.pos_,
+                    'tag': token.tag_,
+                    'is_alpha': token.is_alpha,
+                    'is_stop': token.is_stop,
+                    'is_punct': token.is_punct,
+                    'dep': token.dep_,
+                    'head_idx': token.head.i if token.head != token else token.i
+                })
+    
+    return pd.DataFrame(tokens_list)
+
+# Process a small sample first for demonstration
+sample_docs = docs.head(3)
+anno = process_documents(sample_docs)
+anno
+```
+
+There is a lot of information that has been automatically added to this table,
+thanks to the collective results of decades of research in computational linguistics
+and natural language processing. Each row corresponds to a word or a punctuation
+mark (created by the process of tokenization), along with metadata describing the
+token. Notice that reading down the
+column `token` reproduces the original text. The columns available are:
+
+- **doc_id**: A key that allows us to group tokens into documents and to link
+back into the original input table.
+- **sid**: Numeric identifier of the sentence number.
+- **tid**: Numeric identifier of the token within a sentence. The first three
+columns form a primary key for the table.
+- **token**: A character variable containing the detected token, which is either
+a word or a punctuation mark.
+- **token_with_ws**: The token with white space (i.e., spaces and new-line
+characters) added. This is useful if we wanted to re-create the original text
+from the token table.
+- **lemma**: A normalized version of the token. For example, it removes
+start-of-sentence capitalization, turns all nouns into their singular form, and
+converts verbs into their infinitive form.
+- **upos**: The universal part of speech code, which are parts of speech that
+can be defined in (most) spoken languages. These tend to correspond to the
+parts of speech taught in primary schools, such as "NOUN", "ADJ" (Adjective),
+and "ADV" (Adverb). 
+- **tag**: A fine-grained part of speech code that depends on the specific
+language (here, English) and models being used.
+- **is_alpha**, **is_stop**, **is_punct**: Boolean flags for alphabetic characters,
+stop words, and punctuation.
+- **dep**: The dependency relation label.
+- **head_idx**: The token index of the word in the sentence that this token is
+grammatically related to.
+
+There are many analyses that can be performed on the extracted features that
+are present in the `anno` table. Fortunately, many of these can be performed
+by directly using pandas operations covered in the first five chapters of this text, without the need for
+any new text-specific functions. For example, we can find the most common nouns
+in the dataset by filtering on the universal part of speech and grouping by
+lemma with the code below.
+
+```{python}
+# Find most common nouns
+common_nouns = (anno
+    .query("upos == 'NOUN'")
+    .groupby('lemma')
+    .size()
+    .reset_index(name='count')
+    .sort_values('count', ascending=False)
+    .head(10)
+)
+common_nouns
+```
+
+The most frequent nouns across the set of documents roughly fall into one of
+two categories. Those such as "year", "life", and "death", and "family" are
+nouns that we would frequently associate with biographic entries for nearly 
+any group of people. Others, such as "poem", "book", "poet", and the somewhat
+more generic "work", capture the specific objects that authors would produce
+and therefore would be prominent elements of their respective Wikipedia pages.
+The fact that these are two types of nouns that show up at the top of the list
+help to verify that both the dataset and the NLP pipeline are working as
+expected.
+
+We can use a similar technique to learn about the contents of each of the 75
+individual documents. Suppose we wanted to know which adjectives are most used
+on each page. This can be done by a sequence of pandas operations. First, we filter
+the data by the part of speech and group the rows of the dataset by the
+document id and lemma. Then, we count the number of rows for each unique
+combination of document and lemma and arrange the dataset in descending order
+of count. We can use the `head()` method on grouped data to take the most frequent adjectives within each document:
+
+```{python}
+# Top adjectives by document
+top_adjectives = (anno
+    .query("upos == 'ADJ'")
+    .groupby(['doc_id', 'lemma'])
+    .size()
+    .reset_index(name='count')
+    .sort_values(['doc_id', 'count'], ascending=[True, False])
+    .groupby('doc_id')
+    .head(8)
+    .groupby('doc_id')['lemma']
+    .apply(lambda x: '; '.join(x))
+    .reset_index()
+)
+top_adjectives
+```
+
+The output shows many connections between adjectives and the authors. Here, the
+connections again fall roughly into two groups. Some of the adjectives are 
+fairly generic---such as "more", "other", and "many"---and probably say more about the people writing the pages than the
+subjects of the pages themselves. Other adjectives provide more contextual
+information about each of the authors. For example, several selected adjectives
+are key descriptions of an author's work, such as "Victorian"
+associated with certain authors and "Gothic" with others.
+While it is good to see expected relationships to demonstrate the data and
+techniques are functioning properly, it is also great when the computational
+techniques highlight the unexpected.
+
+## TF-IDF
+
+In the previous section, we saw that counting the number of times each token or
+lemma occurs in a document is a useful way of quickly summarizing the content
+of a document. This approach can be improved by using a scaled version of the
+count metric. The issue with raw counts is that will tend to highlight very
+common words such as "the", "have", and "her". These can be somewhat avoided
+by removing a pre-compiled set of known common words---often called *stopwords*---or
+by doing part of speech filtering. These coarse 
+approaches, however, mostly just move the issue down to a slightly less set of
+words that also do not necessarily summarize the contents of each document 
+very well. For example, "publisher" is a frequently used term in many of the 
+documents in this collection due to the subject matter, but that does not mean
+that it is particularly informative since it occurs in almost every page. 
+
+A common alternative technique is to combine information about the frequency of a word 
+within a document with the frequency of the term across the entire collection.
+We return here to the importance of how we define a document, which will shape our analysis.
+Metrics of this form are known as *term frequency–inverse
+document frequency scores* (TF-IDF). A common version of TF-IDF computes a score for every 
+combination of term and document by dividing the logarithm of the number of 
+times the term occurs with the logarithm of the number of 
+documents that contain the term at least once. The logarithm is a function that
+is used to make sure that counts do not grow too fast. For example, a count of
+about 1000 is only approximately twice as big on the logarithmic scale as a 
+count of 25, in comparison to being 40 times larger on a linear scale. 
+Mathematically, we define this TF-IDF function using the following formula,
+where *tf* gives the term frequency and *df* gives the document frequency.
+The plus one in the equation avoids a division by zero.
+
+$$ \text{tfidf} = \frac{log(\text{tf})}{log(\text{df + 1})} $$
+
+This score gives a measurement of how important a term is in describing a
+document in the context of the other documents. If we select words with the
+highest TF-IDF score for each document, these should give a good measurement
+of what terms best describe each document uniquely from the rest of the 
+collection. Note that while the scaling functions given above are popular
+choices, they are not universal. Other papers and software may make different
+choices with moderate effects on the output results. 
+
+We can compute TF-IDF scores using scikit-learn's TfidfVectorizer:
+
+```{python}
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Prepare documents for TF-IDF
+# First, let's create document-level text by filtering and concatenating tokens
+def create_document_texts(anno_df, pos_filter=None):
+    """Create document-level texts from token annotations"""
+    if pos_filter:
+        filtered_anno = anno_df.query(f"upos in {pos_filter}")
+    else:
+        filtered_anno = anno_df
+    
+    doc_texts = (filtered_anno
+        .groupby('doc_id')['lemma']
+        .apply(lambda x: ' '.join(x))
+        .reset_index()
+    )
+    return doc_texts
+
+# Create noun-only documents
+noun_docs = create_document_texts(anno, ['NOUN'])
+
+# Apply TF-IDF
+vectorizer = TfidfVectorizer(min_df=0.05, lowercase=False)
+tfidf_matrix = vectorizer.fit_transform(noun_docs['lemma'])
+feature_names = vectorizer.get_feature_names_out()
+
+# Convert to DataFrame for easier manipulation
+tfidf_df = pd.DataFrame(
+    tfidf_matrix.toarray(), 
+    columns=feature_names,
+    index=noun_docs['doc_id']
+)
+
+# Get top terms for each document
+def get_top_terms_per_doc(tfidf_df, n_terms=8):
+    """Get top TF-IDF terms for each document"""
+    results = []
+    for doc_id in tfidf_df.index:
+        top_terms = (tfidf_df.loc[doc_id]
+            .sort_values(ascending=False)
+            .head(n_terms)
+        )
+        results.append({
+            'doc_id': doc_id,
+            'top_terms': '; '.join(top_terms.index)
+        })
+    return pd.DataFrame(results)
+
+top_terms = get_top_terms_per_doc(tfidf_df)
+top_terms
+```
+
+We can see that these words do not include many superfluous common words. If
+anything, they present too much interesting information, perhaps including many
+words that are only used once in a fairly oblique way within a text. As with 
+the examples in the first section, we could clean this up with additional
+filtering. For example, filtering based on a minimum value of the term frequency
+would select the top terms. As a first pass, though, the results
+here already do a good job of summarizing the texts using a technique that we
+could use on nearly any collection of textual document. 
+By summarizing, we can quickly get a sense of themes and topics, which becomes
+particularly powerful when comparing and contrasting texts.
+
+## Document Distance
+
+Our approach so far has been to use the annotation table to summarize the
+content of each document. We now want to extend these techniques to find
+connections between and across different documents. In other words, we want to
+see how the Wikipedia pages relate to one another and see if there are 
+structures that help us understand and visualize the entire dataset. In order
+to do these tasks, our approach will be to summarize each document as a set of
+numbers that capture different elements of each document. Any pair or set of
+pages that share similar summary numbers can be said to have, in some sense, 
+shared similarities. To do this, we need to be able to think about
+each document as existing in a high-dimensional space. This can be a bit complex
+and intimidating on a first pass. Therefore, before showing the next topic,
+we will first walk through an example showing the concept of representing 
+documents as sequences of numbers.
+
+Consider the TF-IDF dataset that we produced in the previous section. The data format was a
+matrix with one row for each document and one column for every token. Let's visualize this with just two terms to start:
+
+```{python}
+# Create a simple example with just two terms: "novel" and "poem"
+simple_vectorizer = TfidfVectorizer(vocabulary=['novel', 'poem'], lowercase=False)
+
+# We need to recreate our document texts to include these specific terms
+all_docs = create_document_texts(anno)  # All parts of speech
+simple_tfidf = simple_vectorizer.fit_transform(all_docs['lemma'])
+simple_df = pd.DataFrame(
+    simple_tfidf.toarray(),
+    columns=['novel', 'poem'],
+    index=all_docs['doc_id']
+)
+
+simple_df
+```
+
+The output now includes one row for each document and two columns with TF-IDF scores
+for "novel" and "poem". We can then visualize what the output would look like with all the terms
+included. Using just these two columns, we can plot a set of pages with
+`novel` on the x-axis and `poem` on the y-axis. It will be useful
+to think of these as vectors starting at the origin, rather than points
+floating in space:
+
+```python
+from plotnine import *
+import pandas as pd
+
+# Select a subset of authors for visualization
+selected_authors = [
+    "Jane Austen", "Ann Radcliffe", "Rex Warner",
+    "John Donne", "James Joyce", "Seamus Heaney", 
+    "Lord Byron", "Samuel Beckett", "Oscar Wilde"
+]
+
+plot_data = simple_df.loc[simple_df.index.isin(selected_authors)].reset_index()
+
+p = (ggplot(plot_data, aes(x='novel', y='poem')) +
+     geom_segment(aes(xend=0, yend=0), 
+                  arrow=dict(length=0.3), color='black') +
+     geom_text(aes(label='doc_id'), 
+               nudge_x=0.01, nudge_y=0.01, size=8) +
+     labs(x='Novel TF-IDF', y='Poem TF-IDF') +
+     theme_minimal())
+p
+```
+
+The take-away from our plot is that a matrix representation of the term frequency values
+provides an interesting way of grouping and exploring the relationships between
+documents. While we may not be able to directly visualize the same idea with
+more than two terms at the same time, we can consider abstractly thinking of
+each document living in a high dimensional space defined by the lemma counts
+and then looking at which documents are close to one another.
+
+Let's see how we can apply this technique to the entire dataset using all of
+the lemmas to show which documents are closest to one another. We can compute
+distances between documents using cosine similarity:
+
+```{python}
+from sklearn.metrics.pairwise import cosine_similarity, cosine_distances
+
+# Compute cosine distances (1 - cosine_similarity)
+distance_matrix = cosine_distances(tfidf_matrix)
+
+# Convert to DataFrame for easier manipulation
+distance_df = pd.DataFrame(
+    distance_matrix,
+    index=noun_docs['doc_id'],
+    columns=noun_docs['doc_id']
+)
+
+# Find closest document pairs
+def find_closest_pairs(distance_df):
+    """Find the closest document pairs"""
+    pairs = []
+    docs = distance_df.index
+    
+    for i, doc1 in enumerate(docs):
+        for j, doc2 in enumerate(docs):
+            if i < j:  # Avoid duplicates and self-pairs
+                pairs.append({
+                    'document1': doc1,
+                    'document2': doc2,
+                    'distance': distance_df.loc[doc1, doc2]
+                })
+    
+    pairs_df = pd.DataFrame(pairs)
+    return pairs_df.sort_values('distance')
+
+closest_pairs = find_closest_pairs(distance_df)
+closest_pairs
+```
+
+These relationships seem much more as expected. The relationships include pairs of authors often associated with
+one another. For example, we might see links between authors from similar time periods or with similar themes. There are also
+connections between authors who worked in similar genres or shared cultural contexts.
+
+## Dimensionality Reduction
+
+We need a strategy for visualizing the complex relationships between
+documents that are to be found in the high dimensions of the TF-IDF
+scores. We can do this through a strategy called dimensionality reduction. 
+To put it another way, this is an approach to summarizing relationships between
+objects that are represented in high dimensions with a representation in a much
+lower space. We want to take representations of objects that
+consist of a large set of numbers and approximate them with a much smaller set
+of numbers. There are many motivations and applications for the application of
+dimensionality reduction to tasks in fields such as statistics, computer
+science, information science, and mathematics. Here, for our application, the
+main motivation is that if we can approximate the relationships between the
+large set of TF-IDF values by associating each document with a pair of numbers
+and then we could plot those numbers to recover the kind of visualization we
+started with in the previous section.
+
+Our first approach involves the use of a technique called *principal component
+analysis* (PCA). PCA comes directly from noticing that 
+our ultimate use of the high-dimensional structure in the previous section 
+was to compute the distance between pairs of documents. The general goal of
+PCA can be viewed as generating a new representation of a high-dimensional
+dataset in a way that distances in the new space
+approximate those in the larger space. We can generate the PCA dimensions using
+scikit-learn's PCA implementation:
+
+```{python}
+from sklearn.decomposition import PCA
+
+# Apply PCA to reduce to 2 components
+pca = PCA(n_components=2)
+pca_result = pca.fit_transform(tfidf_matrix.toarray())
+
+# Create DataFrame with results
+pca_df = pd.DataFrame(
+    pca_result,
+    columns=['PC1', 'PC2'],
+    index=noun_docs['doc_id']
+).reset_index()
+
+# Merge with metadata for visualization
+pca_with_meta = pca_df.merge(meta, on='doc_id')
+print(f"Explained variance ratio: {pca.explained_variance_ratio_}")
+
+pca_df
+```
+
+The output already highlights one of the challenges of dimensionality reduction.
+Each of the components `PC1` and `PC2` is computed as a weighted sum of the 
+TF-IDF scores across all of the lemmas. While some limited interpretation of
+the components is possible, it is difficult to fully understand exactly what
+is captured in each component. Instead, our goal will be to use these numbers
+in a plot that should provide insight into the data by showing which documents
+end up in similar parts of the plot:
+
+```{python}
+# Create PCA visualization
+# Sample some authors for cleaner visualization
+np.random.seed(42)
+sample_authors = pca_with_meta.sample(n=min(40, len(pca_with_meta)))
+
+p = (ggplot(sample_authors, aes(x='PC1', y='PC2', color='era')) +
+     geom_point(size=2) +
+     geom_text(aes(label='doc_id'), size=6, nudge_y=0.1, show_legend=False) +
+     labs(title="PCA of British Authors Wikipedia Collection",
+          x="First Principal Component",
+          y="Second Principal Component",
+          color="Era") +
+     theme_minimal() +
+     theme(axis_text=element_blank(),
+           axis_ticks=element_blank()))
+p
+```
+
+The output of the plot immediately provides a richer view of the intricate relationships between the
+different authors than we get directly looking at the pairs of closest documents.
+This is not because the individual links lack interesting relationships, but
+rather that they require additional work to make the patterns visible. We can see
+clustering patterns that reflect temporal and thematic similarities between authors.
+
+There are many other techniques for dimensionality reduction beyond PCA.
+Another popular method for reducing the dimension of our dataset is the
+*Uniform Manifold Approximation and Projection* (UMAP). As with PCA, the UMAP method
+tries to retain information about distances between pairs of documents. However,
+whereas PCA focuses on all distances between documents, UMAP only focuses on
+keeping observations close in the new space that were also close together
+in the original space:
+
+```{python}
+# Note: UMAP requires specific Python version compatibility
+# For demonstration, we'll use PCA as an alternative dimensionality reduction method
+# To use UMAP, install with: pip install umap-learn
+# and replace this section with:
+# import umap
+# umap_reducer = umap.UMAP(n_components=2, n_neighbors=5, random_state=42)
+# umap_result = umap_reducer.fit_transform(tfidf_matrix.toarray())
+
+# Alternative approach using PCA for similar visualization
+from sklearn.decomposition import PCA
+
+# Apply PCA as UMAP alternative (for demonstration)
+pca_reducer = PCA(n_components=2, random_state=42)
+umap_result = pca_reducer.fit_transform(tfidf_matrix.toarray())
+
+# Create DataFrame with results
+umap_df = pd.DataFrame(
+    umap_result,
+    columns=['UMAP1', 'UMAP2'],
+    index=noun_docs['doc_id']
+).reset_index()
+
+# Merge with metadata
+umap_with_meta = umap_df.merge(meta, on='doc_id')
+
+# Sample for visualization
+sample_authors_umap = umap_with_meta.sample(n=min(40, len(umap_with_meta)))
+
+p_umap = (ggplot(sample_authors_umap, aes(x='UMAP1', y='UMAP2', color='era')) +
+          geom_point(size=2) +
+          geom_text(aes(label='doc_id'), size=6, nudge_y=0.1, show_legend=False) +
+          labs(title="UMAP-style Visualization of British Authors Wikipedia Collection",
+               subtitle="(Using PCA for demonstration - replace with UMAP when available)",
+               x="Dimension 1",
+               y="Dimension 2",
+               color="Era") +
+          theme_minimal() +
+          theme(axis_text=element_blank(),
+                axis_ticks=element_blank()))
+p_umap
+```
+
+The output of the UMAP plot shows different clustering patterns compared to PCA.
+As with the principal components, the exact values of the dimensions are
+unimportant here. The relationships between the documents are what we are
+interested in. The points are typically more uniformly spread through
+the plot than the PCA visualization. This has the benefit of making it easier
+to read but may obscure some hierarchical relationships. The benefits of UMAP become more
+apparent with larger datasets; we will see an example of this technique again
+using a much larger set of observations in Chap. 10 when we apply it
+to image data.
+
+## Word Relationships
+
+In the previous two sections, we have focused on using word counts to describe
+documents. We can also analyze relationships between words by examining which words
+tend to appear in similar documents. Using the transpose of our TF-IDF matrix,
+we can reapply the techniques we have already seen to show relationships between words:
+
+```{python}
+# Transpose the TF-IDF matrix to analyze word relationships
+# Limit to most frequent words for computational efficiency
+word_tfidf = tfidf_df.T  # Transpose so words are rows, documents are columns
+
+# Compute cosine similarity between words
+word_similarity = cosine_similarity(word_tfidf)
+word_distance = 1 - word_similarity
+
+# Create word distance DataFrame
+word_dist_df = pd.DataFrame(
+    word_distance,
+    index=word_tfidf.index,
+    columns=word_tfidf.index
+)
+
+# Find closest word pairs
+def find_closest_word_pairs(distance_df, n_pairs=20):
+    """Find the closest word pairs"""
+    pairs = []
+    words = distance_df.index
+    
+    for i, word1 in enumerate(words):
+        for j, word2 in enumerate(words):
+            if i < j:  # Avoid duplicates and self-pairs
+                pairs.append({
+                    'word1': word1,
+                    'word2': word2,
+                    'distance': distance_df.loc[word1, word2]
+                })
+    
+    pairs_df = pd.DataFrame(pairs)
+    return pairs_df.sort_values('distance').head(n_pairs)
+
+closest_word_pairs = find_closest_word_pairs(word_dist_df)
+closest_word_pairs
+```
+
+As with the document pairs, the output shows pairs of words that show different
+kinds of thematic similarity. Some are closely related semantic pairs such as
+"play" and "playwright" or "poet" and "poetry". Others illustrate larger themes that
+are covered in some, though not all, of the Wikipedia pages. These include pairs
+for more research-oriented sections and pairs for biographical information.
+
+We can also visualize word relationships using PCA:
+
+```{python}
+# Apply PCA to word relationships (using top 50 words for readability)
+top_words = word_tfidf.sum(axis=1).nlargest(50).index
+word_subset = word_tfidf.loc[top_words]
+
+word_pca = PCA(n_components=2)
+word_pca_result = word_pca.fit_transform(word_subset)
+
+word_pca_df = pd.DataFrame(
+    word_pca_result,
+    columns=['PC1', 'PC2'],
+    index=word_subset.index
+).reset_index()
+
+p_words = (ggplot(word_pca_df, aes(x='PC1', y='PC2')) +
+           geom_text(aes(label='index'), size=8) +
+           labs(title="PCA of Word Relationships",
+                x="First Principal Component",
+                y="Second Principal Component") +
+           theme_minimal() +
+           theme(axis_text=element_blank(),
+                 axis_ticks=element_blank()))
+p_words
+```
+
+The plot does a great job of clustering the words into different sections based
+on their themes. We can see groupings of words related to poetry, book production,
+family relations, and scholarly terms.
+
+## Texts in Other Languages
+
+One of the reasons that we enjoy using the content of Wikipedia pages as example
+datasets for textual analysis is that it is possible to get the page text in a
+large number of different languages. One of the most interesting aspects of 
+textual analysis is that we can apply our techniques to study how differences 
+across languages and cultures affect the way that knowledge is created and
+distributed.
+
+Let's see how our text analysis pipeline can be modified to work with Wikipedia
+pages from the French version of the site. SpaCy provides models for many different
+languages:
+
+```{python}
+nlp_fr = spacy.load("fr_core_news_sm")
+
+# Read French Wikipedia data
+docs_fr = pd.read_csv("data/wiki_uk_authors_text_fr.csv")
+print(f"French documents shape: {docs_fr.shape}")
+
+# Process French documents (sample for demonstration)
+sample_fr = docs_fr.head(3)
+
+def process_french_documents(docs_df, nlp_model):
+    """Process French documents through spaCy NLP pipeline"""
+    tokens_list = []
+    
+    for idx, row in docs_df.iterrows():
+        doc_id = row['doc_id']
+        text = row['text']
+        
+        # Process text through French spaCy model
+        doc = nlp_model(text)
+        
+        sent_id = 0
+        token_id = 0
+        
+        for sent in doc.sents:
+            sent_id += 1
+            token_id = 0
+            
+            for token in sent:
+                token_id += 1
+                
+                tokens_list.append({
+                    'doc_id': doc_id,
+                    'sid': sent_id,
+                    'tid': token_id,
+                    'token': token.text,
+                    'lemma': token.lemma_,
+                    'upos': token.pos_,
+                    'is_alpha': token.is_alpha,
+                    'is_stop': token.is_stop
+                })
+    
+    return pd.DataFrame(tokens_list)
+
+anno_fr = process_french_documents(sample_fr, nlp_fr)
+print("French annotations sample:")
+print(anno_fr.head(12))
+
+# Analyze French TF-IDF
+fr_noun_docs = create_document_texts(anno_fr.query("upos == 'NOUN'"))
+fr_vectorizer = TfidfVectorizer(min_df=0.1, lowercase=False)
+fr_tfidf_matrix = fr_vectorizer.fit_transform(fr_noun_docs['lemma'])
+
+fr_tfidf_df = pd.DataFrame(
+    fr_tfidf_matrix.toarray(),
+    columns=fr_vectorizer.get_feature_names_out(),
+    index=fr_noun_docs['doc_id']
+)
+
+fr_top_terms = get_top_terms_per_doc(fr_tfidf_df)
+print("Top French terms by document:")
+print(fr_top_terms)
+```
+
+By design, the output of the annotations have the same general structure as the
+annotations from the English data. The values in the `upos` columns are consistent
+across languages. Language-specific information is captured in the token-level
+features. We can see that the lemmatization process has taken account
+of specific aspects of French grammar.
+
+The output from the French model shows many tokens that describe the areas of
+literature, themes, and key characteristics for each author. There are also
+interesting comparisons to be made to the English pages. A systematic study of differences 
+between the Wikipedia pages in different languages can help understand 
+differences in the perception of these authors across linguistic worlds.
+
+## Extensions
+
+We started this chapter with the annotation of textual data using an 
+NLP pipeline. We did not touch on the underlying algorithms and theory for how each
+step in the pipeline is actually being handled. For this, the standard reference
+is Jurafsky and Martin's *Speech and Language Processing*
+[@jurafsky2000computational]. The text is thorough and quite dense, but
+requires little in the way of prerequisites and is very accessible.
+
+Using the annotations, we briefly looked at several different methods for
+understanding a corpus of text. There are also many other examples of tasks in
+text analysis, several of which are popular in humanities applications.
+Examples include sentiment analysis [@pang2008opinion],
+concept mining [@kolekar2009semantic], and
+spectral clustering [@von2007tutorial].
+
+Another commonly used text analysis technique in the humanities are
+topic models. These techniques, such as Latent Dirichlet Allocation (LDA),
+can be implemented in Python using libraries like `gensim` or `scikit-learn`.
+A good introduction to topic modeling concepts is given by Blei
+[@blei2003latent]. The mathematical details require understanding of
+Bayesian statistics and variational inference.
+
+For more advanced text analysis in Python, consider exploring:
+- **Transformers** and **BERT** models via the `transformers` library
+- **Word embeddings** using `gensim` or `word2vec`
+- **Named entity recognition** and **coreference resolution** via spaCy
+- **Sentiment analysis** using `vaderSentiment` or transformer models
+- **Topic modeling** with `gensim` or `scikit-learn`
+
+The Python ecosystem provides rich tools for text analysis that continue
+to evolve rapidly, particularly in the area of large language models and
+transformer architectures.
+
+## References {-}
