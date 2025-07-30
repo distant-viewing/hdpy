@@ -1,6 +1,6 @@
 # Welcome {-}
 
-**This book is currently under development. It will be extended and updated throughout Fall 2025 as part of a course we are teaching this semester.**
+**This book is currently under development. It will be extended and updated throughout the 2025-2026 academic year. It is being used for our year-long undergraduate sequence of data science courses (DSST289 and DSST389).**
 
 This is the digital version of the text *Humanities Data in Python*. The
 first part of the text provides an introduction to the core data science

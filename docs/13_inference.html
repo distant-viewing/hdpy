@@ -8,7 +8,7 @@
 
 <meta name="author" content="Taylor Arnold and Lauren Tilton">
 
-<title>Humanities Data in Python</title>
+<title>13&nbsp; Inference – Humanities Data in Python</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -31,7 +31,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./01_intro.html" rel="next">
+<link href="./14_supervised.html" rel="next">
+<link href="./12_movingimage_data.html" rel="prev">
 <link href="./owl_explore.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -83,7 +84,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Welcome</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./13_inference.html">Part III: Models</a></li><li class="breadcrumb-item"><a href="./13_inference.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Inference</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -118,7 +119,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Welcome</span></a>
   </div>
 </li>
@@ -227,7 +228,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./13_inference.html" class="sidebar-item-text sidebar-link">
+  <a href="./13_inference.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Inference</span></span></a>
   </div>
 </li>
@@ -291,33 +292,21 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#welcome" id="toc-welcome" class="nav-link active" data-scroll-target="#welcome">Welcome</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./13_inference.html">Part III: Models</a></li><li class="breadcrumb-item"><a href="./13_inference.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Inference</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Humanities Data in Python</h1>
+<h1 class="title"><span id="sec-ch13" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Inference</span></span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Taylor Arnold and Lauren Tilton </p>
-          </div>
-  </div>
     
   
     
@@ -329,14 +318,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="welcome" class="level1 unnumbered">
-<h1 class="unnumbered">Welcome</h1><p><img src="owl_explore.png" title="Humanities Data in Python" class="quarto-cover-image nolightbox img-fluid"></p>
-<p><strong>This book is currently under development. It will be extended and updated throughout the 2025-2026 academic year. It is being used for our year-long undergraduate sequence of data science courses (DSST289 and DSST389).</strong></p>
-<p>This is the digital version of the text <em>Humanities Data in Python</em>. The first part of the text provides an introduction to the core data science principles using the Python programming language. The second part explores techniques for working with a variety of different kinds of data that are common in the humanities and social sciences. These include spatial, textual, and temporal data. Example datasets were chosen to be interesting without requiring deep specialized knowledge of a subject domain while at the same time being engaging enough to illustrate the power of the techniques under consideration. While originally designed with the needs of students coming from the humanities, the text offers an approach that should be useful to anyone looking to learn how to explore rich datasets with the Python programming language.</p>
-<p>The authors use this site for teaching courses in data science and the digital humanities. Unlike the physical book, this website will be continually expanded and updated over time. We currently have this version of the text password protected though hope to eventually open it to the public. Please use the menu on the left (or above on the mobile site) to navigate the text. If you would like to follow along, please see the instructions in the setup section for getting Python and all of the datasets installed on your machine. As always, please contact us if you have any questions or comments about the text. We hope that you find it helpful!</p>
 
-
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -745,10 +727,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./12_movingimage_data.html" class="pagination-link" aria-label="Moving Image Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Moving Image Data</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./01_intro.html" class="pagination-link" aria-label="Introduction">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./14_supervised.html" class="pagination-link" aria-label="Supervised Learning">
+        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

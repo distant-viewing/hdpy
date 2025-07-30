@@ -263,6 +263,18 @@ div.csl-indent {
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Image Data</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11_audio_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Audio Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12_movingimage_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Moving Image Data</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -276,32 +288,32 @@ div.csl-indent {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./11_inference.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Inference</span></span></a>
+  <a href="./13_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Inference</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./12_supervised.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span></a>
+  <a href="./14_supervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./13_unsupervised.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span></a>
+  <a href="./15_unsupervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./14_deeplearning.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  <a href="./16_deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./15_transformers.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Transformers</span></span></a>
+  <a href="./17_transformers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Transformers</span></span></a>
   </div>
 </li>
       </ul>
@@ -317,20 +329,20 @@ div.csl-indent {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./16_program.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Programming</span></span></a>
+  <a href="./18_program.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Programming</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./17_jsonxml.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">JSON + XML</span></span></a>
+  <a href="./19_jsonxml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">JSON + XML</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./18_databases.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Databases</span></span></a>
+  <a href="./20_databases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Databases</span></span></a>
   </div>
 </li>
       </ul>
@@ -389,7 +401,7 @@ div.csl-indent {
 <section id="choosing-rows" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="choosing-rows"><span class="header-section-number">3.2</span> Choosing Rows</h2>
 <p>It is often useful to take a subset of the rows of an existing dataset. For example, we might want to build a model on a certain sub-population or highlight a particular part of the data in a plot. In the previous chapter we looked at the 30 largest CBSA regions. This dataset was created by taking a subset of the larger, entire set of CBSA regions. A straightforward way to take a subset of rows is to indicate the specific row numbers that we want to extract. In order to select rows by row numbers, we use the <code>.iloc[]</code> indexer, followed by the numbers of the rows we want. The code chunk below shows an example of using the iloc indexer to take the second, fifth, and seventh rows of the data (remembering that Python uses 0-based indexing).</p>
-<div id="4b6aee7e" class="cell" data-execution_count="2">
+<div id="b1446de5" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cbsa.iloc[[<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">6</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
@@ -470,15 +482,15 @@ div.csl-indent {
 </div>
 </div>
 <p>As mentioned above, the code here does not change the dataset <code>cbsa</code> itself. It still has all 916 rows even after running the code above. If we want to create a new dataset with just these three regions, we need to explicitly name and assign it. For example, below is an example of how we would create a dataset of the first five cities. We have named the new dataset <code>cbsa_first_five</code>.</p>
-<div id="a1b95582" class="cell" data-execution_count="3">
+<div id="943ea829" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cbsa_first_five <span class="op">=</span> cbsa.iloc[<span class="dv">0</span>:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The most common application of the <code>.iloc[]</code> indexer is to take the first set of rows in a dataset. This can be done, for example, after arranging the rows by another variable, something we will see later in the chapter. There are also convenient methods for selecting the first or last rows: <code>.head()</code> and <code>.tail()</code>. For example, in the code below, we show another way to select the first five rows of the dataset.</p>
-<div id="5cc17136" class="cell" data-execution_count="4">
+<div id="1d4afefb" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cbsa.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can also take a subset of the rows of a dataset by selecting rows based on conditions about the various data columns. To do this we use boolean indexing or the <code>.query()</code> method, which accepts a statement about variables in the dataset. We can write the condition directly in terms of the variable names used in the dataset. Only rows where the statements are true will be returned. For example, below is an example of how we use boolean indexing to select regions that have more than 5 million people living in them.</p>
-<div id="b4eeca3c" class="cell" data-execution_count="5">
+<div id="6a17a7bb" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>cbsa[cbsa[<span class="st">'pop'</span>] <span class="op">&gt;</span> <span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
@@ -655,7 +667,7 @@ div.csl-indent {
 </div>
 </div>
 <p>Because population is given in millions of people, we filtered based on <code>pop</code> being greater than <code>5</code>. The output dataset has only 9 rows, compared to the 916 in the original data. Other comparisons can be done with <code>&lt;</code>, <code>&gt;=</code> and <code>&lt;=</code>. There is also a special method called <code>.between()</code> that is often useful. For example, below are all of the regions that have between 1 and 2 million people living in them.</p>
-<div id="86399fff" class="cell" data-execution_count="6">
+<div id="817ad39c" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cbsa[cbsa[<span class="st">'pop'</span>].between(<span class="dv">1</span>, <span class="dv">2</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
@@ -1024,7 +1036,7 @@ div.csl-indent {
 </div>
 </div>
 <p>Sometimes we want to filter based on a character variable in order to select a set of rows based on a specified set of categories. To do this, we can use the <code>.isin()</code> method to select specific categories that we want selected in the output. Below we show an example of selecting only regions in the Northeast (<code>NE</code>) and South (S) quadrants.</p>
-<div id="dad76d1b" class="cell" data-execution_count="7">
+<div id="d5a3b29b" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cbsa[cbsa[<span class="st">'quad'</span>].isin([<span class="st">'NE'</span>, <span class="st">'S'</span>])]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
@@ -1234,7 +1246,7 @@ div.csl-indent {
 </div>
 </div>
 <p>As mentioned in the introduction, we can chain together multiple operations to produce more complex logic. For example, consider finding all of the regions with more than 1 million people that are in the Northeast quadrant. We can do this by applying multiple boolean conditions, as in the example below. We can combine multiple conditions using the <code>&amp;</code> (and) and <code>|</code> (or) operators, making sure to use parentheses around each condition.</p>
-<div id="1eea6e44" class="cell" data-execution_count="8">
+<div id="191b5f92" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cbsa[(cbsa[<span class="st">'pop'</span>] <span class="op">&gt;</span> <span class="dv">1</span>) <span class="op">&amp;</span> (cbsa[<span class="st">'quad'</span>].isin([<span class="st">'NE'</span>]))]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
@@ -1399,7 +1411,7 @@ div.csl-indent {
 <section id="data-and-layers" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="data-and-layers"><span class="header-section-number">3.3</span> Data and Layers</h2>
 <p>We know that we could use our newly created subsets of data with plotnine to create visualizations such as those in the previous chapter on different parts of a larger dataset. It is also possible to create new types of visualizations that were previously inaccessible. These will let us understand how a subset of the data relates to the larger collection of data. To start, we will create a dataset that consists only of those regions that have more than 2 million people living in them in order to understand the relationships between larger cities. We store the data in an object called <code>cbsa_large</code>.</p>
-<div id="b0c0f347" class="cell" data-execution_count="9">
+<div id="8bcfa6f9" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cbsa_large <span class="op">=</span> cbsa[cbsa[<span class="st">'pop'</span>] <span class="op">&gt;</span> <span class="dv">2</span>]</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>cbsa_large</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
@@ -1977,18 +1989,18 @@ div.csl-indent {
 </div>
 </div>
 <p>As we saw in the previous chapter, we can create a scatter plot of the median rental price for a 1 bedroom apartment and the median household income using the following block of code.</p>
-<div id="20ece85f" class="cell" data-execution_count="10">
+<div id="ee901f98" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa_large, aes(<span class="st">'rent_1br_median'</span>, <span class="st">'hh_income_median'</span>)) <span class="op">+</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    geom_point())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>One of the core ideas behind the grammar of graphics is that complex visualizations can be constructed by layering relatively simple elements on top of one another. What if we wanted to put together two layers where one layer uses the <code>cbsa</code> dataset and the other uses <code>cbsa_large</code>? To do this, we can override the default dataset in any geometry layer with the option <code>data =</code>. This will use a different dataset within a particular layer. For example, the code below would produce two sets of points. The first layer (second line of the code) would include all of the regions and the second layer (third line) would only have data from the set of the largest regions.</p>
-<div id="42a0df09" class="cell" data-execution_count="11">
+<div id="cd8d8a42" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa, aes(<span class="st">'rent_1br_median'</span>, <span class="st">'hh_income_median'</span>)) <span class="op">+</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    geom_point() <span class="op">+</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    geom_point(data<span class="op">=</span>cbsa_large))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The resulting plot, however, would not look any different than it would if we were just to plot all of the cities together. The second layer of points would sit unassumingly on top of the rest of the data, with no way of seeing that the largest cities have two sets of black points plotted on top of one another. To rectify this, we can color each layer a different color in order to distinguish them from one another. We will do this by highlighting the largest cities in navy blue, while making the rest of the points a light grey. This plot can be further built up by showing the names of just the rows of the largest cities (including all of the cities would take up far too much space). These changes are shown in the code below.</p>
-<div id="ab8ca3b1" class="cell" data-execution_count="12">
+<div id="9610a177" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa, aes(<span class="st">'rent_1br_median'</span>, <span class="st">'hh_income_median'</span>)) <span class="op">+</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    geom_point(color<span class="op">=</span><span class="st">'grey'</span>) <span class="op">+</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    geom_point(color<span class="op">=</span><span class="st">'navy'</span>, data<span class="op">=</span>cbsa_large) <span class="op">+</span></span>
@@ -1997,7 +2009,7 @@ div.csl-indent {
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="03_verbs_files/figure-html/cell-13-output-1.png" width="672" height="480" class="figure-img"></p>
+<p><a href="03_verbs_files/figure-html/cell-13-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Plot of the core-based statistical areas in the United States, showing the median price to rent a one-bedroom apartment and the median household income as reported by the 2021 American community survey. Here, regions with greater than two million residents are highlighted in navy and their short names are added as labels."><img src="03_verbs_files/figure-html/cell-13-output-1.png" width="672" height="480" alt="Plot of the core-based statistical areas in the United States, showing the median price to rent a one-bedroom apartment and the median household income as reported by the 2021 American community survey. Here, regions with greater than two million residents are highlighted in navy and their short names are added as labels." class="figure-img"></a></p>
 <figcaption>Plot of the core-based statistical areas in the United States, showing the median price to rent a one-bedroom apartment and the median household income as reported by the 2021 American community survey. Here, regions with greater than two million residents are highlighted in navy and their short names are added as labels.</figcaption>
 </figure>
 </div>
@@ -2009,7 +2021,7 @@ div.csl-indent {
 <section id="selecting-columns" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="selecting-columns"><span class="header-section-number">3.4</span> Selecting Columns</h2>
 <p>Now that we have seen how to select a subset of the rows in a dataset, another step would be to select a subset of the columns. To do this, we will make use of column selection with square brackets or the <code>.loc[]</code> indexer. We pass it the names of the variables we want to keep in the output dataset, in the (possibly new) order that we want the columns to be arranged in. Here, for example, is a new version of the <code>cbsa</code> dataset containing only the name of the region, the population, the longitude and latitude, and the household median income.</p>
-<div id="a598ed93" class="cell" data-execution_count="13">
+<div id="679025a1" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cbsa[[<span class="st">'name'</span>, <span class="st">'pop'</span>, <span class="st">'lon'</span>, <span class="st">'hh_income_median'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <div>
@@ -2115,7 +2127,7 @@ div.csl-indent {
 <section id="arranging-rows" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="arranging-rows"><span class="header-section-number">3.5</span> Arranging Rows</h2>
 <p>The indexing and boolean filtering operations determine a subset of rows to keep from the original dataset. The <code>.sort_values()</code> method keeps all of the original data but re-orders its rows. It works by giving it one or more variable names. The method sorts the data by the first variable from smallest to largest (or alphabetically for character variables). In the case of ties, the second variable, if given, is used. More variables can be given to further break additional ties. If any ties are not broken by the given variables, the rows in question will retain the order given in the original input dataset. The following block of code provides an example in which we order the dataset first by <code>division</code> and then by <code>pop</code>. We will use column selection to display the columns of the data that are used in the arranging of the rows.</p>
-<div id="8c6abdfd" class="cell" data-execution_count="14">
+<div id="7c8d15e1" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>cbsa.sort_values([<span class="st">'division'</span>, <span class="st">'pop'</span>])[[<span class="st">'name'</span>, <span class="st">'division'</span>, <span class="st">'pop'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <div>
@@ -2205,7 +2217,7 @@ div.csl-indent {
 </div>
 </div>
 <p>In the new dataset all of the regions in the “East North Central” division come up first as a result of this division being first alphabetically. Within each group, the items are sorted from the lowest to highest population. Any ordering can be reversed (i.e., from the highest to the lowest value) by setting the <code>ascending</code> parameter to <code>False</code>. Below is an example that repeats the sorting above, but this time in descending order of population.</p>
-<div id="d4a6f443" class="cell" data-execution_count="15">
+<div id="525ae5f8" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>cbsa.sort_values([<span class="st">'division'</span>, <span class="st">'pop'</span>], ascending<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>])[[<span class="st">'name'</span>, <span class="st">'division'</span>, <span class="st">'pop'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <div>
@@ -2295,7 +2307,7 @@ div.csl-indent {
 </div>
 </div>
 <p>In the result here, “Chicago” has been placed at the top of the dataset, followed by “Detroit” and “Cincinnati”. These are the three largest regions in the “East North Central” division of the United States. A particularly useful application of this kind of sorting with <code>.sort_values()</code> is to pair it with <code>.head()</code> or <code>.iloc[]</code>. Below, for example, is the code to select the 30 regions in our dataset that have the largest population.</p>
-<div id="e0011940" class="cell" data-execution_count="16">
+<div id="c1f25551" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cbsa.sort_values(<span class="st">'pop'</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This is the code that we used to create the smaller version of the <code>cbsa</code> dataset that was used throughout Chapter 2. As we can see, putting these operations together offers a powerful way to explore our data.</p>
@@ -2304,14 +2316,14 @@ div.csl-indent {
 <h2 data-number="3.6" class="anchored" data-anchor-id="group-by-and-aggregation"><span class="header-section-number">3.6</span> Group By and Aggregation</h2>
 <p>The two operations, aggregation and <code>.groupby()</code>, are often used in sequence to create interesting new summarized versions of a dataset. We will start with aggregation operations. These functions collapse the rows of a DataFrame using summary functions. To apply aggregation requires specifying exactly how the data should be summarized and in terms of which columns the summary should be done.</p>
 <p>As with every operation, we start by taking a dataset and applying an aggregation method. We need to specify which aggregation function to use, such as <code>.mean()</code>, <code>.min()</code>, <code>.max()</code>, <code>.sum()</code>, or <code>.count()</code>. An example will help illustrate how this works. The code below computes the mean (in other words, average) population in each of the CBSA regions.</p>
-<div id="10d79e59" class="cell" data-execution_count="17">
+<div id="4b9165e2" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cbsa[<span class="st">'pop'</span>].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>np.float64(0.3379417838427948)</code></pre>
 </div>
 </div>
 <p>From the output, we see that the average CBSA region has around 0.33 million residents. We are not constrained to computing just one summary at once, however. We can compute multiple summaries using the <code>.agg()</code> method. To do this, we can pass a dictionary specifying which aggregation functions to apply to which columns. For example, here we compute the mean value of the household median income, the sum of the population across all regions, the maximum median age, and a total count of the number of rows.</p>
-<div id="23bba779" class="cell" data-execution_count="18">
+<div id="857fb486" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>cbsa.agg({</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'hh_income_median'</span>: <span class="st">'mean'</span>,</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'pop'</span>: <span class="st">'sum'</span>, </span>
@@ -2331,7 +2343,7 @@ dtype: float64</code></pre>
 </div>
 <p>Summarizing the dataset to a single set of values can be useful for understanding the general trends in a dataset or highlighting outliers. However, the real power of aggregation comes when we pair it with the <code>.groupby()</code> method. This will allow us to produce summaries within one or more grouping variables in our dataset.</p>
 <p>The <code>.groupby()</code> method is a special kind of data operation. The method takes one or more names of variables in the dataset and creates a special grouped object that allows subsequent operations to be applied separately for each group. It makes no direct, visible changes to the dataset and is used only to change the way that other data operations treat the dataset. For example, when we use the <code>.groupby()</code> method, subsequent uses of aggregation functions will produce a summary that describes the properties of variables within the variable used for grouping. The variable name(s) placed inside of the <code>.groupby()</code> method indicate which variable(s) should be used for the groups. For example, we recompute the summary from the previous code block, but this time group the data by the division.</p>
-<div id="5ce1f1f7" class="cell" data-execution_count="19">
+<div id="0495abc1" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>(cbsa.groupby(<span class="st">'division'</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    .agg({<span class="st">'hh_income_median'</span>: <span class="st">'mean'</span>,</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>          <span class="st">'pop'</span>: <span class="st">'sum'</span>,</span>
@@ -2437,7 +2449,7 @@ dtype: float64</code></pre>
 <section id="geometries-for-summaries" class="level2" data-number="3.7">
 <h2 data-number="3.7" class="anchored" data-anchor-id="geometries-for-summaries"><span class="header-section-number">3.7</span> Geometries for Summaries</h2>
 <p>We can use summarized datasets to produce new data visualizations. For example, consider summarizing the household median income and average age for each division of the country. We can take this data and construct a scatter plot that shows the average median income and average median age for each division, along with informative labels. Code to produce the visualization is given below.</p>
-<div id="b638260b" class="cell" data-execution_count="20">
+<div id="3cf9e124" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>summary_data <span class="op">=</span> (cbsa.groupby(<span class="st">'division'</span>)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    .agg({<span class="st">'hh_income_median'</span>: <span class="st">'mean'</span>,</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>          <span class="st">'pop'</span>: <span class="st">'mean'</span>,</span>
@@ -2456,14 +2468,14 @@ dtype: float64</code></pre>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="03_verbs_files/figure-html/cell-21-output-1.png" width="672" height="480" class="figure-img"></p>
+<p><a href="03_verbs_files/figure-html/cell-21-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Plot showing the average household median income and average median age based on the geographic division using data from the core-based statistical areas in the as reported by the 2021 American community survey."><img src="03_verbs_files/figure-html/cell-21-output-1.png" width="672" height="480" alt="Plot showing the average household median income and average median age based on the geographic division using data from the core-based statistical areas in the as reported by the 2021 American community survey." class="figure-img"></a></p>
 <figcaption>Plot showing the average household median income and average median age based on the geographic division using data from the core-based statistical areas in the as reported by the 2021 American community survey.</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>Scatter plots are often useful for displaying summarized information. The <code>geom_col</code> geometry introduced in the previous chapter is also useful, particularly when combined with counting operations. If we want to create a bar plot that shows the distribution of the total number of rows associated with each category, we can do this by combining the group by and aggregation functions with a plot that uses <code>geom_col</code>. Below is an example that counts the total number of CBSA regions in each division.</p>
-<div id="95a9138c" class="cell" data-execution_count="21">
+<div id="902e75e1" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>division_counts <span class="op">=</span> (cbsa.groupby(<span class="st">'division'</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    .size()</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">'n'</span>))</span>
@@ -2473,7 +2485,7 @@ dtype: float64</code></pre>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="03_verbs_files/figure-html/cell-22-output-1.png" width="672" height="480" class="figure-img"></p>
+<p><a href="03_verbs_files/figure-html/cell-22-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Bar plot showing the number of core-based statistical areas found in each division of the United States."><img src="03_verbs_files/figure-html/cell-22-output-1.png" width="672" height="480" alt="Bar plot showing the number of core-based statistical areas found in each division of the United States." class="figure-img"></a></p>
 <figcaption>Bar plot showing the number of core-based statistical areas found in each division of the United States.</figcaption>
 </figure>
 </div>
@@ -2483,7 +2495,7 @@ dtype: float64</code></pre>
 <div id="fig-img-verbs" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-img-verbs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="img/diagram_verbs.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;3.1: Visual descriptions of the six data verbs intrduced in this chapter."><img src="img/diagram_verbs.png" class="img-fluid figure-img"></a>
+<a href="img/diagram_verbs.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;3.1: Visual descriptions of the six data verbs intrduced in this chapter."><img src="img/diagram_verbs.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-img-verbs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3.1: Visual descriptions of the six data verbs intrduced in this chapter.
@@ -2495,7 +2507,7 @@ Figure&nbsp;3.1: Visual descriptions of the six data verbs intrduced in this cha
 <h2 data-number="3.8" class="anchored" data-anchor-id="assign"><span class="header-section-number">3.8</span> Assign</h2>
 <p>The final core <strong>pandas</strong> operation that we will look at is the <code>.assign()</code> method. It is used to create a new variable in our dataset based on other variables that are already present. Similar to aggregation functions, this method works by specifying the name of the variable we want to create followed by the code that describes how to construct the variable in terms of the rest of the data.</p>
 <p>For an example of using <code>.assign()</code>, consider converting the population of each region from the millions given in the dataset into a new variable that is in terms of hundreds of thousands. This involves multiplying the population variable by <code>10</code>. In the code below, we use the assign method to create a new variable named <code>pop_100k</code> that is defined as 10 times the <code>pop</code> variable. We will use column selection to highlight the variables that are involved in the calculation.</p>
-<div id="804a6841" class="cell" data-execution_count="22">
+<div id="8c4845cd" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>cbsa.assign(pop_100k<span class="op">=</span>cbsa[<span class="st">'pop'</span>] <span class="op">*</span> <span class="dv">10</span>)[[<span class="st">'name'</span>, <span class="st">'pop'</span>, <span class="st">'pop_100k'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <div>
@@ -2587,7 +2599,7 @@ Figure&nbsp;3.1: Visual descriptions of the six data verbs intrduced in this cha
 <p>Notice that there is a new variable named <code>pop_100k</code>. This new variable was added as the last column in the dataset, but we have rearranged the ordering using column selection. We can also modify an existing column in the dataset by using the name of an existing variable, or by direct assignment with the bracket notation. In this case the position of the variable within the DataFrame does not change.</p>
 <p>The assign method itself has a relatively straightforward syntax. The main challenge is knowing how to apply and chain together the various transformations that are useful within an analysis. Let’s see some common types of operations that will be useful in subsequent applications.</p>
 <p>Many of the uses for creating new variables involve assigning one value when a set of conditions is true and another if the conditions are false. For example, consider creating a new character variable called <code>region_size</code> based on the population of each region. We might classify a region as being “large” if it has more than 7 million people and “small” otherwise. In order to create a variable like this, we need the function <code>np.where()</code>. The <code>np.where()</code> function has three parts: a TRUE/FALSE condition, the value to use when the condition is true, and the value to use when it is false. Below is an example showing the construction of the new variable <code>region_size</code>, where we have selected the relevant variables.</p>
-<div id="579d2c32" class="cell" data-execution_count="23">
+<div id="a64efdaf" class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>(cbsa.assign(region_size<span class="op">=</span>np.where(cbsa[<span class="st">'pop'</span>] <span class="op">&gt;</span> <span class="dv">7</span>, <span class="st">'large'</span>, <span class="st">'small'</span>))</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">'name'</span>, <span class="st">'pop'</span>, <span class="st">'region_size'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="19">
@@ -2679,7 +2691,7 @@ Figure&nbsp;3.1: Visual descriptions of the six data verbs intrduced in this cha
 </div>
 <p>Looking at the first several rows of data, we see that there are five regions classified as large, with all of the others classified as small. This classification can be used just like any other character variable. For example, we could group by it and then see summary statistics broken out by small and large regions. Or, we could build a plot where the small and large regions have different colors.</p>
 <p>The <code>np.where()</code> function can be used to produce any number of categories by using it multiple times. Let’s modify our region size variable to now have five categories: “huge” (over 7 million), “large” (2-7 million), and “medium” (between 1-2 million), “small” (0.3 to 1 million), and the remainder “tiny”. There are several different ways to get to the same result. One of the best and easiest to understand is to start by assigning a default value and then changing the value of the new variable in sequence. For example, below is a code block that creates the new categories and then summarizes the data based on the categories. We have replaced the variable name <code>region_size</code> with <code>rs</code> in order to make sure the code fits easily on the page.</p>
-<div id="f619c983" class="cell" data-execution_count="24">
+<div id="d956de9d" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> (cbsa.assign(rs<span class="op">=</span><span class="st">'default'</span>)</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    .assign(rs<span class="op">=</span><span class="kw">lambda</span> x: np.where(x[<span class="st">'pop'</span>] <span class="op">&gt;</span> <span class="dv">7</span>, <span class="st">'huge'</span>, x[<span class="st">'rs'</span>]))</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    .assign(rs<span class="op">=</span><span class="kw">lambda</span> x: np.where(x[<span class="st">'pop'</span>].between(<span class="dv">2</span>, <span class="dv">7</span>), <span class="st">'large'</span>, x[<span class="st">'rs'</span>]))</span>
@@ -2760,7 +2772,7 @@ Figure&nbsp;3.1: Visual descriptions of the six data verbs intrduced in this cha
 <p>We may wonder why we created a “default” value for the variable <code>rs</code>. It would have been one less line of code to set the default value to “tiny” and remove the final assign function. The reason for the approach above is three-fold. First, it’s easier to understand what the code is doing in its current format because each condition (“huge”, “large”, “medium”, “small”, and “tiny”) is explicitly coded. Secondly, it creates a nice check on our code and data. If we find a row of the output that still has the value “default” we will know that there is a problem somewhere. Finally, the code above will more safely handle the issues with missing values, an issue that we will return to in future chapters.</p>
 <p>Another reason to create new variables is to handle the formatting of character variables such as <code>quad</code> and <code>division</code> in our <code>cbsa</code> dataset. Pandas has a special data type called a <em>categorical</em> that is specifically designed to handle character variables with a defined set of categories. It is typically not necessary to store data as categorical during most operations, but it can be useful to create a categorical variable just prior to creating a data visualization or model. From the perspective of data analysis, the biggest difference between regular string columns and categorical columns is that a categorical column has a default order of its unique values, called the <em>category order</em>. Creating categorical variables allows us to change the ordering of categories within visualizations and models. As we have seen, these by default are ordered alphabetically for string variables, but will be done in the order specified by the category levels in the case of a categorical variable.</p>
 <p>One way to produce a categorical variable with a given order is to first sort the data in the desired order, then create the categorical variable using the unique values in that order. Combining this with the <code>.sort_values()</code> method provides a lot of control over how categories become ordered. In the code below, for example, we recreate the previous bar plot, but this time arranges the categories and then forces the categories to be in the order specified in the data.</p>
-<div id="376cd4a7" class="cell" data-execution_count="25">
+<div id="3f993a7c" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>division_counts_ordered <span class="op">=</span> (cbsa.groupby(<span class="st">'division'</span>)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    .size()</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">'n'</span>)</span>
@@ -2777,7 +2789,7 @@ Figure&nbsp;3.1: Visual descriptions of the six data verbs intrduced in this cha
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="03_verbs_files/figure-html/cell-26-output-1.png" width="672" height="480" class="figure-img"></p>
+<p><a href="03_verbs_files/figure-html/cell-26-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Plot showing the number of core-based statistical areas found in each division of the United States. Here, the categories are ordered by their counts."><img src="03_verbs_files/figure-html/cell-26-output-1.png" width="672" height="480" alt="Plot showing the number of core-based statistical areas found in each division of the United States. Here, the categories are ordered by their counts." class="figure-img"></a></p>
 <figcaption>Plot showing the number of core-based statistical areas found in each division of the United States. Here, the categories are ordered by their counts.</figcaption>
 </figure>
 </div>

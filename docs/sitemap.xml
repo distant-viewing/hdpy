@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://distant-viewing.github.io/hdpy/index.html</loc>
-    <lastmod>2025-07-29T21:22:21.294Z</lastmod>
+    <lastmod>2025-07-30T08:28:13.553Z</lastmod>
   </url>
   <url>
     <loc>https://distant-viewing.github.io/hdpy/01_intro.html</loc>
@@ -30,7 +30,7 @@
   </url>
   <url>
     <loc>https://distant-viewing.github.io/hdpy/07_network_data.html</loc>
-    <lastmod>2025-07-29T21:29:47.718Z</lastmod>
+    <lastmod>2025-07-29T21:33:57.214Z</lastmod>
   </url>
   <url>
     <loc>https://distant-viewing.github.io/hdpy/08_temporal_data.html</loc>
@@ -45,35 +45,43 @@
     <lastmod>2025-07-29T20:29:14.906Z</lastmod>
   </url>
   <url>
-    <loc>https://distant-viewing.github.io/hdpy/11_inference.html</loc>
-    <lastmod>2025-07-29T20:45:50.852Z</lastmod>
+    <loc>https://distant-viewing.github.io/hdpy/11_audio_data.html</loc>
+    <lastmod>2025-07-30T08:19:07.702Z</lastmod>
   </url>
   <url>
-    <loc>https://distant-viewing.github.io/hdpy/12_supervised.html</loc>
-    <lastmod>2025-07-29T20:46:02.419Z</lastmod>
+    <loc>https://distant-viewing.github.io/hdpy/12_movingimage_data.html</loc>
+    <lastmod>2025-07-30T08:19:59.682Z</lastmod>
   </url>
   <url>
-    <loc>https://distant-viewing.github.io/hdpy/13_unsupervised.html</loc>
-    <lastmod>2025-07-29T20:46:11.680Z</lastmod>
+    <loc>https://distant-viewing.github.io/hdpy/13_inference.html</loc>
+    <lastmod>2025-07-30T08:20:11.136Z</lastmod>
   </url>
   <url>
-    <loc>https://distant-viewing.github.io/hdpy/14_deeplearning.html</loc>
-    <lastmod>2025-07-29T20:46:19.100Z</lastmod>
+    <loc>https://distant-viewing.github.io/hdpy/14_supervised.html</loc>
+    <lastmod>2025-07-30T08:20:14.332Z</lastmod>
   </url>
   <url>
-    <loc>https://distant-viewing.github.io/hdpy/15_transformers.html</loc>
-    <lastmod>2025-07-29T20:46:28.184Z</lastmod>
+    <loc>https://distant-viewing.github.io/hdpy/15_unsupervised.html</loc>
+    <lastmod>2025-07-30T08:20:17.763Z</lastmod>
   </url>
   <url>
-    <loc>https://distant-viewing.github.io/hdpy/16_program.html</loc>
-    <lastmod>2025-07-29T20:44:47.198Z</lastmod>
+    <loc>https://distant-viewing.github.io/hdpy/16_deeplearning.html</loc>
+    <lastmod>2025-07-30T08:20:21.021Z</lastmod>
   </url>
   <url>
-    <loc>https://distant-viewing.github.io/hdpy/17_jsonxml.html</loc>
-    <lastmod>2025-07-29T20:50:19.767Z</lastmod>
+    <loc>https://distant-viewing.github.io/hdpy/17_transformers.html</loc>
+    <lastmod>2025-07-30T08:20:24.393Z</lastmod>
   </url>
   <url>
-    <loc>https://distant-viewing.github.io/hdpy/18_databases.html</loc>
-    <lastmod>2025-07-29T20:50:25.590Z</lastmod>
+    <loc>https://distant-viewing.github.io/hdpy/18_program.html</loc>
+    <lastmod>2025-07-30T08:20:27.787Z</lastmod>
+  </url>
+  <url>
+    <loc>https://distant-viewing.github.io/hdpy/19_jsonxml.html</loc>
+    <lastmod>2025-07-30T08:20:31.087Z</lastmod>
+  </url>
+  <url>
+    <loc>https://distant-viewing.github.io/hdpy/20_databases.html</loc>
+    <lastmod>2025-07-30T08:20:35.131Z</lastmod>
   </url>
 </urlset>

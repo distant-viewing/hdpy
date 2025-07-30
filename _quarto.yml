@@ -22,6 +22,7 @@ book:
 
   chapters:
     - index.qmd
+
     - part: "Part I: Core"
       chapters:
         - 01_intro.qmd
@@ -29,6 +30,7 @@ book:
         - 03_verbs.qmd
         - 04_combine.qmd
         - 05_collect.qmd
+
     - part: "Part II: Data Types"
       chapters:
         - 06_textual_data.qmd
@@ -36,18 +38,22 @@ book:
         - 08_temporal_data.qmd
         - 09_spatial_data.qmd
         - 10_image_data.qmd
+        - 11_audio_data.qmd
+        - 12_movingimage_data.qmd
+
     - part: "Part III: Models"
       chapters:
-        - 11_inference.qmd
-        - 12_supervised.qmd
-        - 13_unsupervised.qmd
-        - 14_deeplearning.qmd
-        - 15_transformers.qmd
+        - 13_inference.qmd
+        - 14_supervised.qmd
+        - 15_unsupervised.qmd
+        - 16_deeplearning.qmd
+        - 17_transformers.qmd
+
     - part: "Part IV: Programming"
       chapters:
-        - 16_program.qmd
-        - 17_jsonxml.qmd
-        - 18_databases.qmd
+        - 18_program.qmd
+        - 19_jsonxml.qmd
+        - 20_databases.qmd
 
 bibliography: refs.bib
 csl: journal-of-combinatorics.csl
@@ -62,3 +68,4 @@ format:
     
     author-meta: "Taylor Arnold and Lauren Tilton"
     callout-appearance: simple
+    lightbox: true
