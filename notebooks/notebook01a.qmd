@@ -1,0 +1,23 @@
+This is the first notebook that we will be using this semester. The idea is just
+to have something to show (hopefully! how easy it is to get up and running in
+Python using Colab. In the cell below, run the expression:
+
+```{python}
+1 + 1
+```
+
+
+
+```{python}
+mynum = 3 + 5
+```
+
+
+```{python}
+mynum + 1
+```
+
+
+```{python}
+import numpy as np
+```
