@@ -17,11 +17,11 @@ It prioritizes studying data directly in order to generate hypotheses
 and ascertain general trends prior to, and often in lieu of, formal
 statistical modeling. The growth in both data volume and complexity has
 further increased the need for a careful application of these exploratory
-techniques. In the intervening 40 years, techniques for EDA have enjoyed great
+techniques. In the intervening years, techniques for EDA have enjoyed great
 popularity within statistics, computer science, and many other data-driven
 fields and professions.
 
-The histories of the R programming language and EDA are deeply entwined.
+The histories of data programming and EDA are deeply entwined.
 Concurrent with Tukey's development of EDA, Rick Becker, John Chambers, and
 Allan Wilks of Bell Labs began developing software designed specifically
 for statistical computing. By 1980, the 'S' language was
@@ -31,42 +31,32 @@ popular series of books and updates, including 'New S' and 'S-Plus'
 In the early 1990s, Ross Ihaka and Robert Gentleman produced a fully open-source
 implementation of S called 'R'. It is called 'R' for it is both the
 "previous letter in the alphabet" and the shared initial in the authors' names.
-Their implementation has become the de-facto tool in the field of statistics and
-is often cited as being amongst the Top-20 used programming languages in the
-world. 
-Without the interactive console and flexible graphics engine of a language such
-as R, modern data analysis techniques would be largely intractable. Conversely,
-without the tools of EDA, R would likely still have been a welcome
-simplification to programming in lower-level languages, but would have played a
-far less pivotal role in the development of applied statistics.
+Their implementation became the de-facto tool in the field of statistics. More
+recently, many of the best ideas from R have been extended to other general
+purpose programming languages such as Python and JavaScript.
 
 ## Data Science Ecosystem
 
-While R pioneered many concepts in statistical computing and EDA, these ideas have been 
-successfully adopted and extended by the Python programming language through a rich
-ecosystem of data science libraries. Python, originally created by Guido van Rossum 
-in 1991, has evolved into one of the most popular programming languages for data analysis,
-machine learning, and scientific computing.
+The methods of EDA ideas have been successfully adopted and extended by the
+Python programming language through a rich ecosystem of data science libraries.
+Python, originally created by Guido van Rossum  in 1991, has evolved into one of
+the most popular programming languages for data analysis, machine learning, and
+scientific computing. **Pandas**, developed by Wes McKinney starting in 2008,
+brought R-like data structures and manipulation capabilities to Python 
+[@mckinney2022python]. **Matplotlib** and later **Seaborn** provided
+comprehensive plotting capabilities, while **plotnine** specifically
+implemented the grammar of graphics approach pioneered by **ggplot2** in R.
+More recently, **polars** has emerged as a high-performance alternative to
+pandas for large-scale data manipulation.
 
-The core concepts developed for EDA in R—interactive data manipulation, powerful
-visualization capabilities, and seamless integration between analysis steps—have been
-implemented in Python through several key libraries. **Pandas**, developed by Wes McKinney
-starting in 2008, brought R-like data structures and manipulation capabilities to Python
-[@mckinney2022python]. **Matplotlib** and later **Seaborn** provided comprehensive plotting
-capabilities, while **plotnine** specifically implemented the grammar of graphics
-approach pioneered by **ggplot2** in R. More recently, **Polars** has emerged as a
-high-performance alternative to pandas for large-scale data manipulation.
-
-This Python ecosystem maintains the same philosophy that made R successful for EDA:
-prioritizing interactive exploration, readable code, and the ability to seamlessly
-move between data manipulation, visualization, and analysis. The historical context
-of EDA's development in R underscores the motivation for
-studying these concepts in Python as well. We see this book as contributing to
-efforts to bring new communities to learn from and to help shape data analysis
-by offering the humanities and humanistic social sciences powerful tools for
-data-driven inquiry. A visual summary of the steps of EDA are shown in Fig. 1.1. We will
-see that the core chapters in this text map onto the steps outlined in the
-diagram.
+This Python ecosystem maintains the philosophy behind EDA:
+prioritizing interactive exploration, readable code, and the ability to
+seamlessly move between data manipulation, visualization, and analysis.
+We see this book as contributing to efforts to bring new communities to learn
+from and to help shape data analysis by offering the humanities and humanistic
+social sciences powerful tools for data-driven inquiry. A visual summary of
+the steps of EDA are shown in Fig. 1.1. We will see that the core chapters
+in this text map onto the steps outlined in the diagram.
 
 ## Setup
 
@@ -75,52 +65,39 @@ the majority of readers will eventually want to follow along with the code and
 examples that are given throughout the text. The first step in doing so is to
 obtain a working copy of Python with the necessary data science libraries. 
 
-We recommend installing Python through the Anaconda distribution, which includes
-Python along with many of the most commonly used data science packages:
-[https://www.anaconda.com/download](https://www.anaconda.com/download). Anaconda provides download instructions
-according to a user's operating system (i.e., Mac, Windows, Linux). Alternative installation
-methods exist for advanced users, including Miniconda for a lighter installation or
-installing Python directly and managing packages separately. We make no
-assumptions throughout this text regarding which operating system or method of
-obtaining Python readers have chosen. In the rare cases where differences
-exist based on these options, they will be explicitly addressed.
+For readers new to programming, we recommend gettings started by using Google
+Colab. It gives free access to a working Python session with no setup required.
+For users comfortable with the command-line, the [uv]() library is extremely
+powerful and reduces many of the pain-points that other methods of setting up
+Python can have.
 
-For working with Python code, we recommend using either Jupyter notebooks or an
-integrated development environment (IDE). **Jupyter Lab** or **Jupyter notebooks**
-provide an excellent interactive environment for data analysis and are included with
-Anaconda. Alternatively, **VS Code** with the Python extension or **PyCharm** provide
-full-featured IDE experiences. We will show examples using Jupyter notebooks, which
-provide a convenient way of running Python code and seeing the output in a single interface.
-
-In addition to the Python software, walking through the examples in this text requires
-access to the datasets we explore. Care has been taken to ensure that these are
-all in the public domain so as to make it easy for us to redistribute
-to readers. The materials and download instructions can be found at 
-[https://humanitiesdata.org/](https://humanitiesdata.org/). A complete copy of the
-code from the book is also provided to make replicating (and extending) the
-results as easy as possible.
+In addition to the Python software, walking through the examples in this text
+requires access to the datasets we explore. Care has been taken to ensure that
+these are all in the public domain so as to make it easy for us to redistribut
+to readers. The materials and download instructions can be downloaded through
+the associated notebooks at the start of each chapter.
 
 A major selling point of Python is its extensive collection of user-contributed
-libraries, available through the Python Package Index (PyPI). Details of how to install
-packages are included in the supplemental materials. Specifically, the supplemental materials
-have a document called `setup.md` or a `requirements.txt` file. These provide instructions
-for installing all the packages that are needed throughout this book using either
-`pip` or `conda`. Like Python itself, all the packages used here are free and open-source
-software, thanks to a robust community dedicated to developing and expanding Python's
-data science capabilities.
+libraries, available through the Python Package Index (PyPI). Details of how to
+install packages are included in the supplemental materials, as well as through
+examples in the notebooks. Like Python itself, all the
+packages used here are free and open-source software, thanks to a robust
+community dedicated to developing and expanding Python's data science
+capabilities.
 
 As mentioned in the preface, we make heavy use in this text of several key
 Python packages: **pandas** for data manipulation, **plotnine** for visualization
-using the grammar of graphics, **numpy** for numerical computing, and **matplotlib**
-for additional plotting capabilities. We may also use specialized packages like
-**scipy** for statistical functions and **scikit-learn** for machine learning tasks.
+using the grammar of graphics, **numpy** for numerical computing, and
+**matplotlib** for additional plotting capabilities. We may also use
+specialized packages like **scipy** for statistical functions and
+**scikit-learn** for machine learning tasks.
 
 Learning to program is hard and invariably questions and issues will arise
 in the process (even the most experienced users require help with surprisingly
 high frequency). As a first source of help, searching a question or error
-message online will often pull up one of the many third-party question and
-answer sites, such as [http://stackoverflow.com/](http://stackoverflow.com/), which are heavily
-frequented by new and advanced Python users alike. If we cannot find an immediate
+message in an search engine or chat-based generative AI software
+will often pull up a solution directly related to your question.
+If we cannot find an immediate
 answer to a question, the next best step is to find some local, in-person
 help. While we have done our best with this static text to explain the 
 concepts for working with Python, nothing beats talking to a real-life person.
@@ -141,9 +118,12 @@ We include the exact same code that will be printed in
 the book. We have used Jupyter notebooks (with an `.ipynb`
 extension) to store this code, with a file corresponding to each chapter
 in the text. Jupyter notebooks are an excellent choice for data analysis
-because they allow us to mix code, visualizations, and explanations within the same
-file [@perez2007ipython]. In fact, the entire data science workflow—from initial
-exploration through final presentation—can be contained within a single notebook.
+because they allow us to mix code, visualizations, and explanations within the
+same file [@perez2007ipython]. In fact, the entire data science workflow—from
+initial exploration through final presentation—can be contained within a single
+notebook. Furthermore, Jupyter notebooks can be directly executed from Google
+Colab, making it possible to do the associated notebooks directly through a 
+one-click link.
 
 The Jupyter environment offers a convenient format for viewing and
 editing notebooks. When we open a Jupyter notebook, we see an interface
@@ -151,29 +131,23 @@ with cells that can contain either code or markdown text. Running a code cell
 executes the Python code and displays the output directly below the cell.
 This interactive approach is ideal for exploratory data analysis because we
 can experiment with different approaches and immediately see the results.
-
 Looking at a Jupyter notebook, we'll see that it consists of cells that contain
 either code or formatted text (markdown). Code cells have a gray background
 and can be executed by clicking the run button or pressing Shift+Enter.
 When we run code to read or create a new dataset, we can examine the data by
-simply typing the variable name in a cell, or by using methods like `.head()`
-or `.info()` to get summary information.
-
-As with any digital file, it is a good idea to save the notebook frequently.
-Jupyter notebooks save both the code and the output, including plots and tables.
-If we would like to share our results, we can export the notebook to various
-formats including HTML, PDF, or even convert it to a Python script.
+simply typing the variable name in a cell.
 
 ## Running Python Code
 
 Now, let's see some examples of how to run Python code. In this book, we
-will show snippets of Python code and the output. Though, know that we should think of each
-of the snippets as occurring inside of a code cell in a Jupyter notebook.
-In one of its most basic forms, Python can be used as a fancy
+will show snippets of Python code and the output. Though, know that we should
+think of each of the snippets as occurring inside of a code cell in a Jupyter
+notebook. In one of its most basic forms, Python can be used as a fancy
 calculator. We can add 1 and 1 by typing `1+1` into a code cell.
 Running the cell will display the output (`2`) below.
-In the book, we will write this code and output using a black box with the Python code written
-inside of it. Any output will be shown below. An example is given below.
+In the book, we will write this code and output using a black box with the Python
+code written inside of it. Any output will be shown below. An example is
+given below.
 
 ```{python}
 1 + 1
@@ -223,26 +197,27 @@ are fixed) and `input1` and `input2` are the values that we will assign
 to them. The number of arguments is not always two, however. There may be any
 number of arguments, including zero. Also, there may be additional optional
 arguments that have default values that can be modified. Let us look at an
-example function: `range`. This function returns a sequence of numbers. We
-can give the function a starting point and an ending point.
+example function: `round`. This function returns a rounded version of a number.
+We can give the function a single number, which returns the nearest integer to
+it. For example, here is the rounded value of π:
 
 ```{python}
-list(range(1, 101))
+round(3.14159)
 ```
 
-The function returns a sequence of numbers starting from 1 and ending at
-100 (note that the end point is exclusive in Python). We used `list()`
-to convert the range object to a list so we can see all the values. In
-addition to specifying arguments
-by name, we can also pass arguments by position. When specifying arguments by
-position we need to know and use the default ordering of the arguments. Below
-is an example of another equivalent way to write the code to produce a sequence
-of integers from 1 to 100, this time using a different approach with numpy.
+The function has an additional optional parameter giving the number of significant
+digits. So, for example, this will round π instead to 2 digits:
 
 ```{python}
-#| eval: false
-import numpy as np
-np.arange(1, 101)
+round(3.14159, 2)
+```
+
+An alternative way to call the same function in the same way is to use
+*named arguments*, where the values of the two inputs are given by name rather
+than position:
+
+```{python}
+round(number=3.14159, ndigits=2)
 ```
 
 How did we know the inputs to each function and what they do? In this
@@ -255,21 +230,12 @@ a question mark after the function name.
 
 ```{python}
 #| eval: false
-help(range)
-# or in Jupyter: range?
+help(round)
+# or in Jupyter: round?
 ```
 
 Many Python libraries also have extensive online documentation. For example,
 pandas has comprehensive documentation at [https://pandas.pydata.org/docs/](https://pandas.pydata.org/docs/).
-
-As shown in the documentation, the `range` function also has an optional step argument
-that controls the spacing between each of the numbers. By default the step
-is equal to 1, but we can change it to create sequences with different intervals.
-For example, below are the even numbers between 2 and 20.
-
-```{python}
-list(range(2, 21, 2))
-```
 
 We will learn how to use numerous functions in the coming chapters, each of
 which will help us in exploring and understanding data. In order to do this,
@@ -298,12 +264,12 @@ section.
 
 A larger version of this dataset, with more regions and variables, is
 included in the book's supplemental materials as a comma separated value (CSV)
-file. We will make
-extensive use of this dataset in the following chapters as a common example
-for creating visualizations and performing data manipulation. In order to read in the
-dataset we use the function `pd.read_csv()` from the **pandas** package [@pandas].
-In order make the functions from **pandas** available, we need to import it.
-We will use the standard convention of importing pandas as `pd` and numpy as `np`.
+file. We will make extensive use of this dataset in the following chapters as a
+common example for creating visualizations and performing data manipulation. In
+order to read in the dataset we use the function `pd.read_csv()` from the
+**pandas** package [@pandas]. In order make the functions from **pandas**
+available, we need to import it. We will use the standard convention of importing
+pandas as `pd` and numpy as `np`.
 
 ```{python}
 import pandas as pd
@@ -328,13 +294,24 @@ Notice that the display shows that there are a total of 934 rows and
 and 13 variables. Only the first few and last few observations are shown in the
 output, along with information about the shape of the DataFrame.
 We can use various methods to explore the data, such as `cbsa.head()` to see
-the first few rows, `cbsa.info()` to get information about the data types,
-or `cbsa.describe()` to get summary statistics.
+the first few rows. For example, the method `cbsa.describe()` will given
+additional summary statistics about the numerical variables.
+
+```{python}
+cbsa.describe()
+```
+
+The method `cbsa.info()` will give information about the data types in each
+column.
+
+```{python}
+cbsa.info()
+```
 
 The data types shown by pandas tell us the
 types of data stored in each column. The type `object` typically indicates
-text data (strings), such as the `name`, `quad` (quadrant), and `division` columns.
-String data can consist of any sequence of
+text data (strings), such as the `name`, `quad` (quadrant), and `division`
+columns. String data can consist of any sequence of
 letters, numbers, spaces, and punctuation marks. String variables are
 often used to represent fixed categories, such as the quadrant and
 division of each CBSA region. They can also provide unique identifiers 
@@ -362,10 +339,7 @@ Chapter 11 (lists and logical values).
 
 Throughout this book, we will use multiple datasets to illustrate different
 concepts and show how each approach can be used across multiple application
-domains. We draw on data that animates humanities inquiry in areas such as
-American Studies, 
-history, literary studies, and visual culture studies. 
-While we will briefly reintroduce new datasets as they appear, for
+domains. While we will briefly reintroduce new datasets as they appear, for
 readers making their way selectively through the text, we offer
 a somewhat more detailed description of the main datasets that we will use in this section.
 
@@ -462,11 +436,12 @@ follow the following guidelines throughout this book (based on PEP 8, Python's
 official style guide):
 
 1. one space before and after an equals sign and around operators
-2. one space after a comma, but no space before a comma
-3. one space around mathematical operations (such as `+` and `*`)
-4. if a line of code becomes too long, split it across multiple lines with
+2. except: no spaces around the equals sign in a function argument
+3. one space after a comma, but no space before a comma
+4. one space around mathematical operations (such as `+` and `*`)
+5. if a line of code becomes too long, split it across multiple lines with
 proper indentation (typically 4 spaces)
-5. use lowercase with underscores for variable names (snake_case)
+6. use lowercase with underscores for variable names (snake_case)
 
 We have found it makes our life a lot easier if we use these rules right from the
 start and whenever we are writing Python code.
@@ -478,7 +453,8 @@ on the main material. These include references for further study, additional
 Python packages, and other suggested methods that may be of interest to the study
 of each specific type of humanities data.
 
-In this chapter, we will mention a few standard Python references that might be useful
+In this chapter, we will mention a few standard Python references that might
+be useful
 to use in parallel or in sequence with our text. The classic introduction to the
 Python language is *Learning Python* by Mark Lutz [@lutz2013learning]. For those
 specifically interested in data science applications, *Python for Data Analysis*

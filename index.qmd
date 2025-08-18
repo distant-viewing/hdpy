@@ -16,10 +16,7 @@ approach that should be useful to anyone looking to learn how to
 explore rich datasets with the Python programming language.
 
 The authors use this site for teaching courses in data science and the
-digital humanities. Unlike the physical book, this website will be
-continually expanded and updated over time. We currently have this
-version of the text password protected though hope to eventually
-open it to the public. Please use the menu on the left (or above
+digital humanities. Please use the menu on the left (or above
 on the mobile site) to navigate the text. If you would like to follow
 along, please see the instructions in the setup section for getting
 Python and all of the datasets installed on your machine. As always,

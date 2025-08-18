@@ -397,7 +397,7 @@ div.csl-indent {
 <section id="spatial-points" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="spatial-points"><span class="header-section-number">9.2</span> Spatial Points</h2>
 <p>As a starting point, we will begin by working again with the CBSA dataset that we used in the introductory chapters. A reminder that CBSA stands for community based statistical areas, which are regions defined by the U.S. Office of Management and Budget. They are characterized by social and economic ties rather than political boundaries. While we did not make use of it at the time, this dataset does include spatial information about each region given by the longitude and latitude coordinates at the center of each CBSA region. Let’s read the dataset into Python again, focusing on the spatial information contained in the fourth and fifth columns.</p>
-<div id="13c1072d" class="cell" data-execution_count="2">
+<div id="a2e610f2" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cbsa <span class="op">=</span> pd.read_csv(<span class="st">"data/acs_cbsa.csv"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cbsa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
@@ -608,7 +608,7 @@ div.csl-indent {
 </div>
 </div>
 <p>What can we do with this spatial information? The longitude and latitude are stored as numbers. There is nothing stopping us from plotting them directly in a visualization. This would result in a plot that shows the spatial extent of the regions and could be roughly identified as having the same shape that we see in familiar maps of the United States. This approach is a nice starting point. If we were dealing with data from a smaller geographic region, as we will see in later sections, this kind of scatter plot can actually be a fine base to a spatial visualization. In the case of the United States, we can do better by turning this into a special kind of object specifically designed to store geospatial information. To do this, we make use of geopandas to create a GeoDataFrame from our regular DataFrame. We convert the longitude and latitude columns into Point geometries and set the coordinate reference system (CRS) to 4326, which indicates that these are “raw” longitude and latitude values.</p>
-<div id="2148d43c" class="cell" data-execution_count="3">
+<div id="eafaa314" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> shapely.geometry <span class="im">import</span> Point</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -840,7 +840,7 @@ div.csl-indent {
 </div>
 <p>The output object <code>cbsa_geo</code> is now a special kind of DataFrame called a GeoDataFrame that includes more specific information about the spatial data attached to each observation in addition to the standard information that we are familiar with in a tabular dataset. Printing the <code>cbsa_geo</code> data shows how this object differs from other DataFrames we have used in this book. There is a special column called <code>geometry</code> that has the spatial information attached to it.</p>
 <p>One of the benefits of the spatially enhanced version of a dataset is that it allows us to create spatial plots using geopandas’ built-in plotting functionality or using plotnine with spatial awareness. We can create a basic spatial plot using geopandas’ <code>.plot()</code> method:</p>
-<div id="92fce858" class="cell" data-execution_count="4">
+<div id="11fcba66" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic spatial plot using geopandas</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>cbsa_geo.plot(ax<span class="op">=</span>ax, markersize<span class="op">=</span><span class="dv">5</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
@@ -857,7 +857,7 @@ div.csl-indent {
 <p>The output shows the spatial distribution of CBSA centers across the United States. As we have seen with other plots, such as when working with temporal data in Chap. 8, geopandas automatically handles the coordinate system and creates appropriate axis labels. One somewhat unique thing about spatial plots is that we often don’t need to explicitly set x and y coordinates because they are inferred from the spatial information. However, we can still modify other aesthetic properties such as changing the color and size of the points.</p>
 <p>One important operation that we can perform on spatial data before plotting it is to change the projection of the points. Projections create a better representation of the curved earth on a flat plot based on the region of the world that we are looking at. To change the projection, we can use the <code>.to_crs()</code> method. The method takes one argument, a CRS identifier giving the projection. Above, we already saw the 4326 code to indicate that our input projection was in degrees longitude and latitude.</p>
 <p>A powerful aspect of spatial analysis is working with coordinate reference systems. Each CRS represents points on the earth in terms of two numbers. This allows us to adjust our projection such as selecting a Mercator or Albers projection. A better projection when working with the entire United States is the CRS code 5069, a Conus Albers centered on the continental United States. We can plot the data using this projection:</p>
-<div id="76a39399" class="cell" data-execution_count="5">
+<div id="4a707cf7" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform to better projection for US</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cbsa_projected <span class="op">=</span> cbsa_geo.to_crs(<span class="st">'EPSG:5069'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -876,7 +876,7 @@ div.csl-indent {
 </div>
 <p>The output shows the spatial points plot using the updated CRS code. Notice that the lines of longitude and latitude are no longer straight when we overlay coordinate grids. They curve, much like they would if we were looking at a round globe and spun it around to center our vision on the United States. In order to find a good CRS code for a spatial dataset, we need to look up the CRS codes in an index. One such free service can be found at <a href="http://epsg.io">epsg.io</a>. Just search the broad political terms in the vicinity of the points to find recommended options. Usually searching for the country of our data will suffice. For countries with larger geographic scope such the United States, Canada, Russia, or China, we may need to narrow down our search to a city or region.</p>
 <p>We can also add text labels to our spatial plots. Let’s add labels for the most populous CBSA regions. We’ll filter to only show regions with at least one million people and focus on the continental United States:</p>
-<div id="71426172" class="cell" data-execution_count="6">
+<div id="f50de8a6" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for large CBSAs in continental US</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>large_cbsas <span class="op">=</span> (cbsa_projected</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"quad != 'O' and pop &gt;= 1"</span>))</span>
@@ -907,7 +907,7 @@ div.csl-indent {
 <section id="polygons" class="level2" data-number="9.3">
 <h2 data-number="9.3" class="anchored" data-anchor-id="polygons"><span class="header-section-number">9.3</span> Polygons</h2>
 <p>Polygons are the way that we represent areas on a map. Spatial data can associate regions (i.e.&nbsp;polygons) with each row rather than a single point. It is less likely that we will create this type of spatial data directly. Instead, we usually read polygon data directly from a file that is already designed to store spatial information. The file type we will use is called GeoJSON. Geopandas can read GeoJSON files (and many other geospatial formats like ESRI shapefiles) using the <code>read_file()</code> function. Below, let’s read in a dataset with polygons describing the shape of each state in the United States.</p>
-<div id="475db08d" class="cell" data-execution_count="7">
+<div id="aedbbc78" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read state polygons from GeoJSON</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>state <span class="op">=</span> gpd.read_file(<span class="st">"data/geo_state.geojson"</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>state</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1284,7 +1284,7 @@ div.csl-indent {
 </div>
 <p>In the output above, we can see that this object already has the spatial information attached to it. Unlike our previous dataset, the geometry type here consists of polygons and multipolygons, to indicate that each row is associated with a region rather than an individual point. The prefix “multi” is used to indicate that some of our observations may be associated with multiple separate polygons. For example, Hawaii requires at least one polygon for each of the islands that make up the state. As with spatial points, we can create a spatial plot of the regions using geopandas plotting methods.</p>
 <p>As with the spatial points, it will be helpful to transform our data before plotting it. In fact, it is often much more clear with polygons how distorted the default projection makes everything. Below is the code to produce a plot of the states as regions:</p>
-<div id="9302aef2" class="cell" data-execution_count="8">
+<div id="5736715b" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform to better projection and plot</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>state_projected <span class="op">=</span> state.to_crs(<span class="st">'EPSG:5069'</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1302,7 +1302,7 @@ div.csl-indent {
 </div>
 </div>
 <p>We can also add labels to show state abbreviations at the center of each polygon:</p>
-<div id="b5172aaa" class="cell" data-execution_count="9">
+<div id="ff1fac95" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot states with labels, excluding Alaska and Hawaii for cleaner display</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>continental_states <span class="op">=</span> state_projected[<span class="op">~</span>state_projected[<span class="st">'abb'</span>].isin([<span class="st">'AK'</span>, <span class="st">'HI'</span>])]</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1329,7 +1329,7 @@ div.csl-indent {
 </div>
 </div>
 <p>As we have been calling them throughout this text, the CBSA regions are, in fact, regions. The United States Census Bureau provides shape files that show the actual regions defined for each CBSA. Let’s read this data and see how we can visualize the regions themselves:</p>
-<div id="84a9f993" class="cell" data-execution_count="10">
+<div id="fe455003" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read CBSA regions</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>cbsa_reg <span class="op">=</span> gpd.read_file(<span class="st">"data/acs_cbsa_geo.geojson"</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1450,7 +1450,7 @@ div.csl-indent {
 </div>
 </div>
 <p>The structure of this dataset is similar to the dataset of state regions, with a geometry column containing the region shapes and metadata indicating that these are polygons and multipolygons. A common technique with spatial information is to encode a variable of interest using the color of each polygon. Since both the x- and y-coordinates are used to represent where a region is, color becomes the aesthetic that holds the metric of interest that would usually go on one of the primary axes. For example, consider trying to show the population of each of the CBSA regions. We can do this by setting the color based on the population variable. We’ll also add the state boundaries as a reference:</p>
-<div id="48948877" class="cell" data-execution_count="11">
+<div id="4d83d678" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter to continental US and transform projections</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>cbsa_continental <span class="op">=</span> cbsa_reg[cbsa_reg[<span class="st">'quad'</span>] <span class="op">!=</span> <span class="st">'O'</span>].to_crs(<span class="st">'EPSG:5069'</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>states_continental <span class="op">=</span> state_projected[<span class="op">~</span>state_projected[<span class="st">'abb'</span>].isin([<span class="st">'AK'</span>, <span class="st">'HI'</span>])]</span>
@@ -1476,7 +1476,7 @@ div.csl-indent {
 </div>
 </div>
 <p>The spatial part of the plot works quite well, showing the coverage of the CBSA regions over the country. It is possible to pick out the largest regions on the map corresponding to New York, Los Angeles, and Chicago. However, the default color scale is fairly difficult to interpret because the population values are highly skewed. We can improve this by using a logarithmic scale and a better color scheme:</p>
-<div id="904b005f" class="cell" data-execution_count="12">
+<div id="99425bd0" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">10</span>))</span>
@@ -1508,7 +1508,7 @@ div.csl-indent {
 <section id="spatial-metrics" class="level2" data-number="9.4">
 <h2 data-number="9.4" class="anchored" data-anchor-id="spatial-metrics"><span class="header-section-number">9.4</span> Spatial Metrics</h2>
 <p>Now that we have seen how to read in spatial polygon data and plot it, we can begin to show how we can analyze the spatial data beyond visualizations. Geopandas provides a number of methods that we can apply to GeoDataFrames to compute summary information about each of the geometries. For example, the <code>.area</code> property will return the total area of each of the polygons associated with every row of a spatial dataset. When working with a projected coordinate system (like our Albers projection), the area will be in the units of that projection (typically square meters). To convert to square kilometers, we can divide by one million. Let’s compute the area of each CBSA region in square kilometers and then arrange in ascending order to see the smallest regions by area:</p>
-<div id="14fa1b32" class="cell" data-execution_count="13">
+<div id="5e0a2f1c" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute areas (ensuring we're in a projected CRS for accurate area calculation)</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cbsa_with_area <span class="op">=</span> cbsa_continental.copy()</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>cbsa_with_area[<span class="st">'area_km2'</span>] <span class="op">=</span> cbsa_with_area.geometry.area <span class="op">/</span> <span class="fl">1e6</span></span>
@@ -1602,7 +1602,7 @@ div.csl-indent {
 </div>
 </div>
 <p>Another useful metric that we can compute from spatial polygon objects are the <em>centroids</em>, points at the geographic center of each region. It can be useful if we want to treat the polygon as a single point or add a label such as a placename in the center of the region. Computing this is straightforward using the <code>.centroid</code> property:</p>
-<div id="50407a52" class="cell" data-execution_count="14">
+<div id="1383ad08" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute centroids</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>centroids <span class="op">=</span> cbsa_continental.geometry.centroid</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1701,7 +1701,7 @@ div.csl-indent {
 </div>
 <p>These are the exact centroids that were pre-populated in the <code>cbsa</code> dataset that we started with at the beginning of the chapter. In fact, we computed those centroids when building the dataset for the book directly from the polygons provided by the United States Census Bureau. Centroids are very helpful for many kinds of analysis. If the regions are fairly small in area compared to the total area of analysis, it may be easier and more straightforward to treat each observation as a point rather than as a complex region.</p>
 <p>In addition to points and polygons, it is also possible to have spatial data that represents spatial lines. These can define, for example, roads, metro lines, railways, rivers, or the path of a moving object such as a hurricane. As an example, let’s read in a dataset of roads from New York City:</p>
-<div id="b162bfa1" class="cell" data-execution_count="15">
+<div id="f27ada87" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read road network data</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>roads <span class="op">=</span> gpd.read_file(<span class="st">"data/geo_ny_roads.geojson"</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>roads</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1781,7 +1781,7 @@ div.csl-indent {
 </div>
 </div>
 <p>One useful application of spatial lines is to add them on top of other spatial data visualizations to better understand where different regions are located. This is particularly useful when looking at regions within a city where it can be hard to understand how to match the plot up with our understanding of the city’s geography without lines or other markers to orient ourselves. We can also compute metrics associated with lines. For example, the <code>.length</code> property functions similarly to the <code>.area</code> property to give the length of each line. Let’s apply it to find the longest streets in New York City, grouping together parts of streets that have the same name:</p>
-<div id="c9a42ca2" class="cell" data-execution_count="16">
+<div id="45117f72" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute road lengths and find longest streets</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>roads_with_length <span class="op">=</span> roads.copy()</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>roads_with_length[<span class="st">'length'</span>] <span class="op">=</span> roads_with_length.geometry.length</span>
@@ -1817,7 +1817,7 @@ Name: length, dtype: float64</code></pre>
 <h2 data-number="9.5" class="anchored" data-anchor-id="spatial-joins"><span class="header-section-number">9.5</span> Spatial Joins</h2>
 <p>One of the most common operations that we can perform on spatial data is to combine information between two different GeoDataFrames. For example, we might want to associate the points in one dataset with the polygons that they are contained within another dataset. Or we might want to filter one set of polygons based on those that intersect another set of polygons. For example, let’s say we have a dataset of historical battles or birth places, we can then associate them with modern political boundaries. Self-joins are also common with spatial data, such as in applications that need to find the distances between all pairs of points within a dataset of spatial points.</p>
 <p>Before looking at joining spatial datasets by the spatial information, it will be useful to see what happens if we do a traditional table join with spatial information. Both the <code>cbsa</code> and <code>cbsa_geo</code> datasets contain a column called <code>geoid</code> that can be used to combine them together using an ordinary <code>merge()</code>, or any other table join function. Because GeoDataFrames are just DataFrames with extra information, performing a key-based join works, but we need to be careful about maintaining the spatial properties:</p>
-<div id="36062927" class="cell" data-execution_count="17">
+<div id="aebdec47" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Traditional key-based join with spatial data</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>cbsa_subset <span class="op">=</span> cbsa[[<span class="st">'geoid'</span>, <span class="st">'name'</span>]].copy()  <span class="co"># Remove duplicate columns</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>merged_spatial <span class="op">=</span> cbsa_geo.merge(cbsa_subset, on<span class="op">=</span><span class="st">'geoid'</span>, suffixes<span class="op">=</span>(<span class="st">''</span>, <span class="st">'_extra'</span>))</span>
@@ -1833,7 +1833,7 @@ Is GeoDataFrame: True</code></pre>
 </div>
 <p>Notice that the output maintains its GeoDataFrame properties because we started with a GeoDataFrame and merged regular DataFrame information into it.</p>
 <p>Now, we can move onto joins that function by considering the spatial relationships between two datasets. Geopandas provides a function <code>sjoin()</code> (spatial join) to combine two datasets based on their spatial relationships. For example, we can join the spatial points <code>cbsa_geo</code> dataset with the spatial polygons <code>state</code> to find which state each CBSA center point falls within:</p>
-<div id="525ea8e5" class="cell" data-execution_count="18">
+<div id="727ae3f8" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join: find which state each CBSA center is in</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># First ensure both datasets have the same CRS</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>cbsa_geo_proj <span class="op">=</span> cbsa_geo.to_crs(<span class="st">'EPSG:5069'</span>)</span>
@@ -1927,7 +1927,7 @@ Is GeoDataFrame: True</code></pre>
 </div>
 <p>As confirmation of our join, we see that each CBSA region is now associated with the state it falls within. The New York City CBSA region might be associated with New Jersey if its center point falls there, even though the metropolitan area spans multiple states.</p>
 <p>The spatial join supports different types of spatial relationships through the <code>predicate</code> parameter. For example, we can use <code>'touches'</code> to find geometries that share a border. Let’s use this to join the state dataset to itself by finding all pairs of states that border one another:</p>
-<div id="ad8944be" class="cell" data-execution_count="19">
+<div id="cfc0af85" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find states that border each other</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>bordering_states <span class="op">=</span> gpd.sjoin(state_proj, state_proj, how<span class="op">=</span><span class="st">'inner'</span>, predicate<span class="op">=</span><span class="st">'touches'</span>)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2031,7 +2031,7 @@ Is GeoDataFrame: True</code></pre>
 </div>
 </div>
 <p>Another useful spatial relationship is finding points that are within a certain distance of each other. We can compute distances between spatial objects using various methods:</p>
-<div id="12d90c95" class="cell" data-execution_count="20">
+<div id="fdd73a92" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find distances between CBSA centers</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># For demonstration, let's find the closest CBSA to each one</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2108,7 +2108,7 @@ Is GeoDataFrame: True</code></pre>
 </div>
 </div>
 <p>We can also find the farthest pairs of points by looking at the maximum distances:</p>
-<div id="b529b083" class="cell" data-execution_count="21">
+<div id="f2a3c852" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the farthest CBSA pairs from our sample</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>farthest_pairs <span class="op">=</span> []</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, row <span class="kw">in</span> cbsa_sample.iterrows():</span>
@@ -2179,7 +2179,7 @@ Is GeoDataFrame: True</code></pre>
 <h2 data-number="9.6" class="anchored" data-anchor-id="raster-maps"><span class="header-section-number">9.6</span> Raster Maps</h2>
 <p>We will finish this chapter by considering a completely different way to visualize spatial points. In the introduction, we mentioned that it is possible to build a spatial visualization of points by plotting the longitude and latitude on a scatterplot. If the points are in a relatively small region of the world not too close to either the North or South Pole, the projection of the data will not significantly affect the visualization. However, it can be difficult to understand a scatter plot of longitude and latitude pairs without polygons or lines to orient ourselves. One solution is to plot the points on top of a fixed map. One nice aspect of this approach is that we can grab map images from the entire world from a single source without having to hunt down polygon or line shapefiles for each application <span class="citation" data-cites="nie2011design">[<a href="#ref-nie2011design" role="doc-biblioref">4</a>]</span>. Raster maps are composed of pixels; they are images.</p>
 <p>In Python, we can use the <strong>contextily</strong> library to add basemap tiles to our spatial plots. This library can fetch map tiles from various providers and overlay them with our spatial data:</p>
-<div id="f2c68ece" class="cell" data-execution_count="22">
+<div id="6cf2b6f1" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> contextily <span class="im">as</span> cx</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># For demonstration, let's use a dataset with smaller geographic scope</span></span>
@@ -2673,7 +2673,7 @@ Is GeoDataFrame: True</code></pre>
 </div>
 </div>
 <p>We can plot these cities on top of a map without needing complex setup. Contextily works well with geopandas to automatically grab map tiles that correspond to our data extent:</p>
-<div id="0b73703f" class="cell" data-execution_count="23">
+<div id="f5e8aa27" class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create GeoDataFrame from French cities</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>french_geo <span class="op">=</span> gpd.GeoDataFrame(</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    french_city, </span>
@@ -2705,7 +2705,7 @@ Is GeoDataFrame: True</code></pre>
 </div>
 </div>
 <p>We can also use different basemap providers and styles. Contextily supports many different tile sources:</p>
-<div id="73193ad0" class="cell" data-execution_count="24">
+<div id="8e44134f" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot with a different basemap style</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2732,7 +2732,7 @@ Is GeoDataFrame: True</code></pre>
 </div>
 </div>
 <p>For more complex visualizations, we can work with line data. Let’s demonstrate with a Paris metro dataset:</p>
-<div id="dfdf9724" class="cell" data-execution_count="25">
+<div id="d2ed9a6d" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Paris metro data</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>paris_metro <span class="op">=</span> pd.read_csv(<span class="st">"data/geo_paris_metro.csv"</span>)</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>paris_metro</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2872,7 +2872,7 @@ Is GeoDataFrame: True</code></pre>
 </div>
 </div>
 <p>We can create a more complex visualization showing metro lines with their official colors:</p>
-<div id="c9aff9ac" class="cell" data-execution_count="26">
+<div id="7936d982" class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for a few metro lines and create visualization</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>metro_subset <span class="op">=</span> paris_metro[paris_metro[<span class="st">'line'</span>] <span class="op">&lt;=</span> <span class="dv">4</span>].copy()</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2907,7 +2907,7 @@ Is GeoDataFrame: True</code></pre>
 </div>
 </div>
 <p>We can also create faceted plots to show different metro lines separately:</p>
-<div id="702e1ef2" class="cell" data-execution_count="27">
+<div id="48df080f" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create subplots for different metro lines</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">12</span>))</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>axes <span class="op">=</span> axes.flatten()</span>

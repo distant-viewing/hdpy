@@ -928,6 +928,7 @@ the API URL, make the request, parse the response (usually JSON),
 and convert to a structured format.
 
 ```{python}
+#| eval: false
 # Example of building a larger dataset
 def build_author_dataset(author_list, get_content=False):
     """Build a comprehensive dataset of author information."""
