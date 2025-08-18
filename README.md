@@ -1,13 +1,17 @@
-Welcome! 
+These are the main commands to control Quarto within the book:
 
-This is a minimal example of a book based on R Markdown and **bookdown** (https://github.com/rstudio/bookdown). 
+```sh
+source .venv/bin/activate
 
-This template provides a skeleton file structure that you can edit to create your book. 
+quarto preview
+quarto clean
+quarto render
+```
 
-The contents inside the .Rmd files provide some pointers to help you get started, but feel free to also delete the content in each file and start fresh.
+To run the examples, do the following:
 
-Additional resources:
+```sh
+source .venv/bin/activate
 
-The **bookdown** book: https://bookdown.org/yihui/bookdown/
-
-The **bookdown** package reference site: https://pkgs.rstudio.com/bookdown
+quarto render notebook01a.qmd --to html
+```
