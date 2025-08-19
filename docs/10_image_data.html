@@ -398,7 +398,7 @@ div.csl-indent {
 <h2 data-number="10.2" class="anchored" data-anchor-id="loading-images"><span class="header-section-number">10.2</span> Loading Images</h2>
 <p>We will be working with a new dataset in this chapter. Our collection consists of the images taken by the photographic unit of the United States Farm Securities Administration and Office of War Information, commonly called the FSA-OWI. While best known for the over 170 thousand black-and-white images documenting the United States during the Great Depression and World War II, the FSA-OWI also created over sixteen hundred color photographs. Both of these collections are ones that we have worked extensively with in a variety of projects. The color subset is a perfect size to demonstrate the methods in this chapter and, unlike the black-and-white images, will allow us to start with a study of several color-based analyses.</p>
 <p>Our analysis of image data in Python will in many ways follow the pattern seen in the previous chapters. We work to organize our data into structured, tabular datasets that capture information and models about the data. Then, we use the visualization and manipulation approaches in the first five chapters to understand the information in each table. To start, we will load a CSV file into Python that contains metadata about each of the images:</p>
-<div id="07a9acce" class="cell" data-execution_count="2">
+<div id="ce3c5be0" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fsac <span class="op">=</span> pd.read_csv(<span class="st">"data/fsac_metadata.csv.bz2"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>fsac.sample(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
@@ -420,104 +420,104 @@ div.csl-indent {
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1304</td>
-<td>2017878545</td>
+<td data-quarto-table-cell-role="th">223</td>
+<td>2017878254</td>
 <td>1939</td>
-<td>Two women workers are shown capping and inspec...</td>
-<td>828</td>
+<td>Ens[ign] Noressey and Cadet Thenics at the Nav...</td>
+<td>827</td>
 <td>1024</td>
-<td>data/fsac/thm/2017878545.jpg</td>
-<td>data/fsac/med/2017878545.jpg</td>
+<td>data/fsac/thm/2017878254.jpg</td>
+<td>data/fsac/med/2017878254.jpg</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">31</td>
-<td>2017877459</td>
+<td data-quarto-table-cell-role="th">584</td>
+<td>2017877896</td>
 <td>1939</td>
-<td>Planting corn along a river in Tennessee</td>
-<td>1024</td>
-<td>726</td>
-<td>data/fsac/thm/2017877459.jpg</td>
-<td>data/fsac/med/2017877459.jpg</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">906</td>
-<td>2017877475</td>
-<td>1939</td>
-<td>Natchez, Miss.</td>
-<td>1024</td>
+<td>Charlotte Amalie, St. Thomas, Virgin Islands, ...</td>
 <td>725</td>
-<td>data/fsac/thm/2017877475.jpg</td>
-<td>data/fsac/med/2017877475.jpg</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">203</td>
-<td>2017878788</td>
-<td>1939</td>
-<td>Hanna furnaces of the Great Lakes Steel Corpor...</td>
-<td>811</td>
 <td>1024</td>
-<td>data/fsac/thm/2017878788.jpg</td>
-<td>data/fsac/med/2017878788.jpg</td>
+<td>data/fsac/thm/2017877896.jpg</td>
+<td>data/fsac/med/2017877896.jpg</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">245</td>
-<td>2017878798</td>
+<td data-quarto-table-cell-role="th">238</td>
+<td>2017878843</td>
 <td>1939</td>
-<td>Bands of sheep [i.e. cattle] on the Gravelly R...</td>
-<td>804</td>
+<td>Worker at carbon black plant, Sunray, Texas</td>
 <td>1024</td>
-<td>data/fsac/thm/2017878798.jpg</td>
-<td>data/fsac/med/2017878798.jpg</td>
+<td>785</td>
+<td>data/fsac/thm/2017878843.jpg</td>
+<td>data/fsac/med/2017878843.jpg</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">580</td>
-<td>2017877760</td>
+<td data-quarto-table-cell-role="th">406</td>
+<td>2017878477</td>
 <td>1939</td>
-<td>FSA - T[enant] P[urchase] borrower? by his fie...</td>
-<td>721</td>
+<td>One of America's new warships of the air, a mi...</td>
+<td>732</td>
 <td>1024</td>
-<td>data/fsac/thm/2017877760.jpg</td>
-<td>data/fsac/med/2017877760.jpg</td>
+<td>data/fsac/thm/2017878477.jpg</td>
+<td>data/fsac/med/2017878477.jpg</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">683</td>
-<td>2017877799</td>
+<td data-quarto-table-cell-role="th">94</td>
+<td>2017877553</td>
 <td>1939</td>
-<td>Sugar cane land, vicinity of Rio Piedras, Puer...</td>
+<td>Mountaineers and farmers trading mules and hor...</td>
+<td>723</td>
 <td>1024</td>
-<td>729</td>
-<td>data/fsac/thm/2017877799.jpg</td>
-<td>data/fsac/med/2017877799.jpg</td>
+<td>data/fsac/thm/2017877553.jpg</td>
+<td>data/fsac/med/2017877553.jpg</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">820</td>
-<td>2017877519</td>
+<td data-quarto-table-cell-role="th">1401</td>
+<td>2017878040</td>
 <td>1939</td>
-<td>Chopping cotton on rented land near White Plai...</td>
-<td>792</td>
+<td>In the roundhouse at a Chicago and Northwester...</td>
+<td>802</td>
 <td>1024</td>
-<td>data/fsac/thm/2017877519.jpg</td>
-<td>data/fsac/med/2017877519.jpg</td>
+<td>data/fsac/thm/2017878040.jpg</td>
+<td>data/fsac/med/2017878040.jpg</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">436</td>
-<td>2017877612</td>
+<td data-quarto-table-cell-role="th">1471</td>
+<td>2017878082</td>
 <td>1939</td>
-<td>Winner at the Delta County Fair, Colorado</td>
+<td>Indiana Harbor Belt RR, switchman demonstratin...</td>
 <td>1024</td>
-<td>703</td>
-<td>data/fsac/thm/2017877612.jpg</td>
-<td>data/fsac/med/2017877612.jpg</td>
+<td>794</td>
+<td>data/fsac/thm/2017878082.jpg</td>
+<td>data/fsac/med/2017878082.jpg</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">627</td>
-<td>2017878942</td>
+<td data-quarto-table-cell-role="th">656</td>
+<td>2017877865</td>
 <td>1939</td>
-<td>Cultivating sugar cane on the Virgin Islands C...</td>
-<td>710</td>
+<td>Christiansted, St. Croix? Virgin Islands</td>
 <td>1024</td>
-<td>data/fsac/thm/2017878942.jpg</td>
-<td>data/fsac/med/2017878942.jpg</td>
+<td>741</td>
+<td>data/fsac/thm/2017877865.jpg</td>
+<td>data/fsac/med/2017877865.jpg</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1327</td>
+<td>2017878525</td>
+<td>1939</td>
+<td>P-51 ("Mustang") fighter plane in construction...</td>
+<td>824</td>
+<td>1024</td>
+<td>data/fsac/thm/2017878525.jpg</td>
+<td>data/fsac/med/2017878525.jpg</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">761</td>
+<td>2017877446</td>
+<td>1939</td>
+<td>Mountain farm along Skyline Drive, Va.</td>
+<td>720</td>
+<td>1024</td>
+<td>data/fsac/thm/2017877446.jpg</td>
+<td>data/fsac/med/2017877446.jpg</td>
 </tr>
 </tbody>
 </table>
@@ -527,14 +527,14 @@ div.csl-indent {
 </div>
 <p>The metadata includes a unique identifier for each image in the first column. It also contains the year in which the photograph was taken and a short title of the photograph. This table also has the dimensions of the image and columns that have the file path to two versions of each image. One copy is a small thumbnail that will be useful to efficiently create visualizations. The other image is the larger version that we will use for most of the actual analyses. Unlike other data types that we have seen, image data is usually stored as a set of separate files, with one file storing the information about a single image. It is not necessary when working with an image collection to have two versions of each image, but if we are given them, as is this case with this collection, it can be helpful to keep both to speed up the visualization techniques.</p>
 <p>Our work with images in this chapter will use several powerful Python libraries. <strong>PIL (Python Imaging Library)</strong> and <strong>OpenCV</strong> will handle image loading and basic processing. <strong>scikit-image</strong> provides additional image processing capabilities. For computer vision tasks, we’ll use <strong>OpenCV</strong> and potentially <strong>MediaPipe</strong> for more advanced features. <strong>matplotlib</strong> will handle visualization, and we’ll use <strong>numpy</strong> extensively for array operations since images are represented as numerical arrays.</p>
-<div id="bc112be8" class="cell" data-execution_count="3">
+<div id="6787cdd4" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cv2</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> skimage <span class="im">import</span> color</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>As a starting point, we will read a single image into Python and see how it is represented. Python’s PIL library makes this straightforward:</p>
-<div id="14580d4d" class="cell" data-execution_count="4">
+<div id="fb302390" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the first image</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>image_path <span class="op">=</span> fsac[<span class="st">'thm_path'</span>].iloc[<span class="dv">0</span>]</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -555,7 +555,7 @@ Array data type: uint8</code></pre>
 </div>
 </div>
 <p>Image data is represented as one or more rectangular grids of pixels, the smallest identifiable locations of an image. A pixel is defined by a set of three numbers giving the intensity of the red, green, and blue lights needed to represent the color of that part of the image on a digital display. The array that we now have in Python represents our image in pixels. We can see that the thumbnail has dimensions corresponding to height, width, and the usual three color channels for red, green, and blue intensities. Let’s examine the pixel values:</p>
-<div id="a27900e0" class="cell" data-execution_count="5">
+<div id="2059d0ff" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(img_array[:<span class="dv">4</span>, :<span class="dv">4</span>, :])</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Pixel value range: </span><span class="sc">{</span>img_array<span class="sc">.</span><span class="bu">min</span>()<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span>img_array<span class="sc">.</span><span class="bu">max</span>()<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -584,7 +584,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 <p>We see that each pixel intensity is given as a number between 0 and 255 for uint8 images (the most common format). A value of 255 indicates maximum intensity, while 0 indicates no intensity for that color channel.</p>
 <p>Working directly with the array format gives us full control, but for analysis it’s often useful to convert to a tabular format with one row per pixel:</p>
-<div id="d0e03515" class="cell" data-execution_count="6">
+<div id="5d2377a4" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> image_to_dataframe(image_path, image_id<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Convert an image to a DataFrame with one row per pixel."""</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Load image</span></span>
@@ -833,7 +833,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 <p>Notice that the output has one row for each pixel. The first column identifies the image, followed by row and column coordinates, image dimensions, and then the RGB color values. We’ve also computed HSV (Hue, Saturation, Value) representations and hex color codes. Four other derived measurements are provided in the last columns. We will investigate these measurements in the next section.</p>
 <p>Now let’s create a function to process multiple images:</p>
-<div id="622bf0a0" class="cell" data-execution_count="7">
+<div id="21f7be43" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_image_collection(image_paths, image_ids, max_images<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Process a collection of images into a combined pixel DataFrame."""</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> max_images:</span>
@@ -1067,7 +1067,7 @@ Pixel value range: 0 to 255</code></pre>
 <p>The blending of colors is what makes it challenging to summarize raw pixel intensities. An image that has a large average green intensity could have a lot of green in it. But, if the green is always blended with red, it could be primarily yellow. Or, if all three intensities are high, the image might only have a large amount of white. In order to work around this issue, it is useful to transform the pixel intensities into a new set of numbers that more closely represent the way that we think about color working. We will work with the HSV representation, which stands for hue, saturation, and value.</p>
 <p>The <em>value</em> of a pixel represents how bright or intense the pixel is. The <em>saturation</em> measures the richness of a color, with zero being a shade of grey and one being a “pure” color. The <em>hue</em> corresponds to information about where a pixel sits in the rainbow of colors, roughly corresponding to a color wheel.</p>
 <p>Let’s visualize the pixel colors from our sample images:</p>
-<div id="bdbcfa34" class="cell" data-execution_count="8">
+<div id="93013af4" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create HSV visualization for the first few images</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>sample_images <span class="op">=</span> pix_sample[pix_sample[<span class="st">'image_id'</span>].isin(pix_sample[<span class="st">'image_id'</span>].unique()[:<span class="dv">6</span>])]</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1090,7 +1090,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>Let’s also look at the actual images for reference:</p>
-<div id="d0a63c88" class="cell" data-execution_count="9">
+<div id="194bb2eb" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the actual images</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">10</span>))</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>axes <span class="op">=</span> axes.flatten()</span>
@@ -1113,7 +1113,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>Now we can use the HSV measurements to analyze our image collection. Let’s find the darkest images by computing average brightness (value):</p>
-<div id="4c519d81" class="cell" data-execution_count="10">
+<div id="78c62074" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute average brightness for each image</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>brightness_summary <span class="op">=</span> (pix_sample</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'image_id'</span>)</span>
@@ -1210,7 +1210,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>Similarly, we can look at images with highly saturated colors:</p>
-<div id="aa903ddd" class="cell" data-execution_count="11">
+<div id="7f422d8e" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find images with saturated colors</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>saturation_summary <span class="op">=</span> (pix_sample</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'saturation &gt; 0.8 and value &gt; 0.5'</span>)  <span class="co"># Bright and saturated pixels</span></span>
@@ -1267,7 +1267,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>For hue analysis, we can group similar hues into buckets and analyze color distribution:</p>
-<div id="47d9e810" class="cell" data-execution_count="12">
+<div id="8444f1e7" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analyze_dominant_hues(pixel_df, n_hue_bins<span class="op">=</span><span class="dv">12</span>):</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Analyze dominant hues in images."""</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Filter to sufficiently bright and saturated pixels</span></span>
@@ -1404,7 +1404,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>Let’s create a more comprehensive analysis with a larger sample:</p>
-<div id="87bbb163" class="cell" data-execution_count="13">
+<div id="d6f4e5e4" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Process more images for better analysis (first 50 to keep manageable)</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Processing first 50 images for comprehensive analysis..."</span>)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>pix_extended <span class="op">=</span> process_image_collection(</span>
@@ -1959,7 +1959,7 @@ Pixel value range: 0 to 255</code></pre>
 <section id="computer-vision-with-opencv" class="level2" data-number="10.4">
 <h2 data-number="10.4" class="anchored" data-anchor-id="computer-vision-with-opencv"><span class="header-section-number">10.4</span> Computer Vision with OpenCV</h2>
 <p>Working with pixel-level data gives us insights into color and basic image properties, but to access higher-level aspects like objects, faces, and poses, we need computer vision algorithms. Python’s OpenCV library provides excellent built-in capabilities for many computer vision tasks.</p>
-<div id="db2be83c" class="cell" data-execution_count="14">
+<div id="ec4e3d4e" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cv2</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> detect_objects_simple(image_path, min_area<span class="op">=</span><span class="dv">1000</span>):</span>
@@ -2017,7 +2017,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>For more sophisticated object detection, we can use pre-trained models. Here’s an example using OpenCV’s DNN module with a pre-trained model:</p>
-<div id="5d7bd81c" class="cell" data-execution_count="15">
+<div id="a11235a9" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> setup_yolo_detection():</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Set up YOLO object detection (if model files are available)."""</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
@@ -2069,7 +2069,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>Let’s create a visualization function to show detection results:</p>
-<div id="34f6bc67" class="cell" data-execution_count="16">
+<div id="c5a1eb45" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> visualize_detections(image_path, detections, detection_type<span class="op">=</span><span class="st">"objects"</span>):</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Visualize detection results on an image."""</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Load image</span></span>
@@ -2113,7 +2113,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>For pose detection, we can use MediaPipe (if available) or create a simplified version:</p>
-<div id="219a9a0f" class="cell" data-execution_count="17">
+<div id="9ab408eb" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> detect_keypoints_simple(image_path):</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simple keypoint detection using corner detection."""</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Load image</span></span>
@@ -2167,7 +2167,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>Let’s create a comprehensive computer vision analysis pipeline:</p>
-<div id="51fbb873" class="cell" data-execution_count="18">
+<div id="b8c0ad0b" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analyze_image_collection_cv(image_paths, image_ids, max_images<span class="op">=</span><span class="dv">10</span>):</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Run computer vision analysis on a collection of images."""</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
@@ -2227,15 +2227,15 @@ Pixel value range: 0 to 255</code></pre>
 <pre><code>Processed 2017877351: 1 faces, 3 objects, 100 keypoints</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>[ WARN:0@2.586] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877359.jpg'): can't open/read file: check file path/integrity
-[ WARN:0@2.587] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877451.jpg'): can't open/read file: check file path/integrity
-[ WARN:0@2.587] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877502.jpg'): can't open/read file: check file path/integrity
-[ WARN:0@2.587] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877452.jpg'): can't open/read file: check file path/integrity
-[ WARN:0@2.587] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877453.jpg'): can't open/read file: check file path/integrity
-[ WARN:0@2.587] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877454.jpg'): can't open/read file: check file path/integrity
-[ WARN:0@2.587] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877476.jpg'): can't open/read file: check file path/integrity
-[ WARN:0@2.587] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877477.jpg'): can't open/read file: check file path/integrity
-[ WARN:0@2.587] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877478.jpg'): can't open/read file: check file path/integrity</code></pre>
+<pre><code>[ WARN:0@2.597] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877359.jpg'): can't open/read file: check file path/integrity
+[ WARN:0@2.597] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877451.jpg'): can't open/read file: check file path/integrity
+[ WARN:0@2.597] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877502.jpg'): can't open/read file: check file path/integrity
+[ WARN:0@2.597] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877452.jpg'): can't open/read file: check file path/integrity
+[ WARN:0@2.597] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877453.jpg'): can't open/read file: check file path/integrity
+[ WARN:0@2.597] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877454.jpg'): can't open/read file: check file path/integrity
+[ WARN:0@2.597] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877476.jpg'): can't open/read file: check file path/integrity
+[ WARN:0@2.597] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877477.jpg'): can't open/read file: check file path/integrity
+[ WARN:0@2.597] global loadsave.cpp:268 findDecoder imread_('data/fsac/med/2017877478.jpg'): can't open/read file: check file path/integrity</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <div>
@@ -2273,7 +2273,7 @@ Pixel value range: 0 to 255</code></pre>
 <section id="embeddings-and-similarity" class="level2" data-number="10.5">
 <h2 data-number="10.5" class="anchored" data-anchor-id="embeddings-and-similarity"><span class="header-section-number">10.5</span> Embeddings and Similarity</h2>
 <p>For more sophisticated analysis, we can compute image embeddings using pre-trained deep learning models. These embeddings capture high-level semantic features and can be used for similarity analysis and clustering:</p>
-<div id="d3fbfc53" class="cell" data-execution_count="19">
+<div id="a4813804" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -3312,7 +3312,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>Now let’s apply dimensionality reduction to visualize image similarities:</p>
-<div id="9aa14a6e" class="cell" data-execution_count="20">
+<div id="3d86140a" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare features for PCA</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>feature_columns <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> feature_df.columns <span class="cf">if</span> col <span class="op">!=</span> <span class="st">'image_id'</span>]</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> feature_df[feature_columns].fillna(<span class="dv">0</span>)</span>
@@ -3654,7 +3654,7 @@ Pixel value range: 0 to 255</code></pre>
 </div>
 </div>
 <p>Let’s visualize the PCA results:</p>
-<div id="02cc6b45" class="cell" data-execution_count="21">
+<div id="b808d004" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create PCA visualization with actual images</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">12</span>))</span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>

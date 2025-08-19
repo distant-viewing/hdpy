@@ -5,6 +5,7 @@
 import pandas as pd
 import numpy as np
 from plotnine import *
+import mizani.breaks
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -71,8 +72,6 @@ a scatter plot, with each point on the plot describing one of our metropolitan
 regions, which leads us to use a *point geometry*. Our plot will allow us to
 understand the relationship between city density and rental prices.
 
-![Diagram of how the elements of the grammar of graphics correspond to elements of the code and visualization.](img/diagram_ggplot.png){#fig-img-ggplot .lightbox}
-
 In Python, we need to use some special functions to indicate all of this information
 and to instruct the program to produce a plot. We start by indicating the name
 of the underlying dataset and using it to create a special object called `ggplot`
@@ -88,8 +87,6 @@ using the values described in the previous paragraph is given below.
 #| fig-cap: "Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey."
 (ggplot(cbsa) +
     geom_point(aes(x='density', y='rent_1br_median')))
-
-cbsa[['name', 'quad', 'density', 'rent_1br_median']]
 ```
 
 Running the code above from a Quarto document will show the
@@ -184,11 +181,8 @@ the labels. We could do this in Python by adding the two geometry layers
 (`geom_point` and `geom_text`) one after the other. This will make it more clear
 where on the x-axis each region is associated to, but at the same time will 
 make the names of the cities even more difficult to read. To fix the second
-problem, we will replace the text geometry with a different geometry called
-`geom_text_repel`. It also places labels on the plot, but has special logic that
-avoids intersecting labels. Instead, labels are moved away from the data points
-and connected (when needed) by a line segment. As with the text geometry, the
-text repel geometry requires specifying `x`, `y`, and `label` aesthetics. Below
+problem, we will add options to the text geometry to push the labels up a bit 
+and to make them a bit smaller. Below
 is the code to make both of these modifications.
 
 ```{python}
@@ -201,7 +195,7 @@ import matplotlib.pyplot as plt
 (ggplot(cbsa) +
     geom_point(aes(x='density', y='rent_1br_median')) +
     geom_text(aes(x='density', y='rent_1br_median', label='name'), 
-              nudge_y=50, size=8))
+              nudge_y=20, size=8))
 ```
 
 The output of the plot with the points and text labels shows that we have attempted to
@@ -228,8 +222,6 @@ that allow us to investigate common relationships in the columns of a dataset.
 Other geometries will be discussed throughout the book as the need arises, and
 the full list of geometries can be found in the **plotnine** package's
 documentation.
-
-![Examples of common geometries used in the grammar of graphics.](img/diagram_geoms.png){#fig-img-geoms .lightbox}
 
 For a moment, we will switch gears and look at the food prices dataset, which
 was introduced in the previous chapter. This data contains one row for every
@@ -272,17 +264,18 @@ is most common when showing the counts of different categories, something we
 will see in the next chapter, but can also be used in any situation where a
 numeric value is associated with different categories. To create a
 plot with bars we use the `geom_col` function, providing both `x` and `y` 
-aesthetics. Python will automatically create vertical bars if we have a character
-variable associated with the `x` aesthetic and horizontal bars if we have one
-in the `y` aesthetic. Putting the character variable on the y-axis usually
-makes it easier to read the labels, so we recommend it in most cases. In the
-code block below, we have the commands to create a bar plot of the population
+aesthetics. Python expects the categorical variable to map to x and the 
+numeric one to map to y. However, usually it is easier to read the other way
+around. To address this, we add another layer called `coord_flip()` that flips
+the two axes for us. In the
+code block below, we have the complete set of commands to create a bar plot of the population
 in each region from the CBSA dataset.
 
 ```{python}
 #| fig-cap: "Plot of the population of the largest 30 core-based statistical areas in the United States, showing their population from the 2021 American community survey."
 (ggplot(cbsa) +
-    geom_col(aes(x='pop', y='name')))
+    geom_col(aes(x='name', y='pop')) +
+    coord_flip())
 ```
 
 One of the first things that stands out in the output is that the regions are ordered alphabetically from
@@ -444,8 +437,9 @@ function `scale_y_continuous` is the default for the y-axis. Adding these to
 a plot on their own has no visible effect. However, there are many helpful 
 optional arguments that we can provide to these functions that change the way a
 plot is displayed. Setting `breaks` within one of these scales tells Python the 
-number of labels to put on the axis. Also, making `minor_breaks` equal to
-`None` turns off the minor grid lines. We can set the value `limits` to a pair
+number of labels to put on the axis. Usually we use a helpful function to set
+these, such as `mizani.breaks.breaks_width`.
+We can set the value `limits` to a pair
 of numbers  in order to describe the starting and ending range on a plot. Below
 is the code to produce a plot which shows the
 same data as our original scatter plot, but now with modified grid lines, axis
@@ -455,8 +449,8 @@ labels, and vertical range.
 #| fig-cap: "Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we adjust the standard breaks and limits on the x- and y-axes."
 (ggplot(cbsa) +
     geom_point(aes(x='density', y='rent_1br_median')) +
-    scale_x_continuous(breaks=np.arange(0, 25000, 2500), minor_breaks=None) +
-    scale_y_continuous(limits=(0, 2000)))
+    scale_x_continuous(breaks=mizani.breaks.breaks_width(100)) +
+    scale_y_continuous(breaks=True, limits=(0, 3000)))
 ```
 
 Finally, there are two special scale types that can be useful for working

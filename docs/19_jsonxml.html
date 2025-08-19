@@ -403,7 +403,7 @@ div.csl-indent {
 <p>The case we consider here is where strings fall somewhere in-between the free-form text in Chap. 6 and the structured categories in the opening chapters. In other words, each string might contain structured data that needs to be modified before we can use it in data summaries, visualizations, and models. Understanding how to parse apart raw strings is a key step in learning how to collect and organize large datasets. In this and the following section, we will share several techniques for manipulating strings that we will be able to put to use in cleaning data in the subsequent chapters.</p>
 <p>To illustrate the string manipulation functions presented here, we will again use a dataset created from Wikipedia related to British authors. In the previous examples, we used a relatively small set of 75 authors. Each of the authors was associated with several metadata categories such as the years of birth and death and a category describing the era in which they were active. We created those records manually using the data entry methods described in Chap. 5. The metadata were stored as a CSV file that we then read into Python and then joined with the dataset that had the textual documents. Wikipedia has a much larger list of authors that we could use to create a much larger set of pages. As we will see below, creating the documents for this larger set is relatively straightforward and just involves a longer loop through the set of pages. Grabbing the metadata for each author, however, is a bit more challenging because we want to try to do this automatically rather than entering the thousands of records manually.</p>
 <p>We have saved one of the intermediate steps in grabbing the larger set of Wikipedia pages as a text file, with one row for each author. (We will show later how to generate this file.) We can load this dataset into Python by reading the file line by line:</p>
-<div id="1d34bb62" class="cell" data-execution_count="2">
+<div id="6b92d854" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read lines from file</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"data/wiki_uk_long_meta.txt"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> f:</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    wiki <span class="op">=</span> f.read().strip().split(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>)</span>
@@ -425,7 +425,7 @@ div.csl-indent {
 </div>
 </div>
 <p>Already we see that there is quite a lot of interesting metadata in this list. However, it is not sufficiently structured to immediately turn it into a tabular dataset with all of the features as individual columns. As a first step, we will create a DataFrame that contains the text as its single column:</p>
-<div id="d2078d3e" class="cell" data-execution_count="3">
+<div id="24e55cae" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>wiki_df <span class="op">=</span> pd.DataFrame({<span class="st">'desc'</span>: wiki})</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>wiki_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
@@ -492,7 +492,7 @@ div.csl-indent {
 </div>
 </div>
 <p>In order to extract the structured information from this text, we need to use specific functions for working with strings. Python has excellent built-in string methods and the <strong>re</strong> module for regular expressions. All string objects in Python have many useful methods. For example, we can find the length of each string:</p>
-<div id="837f71b9" class="cell" data-execution_count="4">
+<div id="064de620" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add string length column</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>wiki_df[<span class="st">'desc_len'</span>] <span class="op">=</span> wiki_df[<span class="st">'desc'</span>].<span class="bu">str</span>.<span class="bu">len</span>()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>wiki_df[[<span class="st">'desc'</span>, <span class="st">'desc_len'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -572,7 +572,7 @@ div.csl-indent {
 </div>
 </div>
 <p>There are also methods to extract substrings. Python uses zero-based indexing, so the first character is at position 0. We can extract substrings using slice notation:</p>
-<div id="19092658" class="cell" data-execution_count="5">
+<div id="dc892683" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract first three characters</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>wiki_df[<span class="st">'desc_first_three'</span>] <span class="op">=</span> wiki_df[<span class="st">'desc'</span>].<span class="bu">str</span>[:<span class="dv">3</span>]</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>wiki_df[[<span class="st">'desc'</span>, <span class="st">'desc_first_three'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -652,7 +652,7 @@ div.csl-indent {
 </div>
 </div>
 <p>We can also extract from the end of strings using negative indices:</p>
-<div id="13c82539" class="cell" data-execution_count="6">
+<div id="baa3a046" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract last three characters</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>wiki_df[<span class="st">'desc_last_three'</span>] <span class="op">=</span> wiki_df[<span class="st">'desc'</span>].<span class="bu">str</span>[<span class="op">-</span><span class="dv">3</span>:]</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>wiki_df[[<span class="st">'desc_last_three'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -720,7 +720,7 @@ div.csl-indent {
 </div>
 </div>
 <p>There are many other useful string methods for searching and replacing:</p>
-<div id="049bf421" class="cell" data-execution_count="7">
+<div id="e48215c4" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if strings contain specific text</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>wiki_df[<span class="st">'has_and'</span>] <span class="op">=</span> wiki_df[<span class="st">'desc'</span>].<span class="bu">str</span>.contains(<span class="st">'and'</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -823,7 +823,7 @@ div.csl-indent {
 <section id="regular-expressions" class="level2" data-number="19.3">
 <h2 data-number="19.3" class="anchored" data-anchor-id="regular-expressions"><span class="header-section-number">19.3</span> Regular Expressions</h2>
 <p>Python’s <strong>re</strong> module provides powerful regular expression capabilities. A <em>regular expression</em> is a way of describing patterns in strings. The language of regular expressions can become quite complex; here we will focus on a subset of components that are more frequently used for cleaning data.</p>
-<div id="f0fc8e63" class="cell" data-execution_count="8">
+<div id="6c088bd0" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's work with a sample of our data</span></span>
@@ -834,7 +834,7 @@ div.csl-indent {
 </div>
 </div>
 <p>There are several special commands in a regular expression that stand for sets of characters. A period <code>.</code> stands for any character, <code>\w</code> for word characters (letters and numbers), and <code>\W</code> for non-word characters such as spaces. Putting any sequence of characters in square brackets will search for any matching character in the set. If the first term in the brackets is the caret <code>^</code>, this will instead match anything not in the set. There is also a special shorthand, <code>[0-9]</code>, to match any digit. If we want to match one or more consecutive characters, we can use the plus sign (<code>+</code>). Let’s see examples:</p>
-<div id="ffac183f" class="cell" data-execution_count="9">
+<div id="c600f2fa" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract patterns using pandas string methods with regex</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>wiki_sample <span class="op">=</span> wiki_df.head(<span class="dv">10</span>).copy()</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -933,7 +933,7 @@ div.csl-indent {
 </div>
 <p>Two other special regular expression characters are <code>^</code> (start of string) and <code>$</code> (end of string). These are called <em>anchors</em> and can be very useful for grabbing data within a string.</p>
 <p>Now, we have enough tools to try to extract some of the data that is captured inside of the string. To start, at least in the first ten rows, if we extract all of the text up to the parenthesis, we will have the full name of each author. We can do this by finding text that doesn’t include parentheses:</p>
-<div id="a57f319f" class="cell" data-execution_count="10">
+<div id="53f5ecbc" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>wiki_sample[<span class="st">'author_name'</span>] <span class="op">=</span> wiki_sample[<span class="st">'desc'</span>].<span class="bu">str</span>.extract(<span class="vs">r'</span><span class="kw">(</span><span class="pp">[^(]</span><span class="op">+</span><span class="kw">)</span><span class="vs">'</span>, expand<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>wiki_sample[<span class="st">'author_name'</span>] <span class="op">=</span> wiki_sample[<span class="st">'author_name'</span>].<span class="bu">str</span>.strip()</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -997,7 +997,7 @@ div.csl-indent {
 </div>
 </div>
 <p>What if we wanted to extract the last name of each author? This could be useful to create a short name for future plots. We can do this by finding word characters at the end of the author name:</p>
-<div id="4f8eeb65" class="cell" data-execution_count="11">
+<div id="1ed7fa0a" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract last names (last word before parentheses)</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>wiki_sample[<span class="st">'last_name'</span>] <span class="op">=</span> wiki_sample[<span class="st">'author_name'</span>].<span class="bu">str</span>.extract(<span class="vs">r'</span><span class="kw">(</span><span class="pp">[</span><span class="dv">\w</span><span class="pp">.]</span><span class="op">+</span><span class="kw">)</span><span class="dv">$</span><span class="vs">'</span>, expand<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1072,7 +1072,7 @@ div.csl-indent {
 </div>
 </div>
 <p>Now, how about the dates that each author was alive? We can look for four-digit numbers, which should correspond to years:</p>
-<div id="50d3b8ee" class="cell" data-execution_count="12">
+<div id="a445adb0" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract birth and death years</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Find all four-digit numbers (years)</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>years_pattern <span class="op">=</span> <span class="vs">r'</span><span class="kw">(</span><span class="pp">[0-9]</span><span class="op">{4}</span><span class="kw">)</span><span class="vs">'</span></span>
@@ -1174,7 +1174,7 @@ div.csl-indent {
 </div>
 </div>
 <p>We can also extract all occurrences of a pattern using <code>findall</code>:</p>
-<div id="7d7f5570" class="cell" data-execution_count="13">
+<div id="960e8757" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract all vowels from each description</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>wiki_sample[<span class="st">'all_vowels'</span>] <span class="op">=</span> wiki_sample[<span class="st">'desc'</span>].<span class="bu">str</span>.findall(<span class="vs">r'</span><span class="pp">[AEIOUaeiou]</span><span class="vs">'</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1249,7 +1249,7 @@ div.csl-indent {
 </div>
 </div>
 <p>The output shows lists of vowels for each author. This type of structure is called <em>nested</em> data. We can “explode” these lists to create multiple rows per author:</p>
-<div id="6803e426" class="cell" data-execution_count="14">
+<div id="afc44332" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Explode the vowels to create multiple rows</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>vowels_exploded <span class="op">=</span> (wiki_sample[[<span class="st">'author_name'</span>, <span class="st">'all_vowels'</span>]]</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    .explode(<span class="st">'all_vowels'</span>)</span>
@@ -1333,7 +1333,7 @@ div.csl-indent {
 </div>
 </div>
 <p>We can use similar techniques to extract professions. Let’s look for text after the closing parenthesis:</p>
-<div id="dac89db6" class="cell" data-execution_count="15">
+<div id="d98dff39" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>wiki_sample[<span class="st">'professions_raw'</span>] <span class="op">=</span> wiki_sample[<span class="st">'desc'</span>].<span class="bu">str</span>.extract(<span class="vs">r'</span><span class="ch">\)</span><span class="kw">(</span><span class="dv">.</span><span class="op">+</span><span class="kw">)</span><span class="dv">$</span><span class="vs">'</span>, expand<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>wiki_sample[<span class="st">'professions_clean'</span>] <span class="op">=</span> (wiki_sample[<span class="st">'professions_raw'</span>]</span>
@@ -1520,7 +1520,7 @@ div.csl-indent {
 </div>
 </div>
 <p>Let’s see the most common professions:</p>
-<div id="201ca12e" class="cell" data-execution_count="16">
+<div id="ef5c8007" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>profession_counts <span class="op">=</span> (wiki_prof</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'professions'</span>)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    .size()</span>
@@ -1664,7 +1664,7 @@ div.csl-indent {
 <li>an ordered <strong>array</strong> of objects coming from any other type</li>
 </ol>
 <p>Objects are defined by curly braces and arrays are defined with square brackets. The reason that JSON can become complex even with these limited types is that, as in the example above, it is possible to created nested structures using the object and array types. To read a JSON object into Python, we can use the built-in <code>json</code> module:</p>
-<div id="172113ba" class="cell" data-execution_count="17">
+<div id="c8640fc1" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Read JSON file</span></span>
@@ -1679,7 +1679,7 @@ Keys: ['data']</code></pre>
 </div>
 </div>
 <p>The output object <code>obj_json</code> is a Python dictionary. In general, Python turns JSON arrays into lists and objects into dictionaries. Numbers, strings, and Boolean objects become the corresponding Python types. To create a structured dataset from the output, we can use standard Python dictionary and list operations:</p>
-<div id="531d1c25" class="cell" data-execution_count="18">
+<div id="64a2a3da" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract author names</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> [author[<span class="st">'name'</span>] <span class="cf">for</span> author <span class="kw">in</span> obj_json[<span class="st">'data'</span>]]</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Author names: </span><span class="sc">{</span>names<span class="sc">}</span><span class="ss">"</span>)</span>
@@ -1735,7 +1735,7 @@ Keys: ['data']</code></pre>
 </div>
 </div>
 <p>The JSON object also associates each author with a set of professions. JSON naturally handles nested structures. To create a dataset mapping each author to all of their professions, we can use pandas’ explode functionality:</p>
-<div id="8f7ff323" class="cell" data-execution_count="19">
+<div id="ab2edf0e" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create professions dataset</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>prof_data <span class="op">=</span> []</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> author <span class="kw">in</span> obj_json[<span class="st">'data'</span>]:</span>
@@ -1854,7 +1854,7 @@ Keys: ['data']</code></pre>
 <span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">author</span>&gt;</span>
 <span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">root</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Python provides several ways to parse XML. We can use the built-in <code>xml.etree.ElementTree</code> module or the more powerful <code>lxml</code> library:</p>
-<div id="fad7b202" class="cell" data-execution_count="20">
+<div id="2bed0d18" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xml.etree.ElementTree <span class="im">as</span> ET</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Parse XML file</span></span>
@@ -1869,7 +1869,7 @@ Number of authors: 2</code></pre>
 </div>
 </div>
 <p>We can extract data from XML by navigating the tree structure:</p>
-<div id="0683bb9d" class="cell" data-execution_count="21">
+<div id="4a544d3e" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract author information</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>authors_xml <span class="op">=</span> []</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> author <span class="kw">in</span> root.findall(<span class="st">'author'</span>):</span>
@@ -1926,7 +1926,7 @@ Number of authors: 2</code></pre>
 </div>
 </div>
 <p>For professions, we need to handle multiple elements:</p>
-<div id="7b2526fb" class="cell" data-execution_count="22">
+<div id="8ce82664" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract professions</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>prof_xml <span class="op">=</span> []</span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> author <span class="kw">in</span> root.findall(<span class="st">'author'</span>):</span>
@@ -2015,7 +2015,7 @@ Number of authors: 2</code></pre>
 <span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">body</span><span class="dt">&gt;</span></span>
 <span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">html</span><span class="dt">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>For HTML parsing, <strong>BeautifulSoup</strong> is the most popular Python library:</p>
-<div id="71f46adc" class="cell" data-execution_count="23">
+<div id="a2ba7108" class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Parse HTML file</span></span>
@@ -2042,7 +2042,7 @@ Figure&nbsp;19.1: Example display of the British authors HTML file shown in Fire
 </figure>
 </div>
 <p>We can extract information using BeautifulSoup’s methods:</p>
-<div id="b29cfa97" class="cell" data-execution_count="24">
+<div id="1beb0aaf" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract author information from HTML</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>authors_html <span class="op">=</span> []</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2139,7 +2139,7 @@ Figure&nbsp;19.1: Example display of the British authors HTML file shown in Fire
 <section id="xpath-with-lxml" class="level2" data-number="19.6">
 <h2 data-number="19.6" class="anchored" data-anchor-id="xpath-with-lxml"><span class="header-section-number">19.6</span> XPath with lxml</h2>
 <p>For more complex XML/HTML parsing, we can use XPath expressions with the <code>lxml</code> library. XPath is a powerful query language for XML documents:</p>
-<div id="6968c1d5" class="cell" data-execution_count="25">
+<div id="8aedf58c" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lxml <span class="im">import</span> html, etree</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Parse HTML with lxml</span></span>
@@ -2167,7 +2167,7 @@ Birth dates: ['21 April 1816', '25 January 1882']</code></pre>
 </div>
 </div>
 <p>XPath provides very precise control over element selection:</p>
-<div id="a24820c5" class="cell" data-execution_count="26">
+<div id="7984e4ca" class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># More complex XPath queries</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Find all author names (h1 tags within author divs)</span></span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>author_names <span class="op">=</span> doc.xpath(<span class="st">".//div[@class='author']/h1/text()"</span>)</span>
@@ -2195,7 +2195,7 @@ Author 2: Virginia Woolf (born 25 January 1882)</code></pre>
 <p>An <em>application programming interface</em> (API) is a generic term for a specific interface that two computers can communicate across. Most commonly, APIs communicate over the internet using the <em>Hypertext Transfer Protocol</em> (HTTP). HTTP is a set of standards describing how different computers can communicate with one another over the internet. It is how the vast majority of the internet communicates; for example, our web browser uses HTTP to communicate with other websites.</p>
 <p>There are many APIs available online for accessing a variety of different types of data. Often these require first setting up an account with the service. Some APIs require payment for each request, though others offer free access or a free-tier of access for occasional users. Most frequently, data from an API would correspond to some data source which is frequently changing, such as news stories or the weather. Increasingly, though, even static datasets are being put behind an API access rather than allowing a straightforward download of a CSV, JSON, or XML file. Fortunately, it is relatively easy to make and parse API calls from within Python using the <strong>requests</strong> library.</p>
 <p>We will show two types of API calls that can be made with the MediaWiki API that runs behind Wikipedia. This API is particularly nice because not only is it freely available, it does not require any signup or access to run. Anyone can call the API directly and get data related to the various MediaWiki projects:</p>
-<div id="8a1b8126" class="cell" data-execution_count="27">
+<div id="16092b76" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> urllib.parse <span class="im">import</span> urlencode</span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2218,7 +2218,7 @@ URL: https://en.wikipedia.org/w/api.php?action=query&amp;format=json&amp;prop=pa
 </div>
 </div>
 <p>Parse the JSON response:</p>
-<div id="ff271a8b" class="cell" data-execution_count="28">
+<div id="61b6d130" class="cell" data-execution_count="28">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Parse JSON response</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> response.json()</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2243,15 +2243,15 @@ URL: https://en.wikipedia.org/w/api.php?action=query&amp;format=json&amp;prop=pa
 <span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"No pageview data available"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         date  views        doc_id
-0  2025-06-19   1585  Emily Brontë
-1  2025-06-20   1432  Emily Brontë
-2  2025-06-21   1441  Emily Brontë
-3  2025-06-22   1672  Emily Brontë
-4  2025-06-23   1677  Emily Brontë</code></pre>
+0  2025-06-20   1432  Emily Brontë
+1  2025-06-21   1441  Emily Brontë
+2  2025-06-22   1672  Emily Brontë
+3  2025-06-23   1677  Emily Brontë
+4  2025-06-24   1628  Emily Brontë</code></pre>
 </div>
 </div>
 <p>We can create a function to get pageviews for multiple authors:</p>
-<div id="975ecea5" class="cell" data-execution_count="29">
+<div id="ccf1e724" class="cell" data-execution_count="29">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_pageviews(titles_list, max_requests<span class="op">=</span><span class="dv">5</span>):</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Get pageviews for a list of Wikipedia page titles."""</span></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    all_pageviews <span class="op">=</span> []</span>
@@ -2305,32 +2305,32 @@ URL: https://en.wikipedia.org/w/api.php?action=query&amp;format=json&amp;prop=pa
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>Emily Brontë</td>
-<td>2025-06-19</td>
-<td>1585</td>
+<td>2025-06-20</td>
+<td>1432</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>Emily Brontë</td>
-<td>2025-06-20</td>
-<td>1432</td>
+<td>2025-06-21</td>
+<td>1441</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>Emily Brontë</td>
-<td>2025-06-21</td>
-<td>1441</td>
+<td>2025-06-22</td>
+<td>1672</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>Emily Brontë</td>
-<td>2025-06-22</td>
-<td>1672</td>
+<td>2025-06-23</td>
+<td>1677</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>Emily Brontë</td>
-<td>2025-06-23</td>
-<td>1677</td>
+<td>2025-06-24</td>
+<td>1628</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -2341,32 +2341,32 @@ URL: https://en.wikipedia.org/w/api.php?action=query&amp;format=json&amp;prop=pa
 <tr class="odd">
 <td data-quarto-table-cell-role="th">175</td>
 <td>Virginia Woolf</td>
-<td>2025-08-13</td>
-<td>2766</td>
+<td>2025-08-14</td>
+<td>2975</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">176</td>
 <td>Virginia Woolf</td>
-<td>2025-08-14</td>
-<td>2975</td>
+<td>2025-08-15</td>
+<td>2934</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">177</td>
 <td>Virginia Woolf</td>
-<td>2025-08-15</td>
-<td>2934</td>
+<td>2025-08-16</td>
+<td>2919</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">178</td>
 <td>Virginia Woolf</td>
-<td>2025-08-16</td>
-<td>2919</td>
+<td>2025-08-17</td>
+<td>3269</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">179</td>
 <td>Virginia Woolf</td>
-<td>2025-08-17</td>
-<td>3269</td>
+<td>2025-08-18</td>
+<td>3766</td>
 </tr>
 </tbody>
 </table>
@@ -2376,7 +2376,7 @@ URL: https://en.wikipedia.org/w/api.php?action=query&amp;format=json&amp;prop=pa
 </div>
 </div>
 <p>We can also get the actual page content using a different API endpoint:</p>
-<div id="8e5db1c3" class="cell" data-execution_count="30">
+<div id="232444e7" class="cell" data-execution_count="30">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get page content</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_page_content(title):</span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Get the HTML content of a Wikipedia page."""</span></span>
@@ -2438,7 +2438,7 @@ First 10 links:
 </div>
 </div>
 <p>This approach allows us to recreate the datasets used throughout Chaps. 6-8. The specific query parameters for different APIs will vary, but the general pattern remains the same: construct the API URL, make the request, parse the response (usually JSON), and convert to a structured format.</p>
-<div id="1d01cd6b" class="cell" data-execution_count="31">
+<div id="99133cb6" class="cell" data-execution_count="31">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example of building a larger dataset</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_author_dataset(author_list, get_content<span class="op">=</span><span class="va">False</span>):</span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Build a comprehensive dataset of author information."""</span></span>

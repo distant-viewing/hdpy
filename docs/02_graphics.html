@@ -78,7 +78,7 @@ div.csl-indent {
 }</style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -128,9 +128,6 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -397,252 +394,17 @@ div.csl-indent {
 <p>In this chapter, we will learn and use the <strong>plotnine</strong> package for building informative graphics <span class="citation" data-cites="plotnine">[<a href="#ref-plotnine" role="doc-biblioref">1</a>]</span> <span class="citation" data-cites="wilkinson2012grammar">[<a href="#ref-wilkinson2012grammar" role="doc-biblioref">2</a>]</span>. The package makes it easy to build fairly complex graphics in a way that is guided by a general theory of data visualization. The only downside is that, because it is built around a theoretical model rather than many one-off solutions for different tasks, it has a somewhat steeper initial learning curve. The chapter is designed to get us started using the package to make a variety of different data visualizations.</p>
 <p>The core idea of the grammar of graphics is that visualizations are composed of independent <em>layers</em>. The term “grammar” is used to describe visualizations because the theory builds connections between elements of the dataset to elements of a visualization. It builds up complex elements from smaller ones, much like a grammar provides relations between words in order to generate larger phrases and sentences. To describe a specific layer, we need to specify several elements. First, we need to specify the dataset from which data will be taken to construct the plot. Next, we have to specify a set of mappings called <em>aesthetics</em> that describe how elements of the plot are related to columns in our data. For example, we often indicate which column corresponds to the horizontal axis of the plot and which one corresponds to the vertical axis of the plot. It is also possible to describe elements such as color, shape, and size of elements of the plot by associating these quantities with columns in the data. Finally, we need to provide the <em>geometry</em> that will be used in the plot. The geometry describes the kinds of objects that are associated with each row of the data. A common example is the points geometry, which associates a single point with each observation.</p>
 <p>We can show how to use the grammar of graphics by starting with the CBSA data that we introduced in the previous chapter, where each row is associated with a particular metropolitan region in the United States. The first plot we will make is a scatter plot that investigates the relationship between the median price of a one-bedroom apartment and the population density of the metropolitan region. In the language of the grammar of graphics, we can start to describe this visualization by providing the variable name in Python of the data (<code>cbsa</code>). Next, we associate the horizontal axis (called the <code>x</code> aesthetic) with the column in the data named <code>density</code>. The vertical axis (the <code>y</code> aesthetic) can similarly be associated with the column named <code>rent_1br_median</code>. We will make a scatter plot, with each point on the plot describing one of our metropolitan regions, which leads us to use a <em>point geometry</em>. Our plot will allow us to understand the relationship between city density and rental prices.</p>
-<div id="fig-img-ggplot" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-img-ggplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="img/diagram_ggplot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;2.1: Diagram of how the elements of the grammar of graphics correspond to elements of the code and visualization."><img src="img/diagram_ggplot.png" class="img-fluid figure-img"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-img-ggplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.1: Diagram of how the elements of the grammar of graphics correspond to elements of the code and visualization.
-</figcaption>
+<p>In Python, we need to use some special functions to indicate all of this information and to instruct the program to produce a plot. We start by indicating the name of the underlying dataset and using it to create a special object called <code>ggplot</code> that indicates that we want to create a data visualization. The plot itself is created by adding—literally, with the plus sign—the function <code>geom_point</code>. This function indicates that we want to add a points geometry to the plot. Inside of the geometry function, we apply the function <code>aes</code> (short for aesthetics), which indicates that we want to specify the mappings between components of the plot and column names in our dataset. Code to write this using the values described in the previous paragraph is given below.</p>
+<div id="2b459824" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="02_graphics_files/figure-html/cell-3-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey."><img src="02_graphics_files/figure-html/cell-3-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey." class="figure-img"></a></p>
+<figcaption>Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey.</figcaption>
 </figure>
 </div>
-<p>In Python, we need to use some special functions to indicate all of this information and to instruct the program to produce a plot. We start by indicating the name of the underlying dataset and using it to create a special object called <code>ggplot</code> that indicates that we want to create a data visualization. The plot itself is created by adding—literally, with the plus sign—the function <code>geom_point</code>. This function indicates that we want to add a points geometry to the plot. Inside of the geometry function, we apply the function <code>aes</code> (short for aesthetics), which indicates that we want to specify the mappings between components of the plot and column names in our dataset. Code to write this using the values described in the previous paragraph is given below.</p>
-<div id="1f151bfe" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>)))</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>cbsa[[<span class="st">'name'</span>, <span class="st">'quad'</span>, <span class="st">'density'</span>, <span class="st">'rent_1br_median'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">name</th>
-<th data-quarto-table-cell-role="th">quad</th>
-<th data-quarto-table-cell-role="th">density</th>
-<th data-quarto-table-cell-role="th">rent_1br_median</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>New York</td>
-<td>NE</td>
-<td>1051.306467</td>
-<td>1430</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>Los Angeles</td>
-<td>W</td>
-<td>1040.647281</td>
-<td>1468</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>Chicago</td>
-<td>NC</td>
-<td>508.629406</td>
-<td>1060</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>Dallas</td>
-<td>S</td>
-<td>323.181404</td>
-<td>1106</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>Houston</td>
-<td>S</td>
-<td>316.543514</td>
-<td>997</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5</td>
-<td>Washington</td>
-<td>S</td>
-<td>363.732689</td>
-<td>1601</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">6</td>
-<td>Philadelphia</td>
-<td>NE</td>
-<td>506.068130</td>
-<td>1083</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">7</td>
-<td>Miami</td>
-<td>S</td>
-<td>430.103162</td>
-<td>1230</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8</td>
-<td>Atlanta</td>
-<td>S</td>
-<td>263.275821</td>
-<td>1181</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9</td>
-<td>Boston</td>
-<td>NE</td>
-<td>517.827702</td>
-<td>1390</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">10</td>
-<td>Phoenix</td>
-<td>W</td>
-<td>126.558955</td>
-<td>1065</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">11</td>
-<td>San Francisco</td>
-<td>W</td>
-<td>712.992772</td>
-<td>1940</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">12</td>
-<td>Riverside</td>
-<td>W</td>
-<td>64.511974</td>
-<td>1120</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">13</td>
-<td>Detroit</td>
-<td>NC</td>
-<td>421.567420</td>
-<td>811</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">14</td>
-<td>Seattle</td>
-<td>W</td>
-<td>256.189989</td>
-<td>1478</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">15</td>
-<td>Minneapolis</td>
-<td>NC</td>
-<td>188.297448</td>
-<td>1035</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16</td>
-<td>San Diego</td>
-<td>W</td>
-<td>298.781488</td>
-<td>1518</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">17</td>
-<td>Tampa</td>
-<td>S</td>
-<td>452.790117</td>
-<td>1045</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">18</td>
-<td>Denver</td>
-<td>W</td>
-<td>135.070927</td>
-<td>1340</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">19</td>
-<td>Baltimore</td>
-<td>S</td>
-<td>404.661335</td>
-<td>1132</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">20</td>
-<td>St. Louis</td>
-<td>NC</td>
-<td>134.615515</td>
-<td>778</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">21</td>
-<td>Orlando</td>
-<td>S</td>
-<td>253.043039</td>
-<td>1156</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">22</td>
-<td>Charlotte</td>
-<td>S</td>
-<td>177.393426</td>
-<td>1074</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">23</td>
-<td>San Antonio</td>
-<td>S</td>
-<td>132.337510</td>
-<td>936</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">24</td>
-<td>Portland</td>
-<td>W</td>
-<td>141.406821</td>
-<td>1262</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">25</td>
-<td>Sacramento</td>
-<td>W</td>
-<td>173.268846</td>
-<td>1156</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">26</td>
-<td>Pittsburgh</td>
-<td>NE</td>
-<td>171.198592</td>
-<td>743</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">27</td>
-<td>Cincinnati</td>
-<td>NC</td>
-<td>187.276368</td>
-<td>714</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">28</td>
-<td>Austin</td>
-<td>S</td>
-<td>201.447732</td>
-<td>1216</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">29</td>
-<td>Las Vegas</td>
-<td>W</td>
-<td>106.878725</td>
-<td>1004</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-<p>Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey.</p>
 </div>
 </div>
 <p>Running the code above from a Quarto document will show the desired visualization right below the block of code. In this plot, each row of our dataset, a CBSA region, is represented as a point in the plot. The location of each point is determined by the density and median rent price for a one-bedroom apartment in the corresponding region. Notice that Python has automatically made several choices for the plot that we did not explicitly indicate in the code. For example, the range of values on the two axes, the axis labels, the grid lines, and the marks along the grid. Python has also automatically picked the color, size, and shape of the points. While the defaults work as a good starting point, it is often useful to modify these values; we will see how to changes these aspects of the plot in later sections of this chapter.</p>
@@ -652,7 +414,7 @@ Figure&nbsp;2.1: Diagram of how the elements of the grammar of graphics correspo
 <h2 data-number="2.2" class="anchored" data-anchor-id="text-geometry"><span class="header-section-number">2.2</span> Text Geometry</h2>
 <p>A common critique of computational methods is that they obscure a closer understanding of each individual object of study in an attempt to search for numeric patterns. This is certainly an important caution; computational analysis of humanities data should always be paired with close analysis. However, it does not always have to be the case that visualizations reduce complex collections to a few numerical summaries. This is particularly so when working with a dataset that has a relatively small number of observations. Looking back at our first scatter plot, how could we recover a closer analysis of individual cities while also looking for general patterns between the two economic variables? One option is to add labels indicating the names of the regions. These names would let anyone looking at the plot to adding their own understanding of the individual regions as an additional layer of information as they interpret the plot.</p>
 <p>Adding the names of the regions can be done by using another type of geometry called a <em>text geometry</em>. This geometry is created with the function <code>geom_text</code>. For each row of a given dataset, this geometry adds a small textual label. As with the point geometry, it requires us to specify which columns of our data correspond to the <code>x</code> and <code>y</code> aesthetics. These values tell the plot where to place the label. Additionally, the text geometry requires an aesthetic called <code>label</code> that indicates the column of the dataset that the label should take its text from. In our case, we will use the column called <code>name</code> to make textual labels on the plot. A reminder that this is a column name from the data that we loaded in. The code block below produces a text label plot by changing the geometry type and adding the additional aesthetic from the previous example.</p>
-<div id="f532ac52" class="cell" data-execution_count="3">
+<div id="fb6f6e20" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    geom_text(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>, label<span class="op">=</span><span class="st">'name'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -666,8 +428,8 @@ Figure&nbsp;2.1: Diagram of how the elements of the grammar of graphics correspo
 </div>
 <p>The plot generated by the code allows us to now see which region has the highest rents (San Francisco). And, we can identify which regions have the highest density (New York and Los Angeles). We can also identify regions such as Detroit that are relatively dense but inexpensive or regions such as Denver that are not particularly dense but still one of the more expensive regions to rent in. While we have added only a single additional piece of information to the plot, each of the labels uniquely identifies each row of the data. This allows anyone familiar with metropolitan regions in the United States to bring many more characteristics of each data point to the plot through their own knowledge. For example, while the plot does not include any information about overall population, anyone who knows the largest cities in the US can use the plot to see that the two most dense cities (New York and Los Angeles) are also the most populous. And, while the plot does not have information about the location of the regions, if we know the general geography of the country, it is possible to see that many of the cities that are expensive but not particularly dense (Portland, Denver, Seattle, and San Diego) are on the West Coast. These observations point to the power of including labels on a scatter plot.</p>
 <p>While the text plot adds additional contextual information compared to the scatter plot, it does have some shortcomings. Some of the labels for points at the edges of the plot fall off and become truncated. Labels for points in the lower-left corner of the plot start to overlap one another and become difficult to read. These issues will only grow if we increase the number of regions in our dataset. Also, it is not entirely clear what part of the label corresponds to the density of the cities. Is it the center of the label, the start of the label, or the end of the label? We could add a note that the value is the center of the label, but that becomes somewhat cumbersome to have to constantly remember and remind ourselves and others about.</p>
-<p>To start addressing these issues, we can add the points back into the plot with the labels. We could do this in Python by adding the two geometry layers (<code>geom_point</code> and <code>geom_text</code>) one after the other. This will make it more clear where on the x-axis each region is associated to, but at the same time will make the names of the cities even more difficult to read. To fix the second problem, we will replace the text geometry with a different geometry called <code>geom_text_repel</code>. It also places labels on the plot, but has special logic that avoids intersecting labels. Instead, labels are moved away from the data points and connected (when needed) by a line segment. As with the text geometry, the text repel geometry requires specifying <code>x</code>, <code>y</code>, and <code>label</code> aesthetics. Below is the code to make both of these modifications.</p>
-<div id="2eb280ac" class="cell" data-execution_count="4">
+<p>To start addressing these issues, we can add the points back into the plot with the labels. We could do this in Python by adding the two geometry layers (<code>geom_point</code> and <code>geom_text</code>) one after the other. This will make it more clear where on the x-axis each region is associated to, but at the same time will make the names of the cities even more difficult to read. To fix the second problem, we will add options to the text geometry to push the labels up a bit and to make them a bit smaller. Below is the code to make both of these modifications.</p>
+<div id="f0da5b79" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> adjustText <span class="im">import</span> adjust_text</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -676,7 +438,7 @@ Figure&nbsp;2.1: Diagram of how the elements of the grammar of graphics correspo
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>)) <span class="op">+</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    geom_text(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>, label<span class="op">=</span><span class="st">'name'</span>), </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>              nudge_y<span class="op">=</span><span class="dv">50</span>, size<span class="op">=</span><span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>              nudge_y<span class="op">=</span><span class="dv">20</span>, size<span class="op">=</span><span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -691,38 +453,29 @@ Figure&nbsp;2.1: Diagram of how the elements of the grammar of graphics correspo
 <section id="lines-and-bars" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="lines-and-bars"><span class="header-section-number">2.3</span> Lines and Bars</h2>
 <p>There a large number of different geometries supplied by the <strong>plotnine</strong> package, in addition to the even larger collection of extensions by other Python packages. We will look at two other types of geometries in this section that allow us to investigate common relationships in the columns of a dataset. Other geometries will be discussed throughout the book as the need arises, and the full list of geometries can be found in the <strong>plotnine</strong> package’s documentation.</p>
-<div id="fig-img-geoms" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-img-geoms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="img/diagram_geoms.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;2.2: Examples of common geometries used in the grammar of graphics."><img src="img/diagram_geoms.png" class="img-fluid figure-img"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-img-geoms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.2: Examples of common geometries used in the grammar of graphics.
-</figcaption>
-</figure>
-</div>
 <p>For a moment, we will switch gears and look at the food prices dataset, which was introduced in the previous chapter. This data contains one row for every year from 1870 through 2015, with relative prices for thirteen different food items across the United States <span class="citation" data-cites="ch02:jacks2019boom">[<a href="#ref-ch02:jacks2019boom" role="doc-biblioref">3</a>]</span>. Consider a visualization showing the change in the price of tea over the 146 years in the dataset. We could create a scatter plot where each point is a row of the data, the <code>x</code> aesthetic captures the year of each record, and the <code>y</code> aesthetic measures the relative cost of tea. This visualization would be fine and could roughly help us understand the changes in relative prices for this commodity. A common visualization type, however, for data of this format is a line plot, where the price in each year is connected by a line to the price in the subsequent year. To create such a plot, we can use the <code>geom_line</code> geometry. This is most commonly used when the horizontal axis measures some unit of time, but can represent other quantities that we expect to continuously and smoothly change between measurements on the x-axis. The line geometry requires the same aesthetics as the point geometry and can be created with the same syntax, as shown in the following block of code.</p>
-<div id="f17e5faa" class="cell" data-execution_count="5">
+<div id="728963f7" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(ggplot(food_prices) <span class="op">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    geom_line(aes(x<span class="op">=</span><span class="st">'year'</span>, y<span class="op">=</span><span class="st">'tea'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="02_graphics_files/figure-html/cell-6-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Plot of the price of tea in standardized units (100 is the price in 1900) over time."><img src="02_graphics_files/figure-html/cell-6-output-1.png" width="672" height="480" alt="Plot of the price of tea in standardized units (100 is the price in 1900) over time." class="figure-img"></a></p>
+<p><a href="02_graphics_files/figure-html/cell-6-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Plot of the price of tea in standardized units (100 is the price in 1900) over time."><img src="02_graphics_files/figure-html/cell-6-output-1.png" width="672" height="480" alt="Plot of the price of tea in standardized units (100 is the price in 1900) over time." class="figure-img"></a></p>
 <figcaption>Plot of the price of tea in standardized units (100 is the price in 1900) over time.</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>The output of this visualization allows us to see the change over time of the tea prices. Notice that the relative price decreased fairly steadily from 1870 through to 1920. It had a few sudden drops and reversals in the 1920s and 1930s, before increasing again in the 1950s. The relative cost of tea then decreased again fairly steadily from the mid 1950s through to the end of the data range in 2015.</p>
-<p>Another common usage of a visualization is to see the value of a numeric column of the dataset relative to a character column of the dataset. It is possible to represent such a relationship with a <code>geom_point</code> layer. However, it is often more visually meaningful to use a bar for each category and the height or length of the bar representing the numeric value. This type of plot is most common when showing the counts of different categories, something we will see in the next chapter, but can also be used in any situation where a numeric value is associated with different categories. To create a plot with bars we use the <code>geom_col</code> function, providing both <code>x</code> and <code>y</code> aesthetics. Python will automatically create vertical bars if we have a character variable associated with the <code>x</code> aesthetic and horizontal bars if we have one in the <code>y</code> aesthetic. Putting the character variable on the y-axis usually makes it easier to read the labels, so we recommend it in most cases. In the code block below, we have the commands to create a bar plot of the population in each region from the CBSA dataset.</p>
-<div id="0e65fc91" class="cell" data-execution_count="6">
+<p>Another common usage of a visualization is to see the value of a numeric column of the dataset relative to a character column of the dataset. It is possible to represent such a relationship with a <code>geom_point</code> layer. However, it is often more visually meaningful to use a bar for each category and the height or length of the bar representing the numeric value. This type of plot is most common when showing the counts of different categories, something we will see in the next chapter, but can also be used in any situation where a numeric value is associated with different categories. To create a plot with bars we use the <code>geom_col</code> function, providing both <code>x</code> and <code>y</code> aesthetics. Python expects the categorical variable to map to x and the numeric one to map to y. However, usually it is easier to read the other way around. To address this, we add another layer called <code>coord_flip()</code> that flips the two axes for us. In the code block below, we have the complete set of commands to create a bar plot of the population in each region from the CBSA dataset.</p>
+<div id="2a5b9c7b" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    geom_col(aes(x<span class="op">=</span><span class="st">'pop'</span>, y<span class="op">=</span><span class="st">'name'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    geom_col(aes(x<span class="op">=</span><span class="st">'name'</span>, y<span class="op">=</span><span class="st">'pop'</span>)) <span class="op">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    coord_flip())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="02_graphics_files/figure-html/cell-7-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Plot of the population of the largest 30 core-based statistical areas in the United States, showing their population from the 2021 American community survey."><img src="02_graphics_files/figure-html/cell-7-output-1.png" width="672" height="480" alt="Plot of the population of the largest 30 core-based statistical areas in the United States, showing their population from the 2021 American community survey." class="figure-img"></a></p>
+<p><a href="02_graphics_files/figure-html/cell-7-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Plot of the population of the largest 30 core-based statistical areas in the United States, showing their population from the 2021 American community survey."><img src="02_graphics_files/figure-html/cell-7-output-1.png" width="672" height="480" alt="Plot of the population of the largest 30 core-based statistical areas in the United States, showing their population from the 2021 American community survey." class="figure-img"></a></p>
 <figcaption>Plot of the population of the largest 30 core-based statistical areas in the United States, showing their population from the 2021 American community survey.</figcaption>
 </figure>
 </div>
@@ -733,13 +486,13 @@ Figure&nbsp;2.2: Examples of common geometries used in the grammar of graphics.
 <section id="optional-aesthetics" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="optional-aesthetics"><span class="header-section-number">2.4</span> Optional Aesthetics</h2>
 <p>In the previous sections, we have shown how visualizations can be built out of geometry layers, where each geometry is associated with a dataset and a collection of variable mappings known as aesthetics. The point, line, and bar geometries require <code>x</code> and <code>y</code> aesthetics; the text geometry also required an aesthetic named <code>label</code>. In addition to the required aesthetics, each geometry type also has a number of optional aesthetics that we can use to add additional information to the plot. For example, most geometries have a <code>color</code> aesthetic. The syntax for describing this is exactly the same as with the required aesthetics: we place the name of the aesthetic followed by the name of the associated variable name. Let’s see what happens when we add a color aesthetic to our scatter plot by relating the column called <code>quad</code> to the aesthetic named <code>color</code>. Below is the corresponding code.</p>
-<div id="5d627486" class="cell" data-execution_count="7">
+<div id="154530ee" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>, color<span class="op">=</span><span class="st">'quad'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="02_graphics_files/figure-html/cell-8-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points are colored based on the quadrant in which the city is found in the United States."><img src="02_graphics_files/figure-html/cell-8-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points are colored based on the quadrant in which the city is found in the United States." class="figure-img"></a></p>
+<p><a href="02_graphics_files/figure-html/cell-8-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points are colored based on the quadrant in which the city is found in the United States."><img src="02_graphics_files/figure-html/cell-8-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points are colored based on the quadrant in which the city is found in the United States." class="figure-img"></a></p>
 <figcaption>Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points are colored based on the quadrant in which the city is found in the United States.</figcaption>
 </figure>
 </div>
@@ -747,13 +500,13 @@ Figure&nbsp;2.2: Examples of common geometries used in the grammar of graphics.
 </div>
 <p>The result of associating a column in the dataset with a color produces a new variation of the original scatter plot. We have the same set of points and locations on the plot, as well as the same axes. However, now each color has been automatically associated with a region and every point has been colored according to the region column associated with each row of the data. The mapping between colors and region names is shown in an automatically created legend on the right-hand side of the plot. The ability to add additional information to the plot by specifying a single aesthetic speaks to how powerful the grammar of graphics is in terms of quickly producing informative visualizations of data. In the first edition of this text, which used the built-in graphics system in Python, it was necessary to write nearly a dozen lines of code to produce a similar plot. Now that we are able to use the <strong>plotnine</strong> package, this process has been greatly simplified.</p>
 <p>In the previous example we changed the color aesthetic from the fixed default of black to a color that changes with another variable. It is also possible to specify an alternative, fixed value for any aesthetic. We can draw on the color names available in Python. For example, we might want to change all of the points to be a shade of green. This can be done with a small change to the function call. To do this, we set the color aesthetic to the name of a color, such as “red”. However, unlike with variable aesthetics, the mapping needs to be done outside of the <code>aes()</code> function, but still within the <code>geom_*</code> function. Below is an example of the code to redo our plot with a different color; we use a color called “olivedrab”, which in print is much more aesthetically pleasing than its name might at first suggest.</p>
-<div id="3874ec81" class="cell" data-execution_count="8">
+<div id="6823e505" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>), color<span class="op">=</span><span class="st">'olivedrab'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="02_graphics_files/figure-html/cell-9-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. The color of the points has been changed to a dark green called ‘olivedrab’."><img src="02_graphics_files/figure-html/cell-9-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. The color of the points has been changed to a dark green called ‘olivedrab’." class="figure-img"></a></p>
+<p><a href="02_graphics_files/figure-html/cell-9-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. The color of the points has been changed to a dark green called ‘olivedrab’."><img src="02_graphics_files/figure-html/cell-9-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. The color of the points has been changed to a dark green called ‘olivedrab’." class="figure-img"></a></p>
 <figcaption>Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. The color of the points has been changed to a dark green called ‘olivedrab’.</figcaption>
 </figure>
 </div>
@@ -767,43 +520,43 @@ Figure&nbsp;2.2: Examples of common geometries used in the grammar of graphics.
 <p>Python makes many choices for us automatically when creating any plot. In our example above, in which we set the color of the points to follow another variable in the dataset, Python handles the details of how to pick the specific colors and sizes. It has figured how large to make the axes, where to add tick marks, and where to draw grid lines. Letting Python deal with these details is convenient because it frees us up to focus on the data itself. Sometimes, such as when preparing to produce plots for external distribution, or when the default are particularly hard to interpret, it is useful to manually adjust these details. This is exactly what scales were designed for.</p>
 <p>Each aesthetic within the grammar of graphics is associated with a scale. Scales detail how a plot should relate aesthetics to the concrete, perceivable features in a plot. For example, a scale for the <code>x</code> aesthetic will describe the smallest and largest values on the x-axis. It will also code information about how to label the x-axis. Similarly, a color scale describes what colors corresponds to each category in a dataset and how to format a legend for the plot. In order to change or modify the default scales, we add an additional function to the code. The order of the scales relative to the geometries do not effect the output; by convention, scales are usually grouped after the geometries.</p>
 <p>For example, a popular alternative to the default color palette shown in our previous plot is the function <code>scale_color_cmap_d()</code>. It constructs a set of colors that is color-blind friendly, looks nice when printed in black and white, and displays fine on bad projectors. After specifying that the color of a geometry should vary with a column in the dataset, we specify this color scale by adding the function as an extra line in the plot. An example is shown in the following code.</p>
-<div id="0bfb2665" class="cell" data-execution_count="9">
+<div id="27ecd9d4" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>, color<span class="op">=</span><span class="st">'quad'</span>)) <span class="op">+</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    scale_color_cmap_d())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="02_graphics_files/figure-html/cell-10-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points color based on the quadrant in which the city is found in the United States, with a color-blind friendly color scale."><img src="02_graphics_files/figure-html/cell-10-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points color based on the quadrant in which the city is found in the United States, with a color-blind friendly color scale." class="figure-img"></a></p>
+<p><a href="02_graphics_files/figure-html/cell-10-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points color based on the quadrant in which the city is found in the United States, with a color-blind friendly color scale."><img src="02_graphics_files/figure-html/cell-10-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points color based on the quadrant in which the city is found in the United States, with a color-blind friendly color scale." class="figure-img"></a></p>
 <figcaption>Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, the points color based on the quadrant in which the city is found in the United States, with a color-blind friendly color scale.</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>The output shows that the colors are now given by a range from dark purple to bright yellow in place of the rainbow of colors in the default plot. As with the categories in the bar plot, the ordering of the unique colors is given by putting the categories in alphabetical order. Changing this requires modifying the dataset before passing it to the plot, something that we will discuss in the next chapter. Note that the <code>_d</code> at the end of the scale function indicates that the colors are used to create a set of mappings for a character variable (it stands for “discrete”). There is also a complimentary function <code>scale_color_cmap()</code> that produces a similar set of colors when making the color of the points change according to a numeric variable. The code below demonstrates the continuous case, where the population is treated as a numeric variable.</p>
-<div id="92659651" class="cell" data-execution_count="10">
+<div id="259fb45c" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>, color<span class="op">=</span><span class="st">'pop'</span>)) <span class="op">+</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    scale_color_cmap())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Many other scales exist to control a variety of aesthetics. For example, <code>scale_size_area</code> can be used to make the size of the points proportional to one of the other columns in a dataset. There are also several scales to control the x and y axes. For example, we can add <code>scale_x_log10()</code> and <code>scale_y_log10()</code> to a plot to produce values on a logarithmic scale, which can be very useful when working with heavily skewed datasets. We will use this in later chapters as needed.</p>
-<p>The default scale for the x-axis is called <code>scale_x_continuous</code>. A corresponding function <code>scale_y_continuous</code> is the default for the y-axis. Adding these to a plot on their own has no visible effect. However, there are many helpful optional arguments that we can provide to these functions that change the way a plot is displayed. Setting <code>breaks</code> within one of these scales tells Python the number of labels to put on the axis. Also, making <code>minor_breaks</code> equal to <code>None</code> turns off the minor grid lines. We can set the value <code>limits</code> to a pair of numbers in order to describe the starting and ending range on a plot. Below is the code to produce a plot which shows the same data as our original scatter plot, but now with modified grid lines, axis labels, and vertical range.</p>
-<div id="0a912c00" class="cell" data-execution_count="11">
+<p>The default scale for the x-axis is called <code>scale_x_continuous</code>. A corresponding function <code>scale_y_continuous</code> is the default for the y-axis. Adding these to a plot on their own has no visible effect. However, there are many helpful optional arguments that we can provide to these functions that change the way a plot is displayed. Setting <code>breaks</code> within one of these scales tells Python the number of labels to put on the axis. Usually we use a helpful function to set these, such as <code>mizani.breaks.breaks_width</code>. We can set the value <code>limits</code> to a pair of numbers in order to describe the starting and ending range on a plot. Below is the code to produce a plot which shows the same data as our original scatter plot, but now with modified grid lines, axis labels, and vertical range.</p>
+<div id="77156aa2" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>)) <span class="op">+</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    scale_x_continuous(breaks<span class="op">=</span>np.arange(<span class="dv">0</span>, <span class="dv">25000</span>, <span class="dv">2500</span>), minor_breaks<span class="op">=</span><span class="va">None</span>) <span class="op">+</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    scale_y_continuous(limits<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">2000</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    scale_x_continuous(breaks<span class="op">=</span>mizani.breaks.breaks_width(<span class="dv">100</span>)) <span class="op">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    scale_y_continuous(breaks<span class="op">=</span><span class="va">True</span>, limits<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">3000</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="02_graphics_files/figure-html/cell-12-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we adjust the standard breaks and limits on the x- and y-axes."><img src="02_graphics_files/figure-html/cell-12-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we adjust the standard breaks and limits on the x- and y-axes." class="figure-img"></a></p>
+<p><a href="02_graphics_files/figure-html/cell-12-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we adjust the standard breaks and limits on the x- and y-axes."><img src="02_graphics_files/figure-html/cell-12-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we adjust the standard breaks and limits on the x- and y-axes." class="figure-img"></a></p>
 <figcaption>Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we adjust the standard breaks and limits on the x- and y-axes.</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>Finally, there are two special scale types that can be useful for working with colors. In some cases we may already have a column in our dataset that explicitly describes the color of an observation; here, it would make sense to use these colors directly. To do that, we can add the scale <code>scale_color_identity</code> to the plot. Another type of scale that can be useful for colors is <code>scale_color_manual</code>. Here, it is possible to describe exactly which color should be used for each category. Below is the syntax for producing manually defined colors for each region in the CBSA dataset.</p>
-<div id="063b6ca1" class="cell" data-execution_count="12">
+<div id="750d4827" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>, color<span class="op">=</span><span class="st">'quad'</span>)) <span class="op">+</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    scale_color_manual(values<span class="op">=</span>{</span>
@@ -819,7 +572,7 @@ Figure&nbsp;2.2: Examples of common geometries used in the grammar of graphics.
 <h2 data-number="2.6" class="anchored" data-anchor-id="labels-and-themes"><span class="header-section-number">2.6</span> Labels and Themes</h2>
 <p>Throughout this chapter, we have seen a number of ways to create and modify data visualizations. One thing that we did not cover was how to label our axes. While many data visualization guides often stress the importance of labeling axes, it is often best to simply use the default labels provided by Python during the exploratory phase of analysis. These are useful for a number of reasons. First, they require minimal effort and make it easy to tweak axes, variables, and other settings without spending time tweaking with the labels. Secondly, the default labels use the variable names in our dataset. When writing code this is exactly what we need to know about a variable to use it in additional plots, models, and data manipulation tasks. Of course, once we want to present our results to others, it is essential to provide more detailed descriptions of the axes and legends in our plot. Fortunately, these can be added directly using the grammar of graphics.</p>
 <p>In order to change the labels in a plot, we can use the <code>labs</code> function as an extra part of our plot. Inside the function, we assign labels to the names of aesthetic values that we want to describe. Leaving a value unspecified will keep the default value in place. Labels for the x-axis and y-axis will be placed on the sides of the plot. Labels for other aesthetics such as size and color will be placed in the legend. We can also add <code>title</code>, <code>subtitle</code>, and a <code>caption</code> value to the <code>labs</code> command to add addition information to describe the plot as a whole. Here is an example of our scatter plot with color that includes a variety of different labels.</p>
-<div id="a7dc3f16" class="cell" data-execution_count="13">
+<div id="2d09f46a" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa) <span class="op">+</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    geom_point(aes(x<span class="op">=</span><span class="st">'density'</span>, y<span class="op">=</span><span class="st">'rent_1br_median'</span>, color<span class="op">=</span><span class="st">'quad'</span>)) <span class="op">+</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    labs(</span>
@@ -833,18 +586,18 @@ Figure&nbsp;2.2: Examples of common geometries used in the grammar of graphics.
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="02_graphics_files/figure-html/cell-14-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we add custom labels and titles to the plot."><img src="02_graphics_files/figure-html/cell-14-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we add custom labels and titles to the plot." class="figure-img"></a></p>
+<p><a href="02_graphics_files/figure-html/cell-14-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we add custom labels and titles to the plot."><img src="02_graphics_files/figure-html/cell-14-output-1.png" width="672" height="480" alt="Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we add custom labels and titles to the plot." class="figure-img"></a></p>
 <figcaption>Plot of the largest 30 core-based statistical areas in the United States, showing their density and the median price to rent a one-bedroom apartment from the 2021 American community survey. Here, we add custom labels and titles to the plot.</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>Another way to prepare our graphics for distribution is to modify the <em>theme</em> of a plot. Themes effect the way that the plot elements such as the axis labels, ticks, and background look. By default throughout this book, we have set the default plot to <code>theme_minimal</code>. We think that this is a great choice for the exploration of a dataset. As the name implies, it removes most of the clutter of other choices while keeping grid lines and other visual cues to help with interpretation. When presenting information for external publication, we often prefer to use a theme that is based on the work of Edward Tufte, a well-known scholar in the field of data visualization. To set the theme, we can add <code>theme_minimal()</code> or another theme function to our plot, as in the example below.</p>
-<div id="e1f1a5af" class="cell" data-execution_count="14">
+<div id="65b8024e" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set minimal theme as default</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>theme_set(theme_minimal())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>&lt;plotnine.themes.theme_minimal.theme_minimal at 0x107d7fe00&gt;</code></pre>
+<pre><code>&lt;plotnine.themes.theme_minimal.theme_minimal at 0x10af1be00&gt;</code></pre>
 </div>
 </div>
 <p>Now, whenever we construct a plot it will use the newly assigned theme. Minimal themes are designed to use as little “ink” as possible, thus focusing the reader on the data <span class="citation" data-cites="tufte1987">[<a href="#ref-tufte1987" role="doc-biblioref">4</a>]</span>. They can be a bit too minimal when first exploring the dataset, but can be a great tool for presenting our results. Again, there are many resources online to customize according to our needs.</p>
@@ -852,7 +605,7 @@ Figure&nbsp;2.2: Examples of common geometries used in the grammar of graphics.
 <section id="conventions-for-graphics-code" class="level2" data-number="2.7">
 <h2 data-number="2.7" class="anchored" data-anchor-id="conventions-for-graphics-code"><span class="header-section-number">2.7</span> Conventions for Graphics Code</h2>
 <p>As a final point, note that there is a convention for simplifying the plotting command. Often, each layer will use the same x and y variables. It is possible to specify these just once in the <code>ggplot</code> function, and they will be used by default in all other layers. Also, we can drop the <code>x =</code> and <code>y =</code> if we put these options first. This can greatly simplify the amount of code needed to create a plot, therefore making the code easier to edit and understand. Below is an example of layering together the <code>geom_point</code> and <code>geom_text</code> with this inheritance structure.</p>
-<div id="7c88631e" class="cell" data-execution_count="15">
+<div id="e359c7ce" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(ggplot(cbsa, aes(<span class="st">'density'</span>, <span class="st">'rent_1br_median'</span>)) <span class="op">+</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    geom_point() <span class="op">+</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    geom_text(aes(label<span class="op">=</span><span class="st">'name'</span>), nudge_y<span class="op">=</span><span class="dv">50</span>, size<span class="op">=</span><span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
